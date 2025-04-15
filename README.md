@@ -12,7 +12,7 @@
 
 ---
 ## 📝 프로젝트 소개
-**모뉴(MoNew) - MongoDB 및 PostgreSQL 기반 백업 및 복구 시스템을 갖춘 사용자 맞춤형 통합 뉴스 플랫폼**  
+**모뉴(MoNew) - PostgreSQL 및 MongoDB 기반 백업 및 복구 시스템을 갖춘 사용자 맞춤형 통합 뉴스 플랫폼**  
 📆 프로젝트 기간: 2025.04.16 ~ 2025.05.13  
 
 ## 🌿 Branch Naming Convention
