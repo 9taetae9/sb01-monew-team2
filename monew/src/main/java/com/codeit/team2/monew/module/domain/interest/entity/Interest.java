@@ -9,6 +9,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -31,4 +32,13 @@ public class Interest extends BaseEntity {
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subscription> subscriptions;
+
+    @Builder
+    public Interest (String name, int subscriberCount, List<InterestKeyword> keywords,
+        List<Subscription> subscriptions) {
+        this.name = name;
+        this.subscriberCount = subscriberCount;
+        this.keywords = keywords;
+        this.subscriptions = subscriptions;
+    }
 }

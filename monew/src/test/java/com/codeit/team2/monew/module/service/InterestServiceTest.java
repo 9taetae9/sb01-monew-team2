@@ -27,14 +27,16 @@ class InterestServiceTest {
     @DisplayName("관심사 정보를 받아 생성한다.")
     @Test
     void create() {
-      // given: InterestRegisterRequest가 주어지면
-       InterestRegisterRequest request =  new InterestRegisterRequest("이름", List.of("이거"));
+        // given
+        List<String> keywords = List.of("이거");
+        InterestRegisterRequest request =  new InterestRegisterRequest("이름", keywords);
 
-      // when : interestKeyword
-      InterestDto interestDto = interestService.create(request);
+        // when
+        InterestDto interestDto = interestService.create(request);
 
-      // then : 키워드랑 관심사가 생성된다.
+        // then
         assertEquals(interestDto.name(), "이름");
+        assertEquals(interestDto.keywords().get(0), "이거");
 
     }
 
