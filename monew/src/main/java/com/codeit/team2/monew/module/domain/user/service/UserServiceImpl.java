@@ -17,11 +17,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto registUser(UserRegisterRequest userRegisterRequest) {
-        User user1 = userMapper.toUser(userRegisterRequest);
-        User user = userRepository.save(user1);
 
-        UserDto userDto = userMapper.toUserDto(user);
+        if (userRepository.existsByEmail(userRegisterRequest.email())) {
+            throw new RuntimeException("duplicate eamil");
+        }
 
-        return userDto;
+        User user = userRepository.save(userMapper.toUser(userRegisterRequest));
+
+        return userMapper.toUserDto(user);
     }
 }
