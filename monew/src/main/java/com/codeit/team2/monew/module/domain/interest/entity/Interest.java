@@ -26,9 +26,9 @@ public class Interest extends BaseEntity {
     @ColumnDefault("0")
     private int subscriberCount;
 
-    @OneToMany(mappedBy = "interest", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InterestKeyword> keywords;
 
-    @OneToMany(mappedBy = "interest", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subscription> subscriptions;
 }
