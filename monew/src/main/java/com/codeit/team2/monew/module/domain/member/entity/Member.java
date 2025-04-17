@@ -27,5 +27,5 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    private Boolean deleted;
+    private Boolean deleted = false;
 }
