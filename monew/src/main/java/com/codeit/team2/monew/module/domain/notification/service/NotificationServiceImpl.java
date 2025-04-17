@@ -16,7 +16,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Notification createCommentNotification(Comment comment, User author, User liker) {
-        Notification notification = new Notification(author, null, comment.getId(),
+        // Comment, User 검증 로직 추가 예정
+        String content = liker.getNickname() + "님이 나의 댓글을 좋아합니다.";
+        Notification notification = new Notification(author, content, comment.getId(),
             ResourceType.COMMENT);
         notificationRepository.save(notification);
         return notification;

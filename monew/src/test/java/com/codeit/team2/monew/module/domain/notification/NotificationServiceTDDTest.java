@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.notification;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.member.entity.User;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
+import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.notification.service.NotificationServiceImpl;
 import java.util.UUID;
@@ -37,6 +39,8 @@ public class NotificationServiceTDDTest {
         UUID authorId = UUID.randomUUID();
         String likerNickname = "liker";
         when(comment.getId()).thenReturn(commentId);
+        when(liker.getNickname()).thenReturn(likerNickname);
+        when(author.getId()).thenReturn(authorId);
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> {
             Notification notification = invocation.getArgument(0);
             ReflectionTestUtils.setField(notification, "id", UUID.randomUUID());
@@ -51,5 +55,9 @@ public class NotificationServiceTDDTest {
 
         // then
         assertNotNull(notification.getId());
+        assertEquals("liker님이 나의 댓글을 좋아합니다.", notification.getContent());
+        assertEquals(authorId, notification.getUser().getId());
+        assertEquals(commentId, notification.getResourceId());
+        assertEquals(ResourceType.COMMENT, notification.getResourceType());
     }
 }
