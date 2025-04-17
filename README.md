@@ -51,7 +51,6 @@
 | `docs`	 | 문서 수정 |
 | `remove`	 | 파일 삭제 |
 | `chore`  | 기타 변경 |
-| `chore`  | 기타 변경 |
 
 ### 🔄 Git Flow
 ![image](https://github.com/user-attachments/assets/6ae847b8-b30d-4d5f-85dc-5c0099a3ced7)
