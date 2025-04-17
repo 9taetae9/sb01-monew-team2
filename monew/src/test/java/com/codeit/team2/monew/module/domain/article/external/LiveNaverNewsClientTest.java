@@ -19,6 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 
 
+/**
+ * This test is only for development. This test actually accesses naver news api
+ */
+
 @SpringBootTest
 @Disabled
 public class LiveNaverNewsClientTest {
