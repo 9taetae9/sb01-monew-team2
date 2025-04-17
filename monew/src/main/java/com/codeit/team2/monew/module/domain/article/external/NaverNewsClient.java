@@ -1,14 +1,11 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
-import com.codeit.team2.monew.module.domain.article.dto.FetchArticleDto;
 import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
-import com.codeit.team2.monew.module.domain.article.dto.NaverArticleItemDto;
 import com.codeit.team2.monew.module.domain.article.dto.NaverArticleResponseDto;
+import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,18 +16,22 @@ public class NaverNewsClient implements NewsClient {
     private WebClient webClient;
     private String clientId;
     private String clientSecret;
+    private final ArticleMapper articleMapper;
+
 
     public NaverNewsClient(
         @Qualifier("naverNewsClient") WebClient webClient,
         @Value(value = "${news.naver.client-id}") String clientId,
-        @Value(value = "${news.naver.client-secret}") String clientSecret) {
+        @Value(value = "${news.naver.client-secret}") String clientSecret,
+        ArticleMapper articleMapper) {
         this.webClient = webClient;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.articleMapper = articleMapper;
     }
 
     @Override
-    public List<FetchArticleDto> fetchArticles(FetchCommand cmd) {
+    public List<Article> fetchArticles(FetchCommand cmd) {
 
         String encodedKeyword = URLEncoder.encode(cmd.keyword(), StandardCharsets.UTF_8);
 
@@ -53,21 +54,6 @@ public class NaverNewsClient implements NewsClient {
             throw new IllegalArgumentException(); // TODO : 예외 상세화
         }
 
-        List<FetchArticleDto> returnDto = new ArrayList<>();
-
-        for (NaverArticleItemDto item : response.items()) {
-            FetchArticleDto dto = new FetchArticleDto(
-                item.title(),
-                "NAVER",
-                item.link(),
-                item.description(),
-                ZonedDateTime.parse(item.pubDate(), DateTimeFormatter.RFC_1123_DATE_TIME)
-                    .toInstant()
-            );
-
-            returnDto.add(dto);
-        }
-
-        return returnDto;
+        return articleMapper.naverArticleListToEntity(response.items());
     }
 }
