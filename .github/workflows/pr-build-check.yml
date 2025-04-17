@@ -19,9 +19,7 @@ jobs:
         cache: 'gradle'
         
     - name: Grant execute permission for gradlew
-      working-directory: ./monew
-      run: chmod +x gradlew
-      
+      run: chmod +x monew/gradlew
+
     - name: Build with Gradle
-      working-directory: ./monew
-      run: ./gradlew build -x test
+      run: ./monew/gradlew build -x test
