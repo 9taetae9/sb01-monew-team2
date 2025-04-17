@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", imports = {ZonedDateTime.class, DateTimeFormatter.class})
 public interface ArticleMapper {
 
-    @Mapping(source = "originalLink", target = "sourceUrl")
+    @Mapping(source = "link", target = "sourceUrl")
     @Mapping(source = "description", target = "summary")
     @Mapping(target = "viewCount", constant = "0")
     @Mapping(target = "publishedDate", expression = "java(ZonedDateTime.parse(dto.pubDate(), DateTimeFormatter.RFC_1123_DATE_TIME).toInstant())")

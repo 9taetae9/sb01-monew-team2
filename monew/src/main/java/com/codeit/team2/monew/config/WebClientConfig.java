@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
 
     @Bean
-    @Qualifier("naverWebClient")
+    @Qualifier("naverNewsClient")
     public WebClient naverWebClient(@Value("${news.naver.url}") String url) {
         return WebClient.builder().baseUrl(url).build();
     }
