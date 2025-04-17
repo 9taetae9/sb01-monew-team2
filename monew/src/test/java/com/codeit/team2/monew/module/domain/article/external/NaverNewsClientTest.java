@@ -21,6 +21,9 @@ import org.mockito.BDDMockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
+/**
+ * {@link NaverNewsClient} 단위 테스트
+ */
 @ExtendWith(MockitoExtension.class)
 public class NaverNewsClientTest {
 

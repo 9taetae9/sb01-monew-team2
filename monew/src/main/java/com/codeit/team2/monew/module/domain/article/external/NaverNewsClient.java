@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+/**
+ * {@link NewsClient} 의 구현채로 naver news api 담당
+ */
 @Component
 public class NaverNewsClient implements NewsClient {
 
