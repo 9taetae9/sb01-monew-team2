@@ -19,7 +19,7 @@ CREATE TABLE "interests" (
 CREATE TABLE "keywords"
 (
     "id"         UUID        NOT NULL,
-    "keyword"    VARCHAR(50) NOT NULL,
+    "name"       VARCHAR(50) NOT NULL UNIQUE,
     "created_at" TIMESTAMP   NOT NULL,
     "updated_at" TIMESTAMP NULL,
     PRIMARY KEY ("id"),
@@ -53,7 +53,7 @@ CREATE TABLE "articles" (
     "interest_id" UUID NOT NULL,
     "title" VARCHAR(255) NOT NULL,
     "source" VARCHAR(255) NOT NULL,
-    "link" VARCHAR(255) NOT NULL UNIQUE,
+    "source_url" VARCHAR(255) NOT NULL UNIQUE,
     "summary" TEXT NULL,
     "view_count" BIGINT NOT NULL DEFAULT 0,
     "published_date" TIMESTAMP NOT NULL,
@@ -89,8 +89,8 @@ CREATE TABLE "comments" (
     "user_id" UUID NOT NULL,
     "article_id" UUID NOT NULL,
     "content" TEXT NOT NULL,
+    "like_count" BIGINT NOT NULL DEFAULT 0,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
-    "likes" BIGINT NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP NOT NULL,
     "updated_at" TIMESTAMP NOT NULL,
     FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
@@ -111,7 +111,7 @@ CREATE TABLE "comment_likes" (
 CREATE TABLE "notifications" (
     "id" UUID NOT NULL PRIMARY KEY,
     "user_id" UUID NOT NULL,
-    "content" VARCHAR(100) NOT NULL,
+    "content" VARCHAR(255) NOT NULL,
     "resource_type" VARCHAR(50) NOT NULL,
     "resource_id" UUID NOT NULL,
     "confirmed" BOOLEAN NOT NULL DEFAULT false,
