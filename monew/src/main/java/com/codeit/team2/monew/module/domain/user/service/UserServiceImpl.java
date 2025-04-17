@@ -26,6 +26,8 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("duplicate nickname");
         }
 
+        // password 암호화는 추후 진행
+
         User user = userRepository.save(userMapper.toUser(userRegisterRequest));
 
         return userMapper.toUserDto(user);
