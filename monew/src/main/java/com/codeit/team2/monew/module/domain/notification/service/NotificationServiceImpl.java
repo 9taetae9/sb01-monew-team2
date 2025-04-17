@@ -1,10 +1,12 @@
 package com.codeit.team2.monew.module.domain.notification.service;
 
+import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.member.entity.User;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +27,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification createInterestNotification() {
+    public List<Notification> createInterestNotification(List<Article> articles) {
         return null;
     }
 }
