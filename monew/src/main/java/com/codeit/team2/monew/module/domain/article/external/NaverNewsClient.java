@@ -6,6 +6,8 @@ import com.codeit.team2.monew.module.domain.article.dto.NaverArticleItemDto;
 import com.codeit.team2.monew.module.domain.article.dto.NaverArticleResponseDto;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,6 +49,10 @@ public class NaverNewsClient implements NewsClient {
             .bodyToMono(NaverArticleResponseDto.class)
             .block();
 
+        if (response == null) {
+            throw new IllegalArgumentException(); // TODO : 예외 상세화
+        }
+
         List<FetchArticleDto> returnDto = new ArrayList<>();
 
         for (NaverArticleItemDto item : response.items()) {
@@ -55,7 +61,8 @@ public class NaverNewsClient implements NewsClient {
                 "NAVER",
                 item.link(),
                 item.description(),
-                item.pubDate()
+                ZonedDateTime.parse(item.pubDate(), DateTimeFormatter.RFC_1123_DATE_TIME)
+                    .toInstant()
             );
 
             returnDto.add(dto);
