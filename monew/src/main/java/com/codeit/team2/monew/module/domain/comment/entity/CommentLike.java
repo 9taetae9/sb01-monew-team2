@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.comment.entity;
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
+import com.codeit.team2.monew.module.domain.member.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -25,20 +26,17 @@ public class CommentLike extends BaseEntity {
 
     private Instant likedAt;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-//    public static CommentLike create(Comment comment, User user) {
-//        CommentLike commentLike = new CommentLike();
-//        commentLike.comment = comment;
-//        commentLike.user = user;
-//        commentLike.likedAt = Instant.now();
-//
-//        if (comment != null) {
-//            comment.addLike(commentLike);
-//        }
-//
-//        return commentLike;
-//    }
+    public static CommentLike create(Comment comment, User user) {
+        CommentLike commentLike = new CommentLike();
+        commentLike.comment = comment;
+        commentLike.user = user;
+        commentLike.likedAt = Instant.now();
+
+        return commentLike;
+    }
+
 }
