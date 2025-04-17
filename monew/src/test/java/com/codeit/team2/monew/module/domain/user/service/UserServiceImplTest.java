@@ -71,6 +71,24 @@ class UserServiceImplTest {
                 userService.registUser(request);
             });
         }
+
+        @Test
+        void 닉네임_중복_예외() {
+            // given
+            String email = "email";
+            String nickname = "nickname";
+            String password = "password";
+
+            UserRegisterRequest request =
+                new UserRegisterRequest(email, nickname, password);
+
+            when(userRepository.existsByNickname(any())).thenReturn(true);
+
+            // when & then
+            assertThrows(Exception.class, () -> {
+                userService.registUser(request);
+            });
+        }
     }
 
 }
