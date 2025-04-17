@@ -16,6 +16,9 @@ spring:
   output:
     ansi:
       enabled: always
+  sql:
+    init:
+      mode: always
 
   batch:
     jdbc:
@@ -28,3 +31,9 @@ logging:
     root: info
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
+
+news:
+  naver:
+    url: https://openapi.naver.com
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
