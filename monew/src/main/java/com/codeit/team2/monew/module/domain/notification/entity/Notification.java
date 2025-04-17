@@ -42,4 +42,12 @@ public class Notification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ResourceType resourceType;
 
+    public Notification(User user, String content, UUID resourceId, ResourceType resourceType) {
+        this.user = user;
+        this.content = content;
+        this.resourceId = resourceId;
+        this.resourceType = resourceType;
+        this.confirmed = false;
+    }
+
 }
