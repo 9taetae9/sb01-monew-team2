@@ -22,6 +22,10 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("duplicate eamil");
         }
 
+        if (userRepository.existsByNickname(userRegisterRequest.nickname())) {
+            throw new RuntimeException("duplicate nickname");
+        }
+
         User user = userRepository.save(userMapper.toUser(userRegisterRequest));
 
         return userMapper.toUserDto(user);
