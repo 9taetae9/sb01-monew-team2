@@ -91,4 +91,20 @@ class UserServiceImplTest {
         }
     }
 
+    @Nested
+    class updateUserTest {
+
+        @Test
+        void 유저_수정_성공() {
+            // given
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname");
+
+            // when
+            UserDto userDto = userService.updateUser(userUpdateRequest);
+
+            // then
+            assertEquals("newNickname", userDto.email());
+        }
+    }
+
 }
