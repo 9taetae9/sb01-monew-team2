@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.external.NaverNewsClient;
@@ -29,7 +30,7 @@ public class KeywordToArticlesProcessorTest {
     }
 
     @Test
-    void processor_shouldReturnArticle_whenKeywordIsGiven() {
+    void processor_shouldReturnArticle_whenKeywordIsGiven() throws Exception {
         //given
         Keyword keyword = new Keyword("AI");
         List<Article> articles = List.of(
@@ -45,5 +46,6 @@ public class KeywordToArticlesProcessorTest {
 
         Assertions.assertThat(result.size()).isEqualTo(1);
         Assertions.assertThat(result.get(0).getTitle()).isEqualTo("AI");
+        BDDMockito.then(naverNewsClient).should(times(1)).fetchArticles(any());
     }
 }
