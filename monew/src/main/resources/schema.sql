@@ -16,12 +16,25 @@ CREATE TABLE "interests" (
     "updated_at" TIMESTAMP NULL
 );
 
+CREATE TABLE "keywords"
+(
+    "id"         UUID        NOT NULL,
+    "keyword"    VARCHAR(50) NOT NULL,
+    "created_at" TIMESTAMP   NOT NULL,
+    "updated_at" TIMESTAMP NULL,
+    PRIMARY KEY ("id"),
+    UNIQUE ("keyword")
+);
+
 CREATE TABLE "interest_keywords" (
-    "id" UUID NOT NULL PRIMARY KEY,
+                                     "id"         UUID      NOT NULL,
     "interest_id" UUID NOT NULL,
-    "keyword" VARCHAR(50) NOT NULL UNIQUE,
-    "created_at" TIMESTAMP NULL,
-    FOREIGN KEY ("interest_id") REFERENCES "interests"("id")
+                                     "keyword_id" UUID      NOT NULL,
+                                     "created_at" TIMESTAMP NOT NULL,
+                                     "updated_at" TIMESTAMP NULL,
+                                     PRIMARY KEY ("id"),
+                                     FOREIGN KEY ("interest_id") REFERENCES "interests" ("id"),
+                                     FOREIGN KEY ("keyword_id") REFERENCES "keywords" ("id")
 );
 
 CREATE TABLE "users"
@@ -46,6 +59,7 @@ CREATE TABLE "articles" (
     "published_date" TIMESTAMP NOT NULL,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP NULL,
     FOREIGN KEY ("interest_id") REFERENCES "interests"("id")
 );
 
@@ -54,6 +68,8 @@ CREATE TABLE "article_views" (
     "user_id" UUID NOT NULL UNIQUE,
     "article_id" UUID NOT NULL UNIQUE,
     "viewed_at" TIMESTAMP NOT NULL,
+    "created_at" TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP NULL,
     FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
     FOREIGN KEY ("article_id") REFERENCES "articles"("id")
 );
@@ -63,6 +79,7 @@ CREATE TABLE "subscriptions" (
     "user_id" UUID NOT NULL,
     "interest_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP NULL,
     FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
     FOREIGN KEY ("interest_id") REFERENCES "interests"("id")
 );
@@ -72,10 +89,10 @@ CREATE TABLE "comments" (
     "user_id" UUID NOT NULL,
     "article_id" UUID NOT NULL,
     "content" TEXT NOT NULL,
-    "created_at" TIMESTAMP NOT NULL,
-    "updated_at" TIMESTAMP NOT NULL,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "likes" BIGINT NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP NOT NULL,
     FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
     FOREIGN KEY ("article_id") REFERENCES "articles"("id")
 );
@@ -85,6 +102,8 @@ CREATE TABLE "comment_likes" (
     "user_id" UUID NOT NULL UNIQUE,
     "comment_id" UUID NOT NULL UNIQUE,
     "liked_at" TIMESTAMP NOT NULL,
+    "created_at" TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP NULL,
     FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
     FOREIGN KEY ("comment_id") REFERENCES "comments"("id")
 );
