@@ -50,52 +50,52 @@ CREATE TABLE "articles" (
 
 CREATE TABLE "article_views" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "user_id" UUID NOT NULL UNIQUE,
+    "member_id" UUID NOT NULL UNIQUE,
     "article_id" UUID NOT NULL UNIQUE,
     "viewed_at" TIMESTAMP NOT NULL,
-    FOREIGN KEY ("user_id") REFERENCES "members"("id"),
+    FOREIGN KEY ("member_id") REFERENCES "members"("id"),
     FOREIGN KEY ("article_id") REFERENCES "articles"("id")
 );
 
 CREATE TABLE "subscriptions" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "user_id" UUID NOT NULL,
+    "member_id" UUID NOT NULL,
     "interest_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL,
-    FOREIGN KEY ("user_id") REFERENCES "members"("id"),
+    FOREIGN KEY ("member_id") REFERENCES "members"("id"),
     FOREIGN KEY ("interest_id") REFERENCES "interests"("id")
 );
 
 CREATE TABLE "comments" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "user_id" UUID NOT NULL,
+    "member_id" UUID NOT NULL,
     "article_id" UUID NOT NULL,
     "content" TEXT NOT NULL,
     "created_at" TIMESTAMP NOT NULL,
     "updated_at" TIMESTAMP NOT NULL,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "likes" BIGINT NOT NULL DEFAULT 0,
-    FOREIGN KEY ("user_id") REFERENCES "members"("id"),
+    FOREIGN KEY ("member_id") REFERENCES "members"("id"),
     FOREIGN KEY ("article_id") REFERENCES "articles"("id")
 );
 
 CREATE TABLE "comment_likes" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "user_id" UUID NOT NULL UNIQUE,
+    "member_id" UUID NOT NULL UNIQUE,
     "comment_id" UUID NOT NULL UNIQUE,
     "liked_at" TIMESTAMP NOT NULL,
-    FOREIGN KEY ("user_id") REFERENCES "members"("id"),
+    FOREIGN KEY ("member_id") REFERENCES "members"("id"),
     FOREIGN KEY ("comment_id") REFERENCES "comments"("id")
 );
 
 CREATE TABLE "notifications" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "user_id" UUID NOT NULL,
+    "member_id" UUID NOT NULL,
     "content" VARCHAR(100) NOT NULL,
     "resource_type" VARCHAR(50) NOT NULL,
     "resource_id" UUID NOT NULL,
     "confirmed" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP NULL,
     "updated_at" TIMESTAMP NULL,
-    FOREIGN KEY ("user_id") REFERENCES "members"("id")
+    FOREIGN KEY ("member_id") REFERENCES "members"("id")
 );
