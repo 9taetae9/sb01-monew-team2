@@ -1,11 +1,9 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
 
-import com.codeit.team2.monew.module.domain.article.dto.ArticleDto;
 import com.codeit.team2.monew.module.domain.article.dto.FetchArticleDto;
 import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.List;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -58,11 +56,12 @@ public class NaverNewsClientTest {
                     """
             ).addHeader("Content-Type", "application/json"));
 
-        FetchCommand cmd = new FetchCommand("AI", 10,1, "date");
+        FetchCommand cmd = new FetchCommand("AI", 10, 1, "date");
 
         //when
         List<FetchArticleDto> result = client.fetchArticles(cmd);
 
         Assertions.assertThat(result.size()).isEqualTo(1);
+        Assertions.assertThat(result.get(0).source()).isEqualTo("NAVER");
     }
 }
