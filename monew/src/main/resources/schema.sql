@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS "interest_keywords";
 DROP TABLE IF EXISTS "subscriptions";
 DROP TABLE IF EXISTS "article_views";
 DROP TABLE IF EXISTS "articles";
-DROP TABLE IF EXISTS "members";
+DROP TABLE IF EXISTS "users";
 DROP TABLE IF EXISTS "interests";
 
 CREATE TABLE "interests" (
@@ -24,7 +24,8 @@ CREATE TABLE "interest_keywords" (
     FOREIGN KEY ("interest_id") REFERENCES "interests"("id")
 );
 
-CREATE TABLE "members" (
+CREATE TABLE "users"
+(
     "id" UUID NOT NULL PRIMARY KEY,
     "email" VARCHAR(255) NOT NULL UNIQUE,
     "nickname" VARCHAR(100) NOT NULL UNIQUE,
@@ -50,52 +51,52 @@ CREATE TABLE "articles" (
 
 CREATE TABLE "article_views" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "member_id" UUID NOT NULL UNIQUE,
+    "user_id" UUID NOT NULL UNIQUE,
     "article_id" UUID NOT NULL UNIQUE,
     "viewed_at" TIMESTAMP NOT NULL,
-    FOREIGN KEY ("member_id") REFERENCES "members"("id"),
+    FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
     FOREIGN KEY ("article_id") REFERENCES "articles"("id")
 );
 
 CREATE TABLE "subscriptions" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "member_id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
     "interest_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL,
-    FOREIGN KEY ("member_id") REFERENCES "members"("id"),
+    FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
     FOREIGN KEY ("interest_id") REFERENCES "interests"("id")
 );
 
 CREATE TABLE "comments" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "member_id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
     "article_id" UUID NOT NULL,
     "content" TEXT NOT NULL,
     "created_at" TIMESTAMP NOT NULL,
     "updated_at" TIMESTAMP NOT NULL,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "likes" BIGINT NOT NULL DEFAULT 0,
-    FOREIGN KEY ("member_id") REFERENCES "members"("id"),
+    FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
     FOREIGN KEY ("article_id") REFERENCES "articles"("id")
 );
 
 CREATE TABLE "comment_likes" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "member_id" UUID NOT NULL UNIQUE,
+    "user_id" UUID NOT NULL UNIQUE,
     "comment_id" UUID NOT NULL UNIQUE,
     "liked_at" TIMESTAMP NOT NULL,
-    FOREIGN KEY ("member_id") REFERENCES "members"("id"),
+    FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
     FOREIGN KEY ("comment_id") REFERENCES "comments"("id")
 );
 
 CREATE TABLE "notifications" (
     "id" UUID NOT NULL PRIMARY KEY,
-    "member_id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
     "content" VARCHAR(100) NOT NULL,
     "resource_type" VARCHAR(50) NOT NULL,
     "resource_id" UUID NOT NULL,
     "confirmed" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP NULL,
     "updated_at" TIMESTAMP NULL,
-    FOREIGN KEY ("member_id") REFERENCES "members"("id")
+    FOREIGN KEY ("user_id") REFERENCES "users" ("id")
 );
