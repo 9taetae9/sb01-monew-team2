@@ -28,3 +28,7 @@ logging:
     root: info
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
+
+news:
+  naver:
+    url: https://openapi.naver.com/v1/search/news.json
