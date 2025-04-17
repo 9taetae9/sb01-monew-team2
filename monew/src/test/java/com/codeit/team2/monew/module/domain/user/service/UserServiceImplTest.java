@@ -64,6 +64,8 @@ class UserServiceImplTest {
             UserRegisterRequest request =
                 new UserRegisterRequest(email, nickname, password);
 
+            when(userRepository.existsByEmail(any())).thenReturn(true);
+
             // when & then
             assertThrows(Exception.class, () -> {
                 userService.registUser(request);
