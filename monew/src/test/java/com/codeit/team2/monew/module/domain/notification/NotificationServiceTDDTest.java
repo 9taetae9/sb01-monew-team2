@@ -3,19 +3,19 @@ package com.codeit.team2.monew.module.domain.notification;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
-import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.member.entity.User;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.notification.service.NotificationServiceImpl;
-import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -68,23 +68,18 @@ public class NotificationServiceTDDTest {
     @Test
     void createInterestNotification() {
         // given
-        Interest interest = mock(Interest.class);    // 구독한 관심사
-        User user = mock(User.class);
-        Subscription subscription = mock(Subscription.class);
-        ReflectionTestUtils.setField(subscription, "user", user);
-        ReflectionTestUtils.setField(subscription, "interest", interest);
-        List<Article> articleList = List.of(
-            new Article("AI", "NAVER", "https://testlink.com", "test description", 0,
-                Instant.now(), false));
+        List<Article> articles = List.of(mock(Article.class));
+        when(notificationRepository.saveAll(anyList())).thenAnswer(
+            invocation -> invocation.getArgument(0));
 
         // when
-        List<Notification> notifications = notificationService.createInterestNotification(
-            articleList);
+        List<Notification> notifications = notificationService.createInterestNotification(articles);
 
         // then
-        notifications.stream()
-            .forEach(notification -> {
-                assertNotNull(notification.getId());
-            });
+        assertNotNull(notifications);
+        assertEquals(1, notifications.size());
+        Notification notification = notifications.get(0);
+        assertNotNull(notification.getUser());
+        verify(notificationRepository, times(1)).saveAll(anyList());
     }
 }

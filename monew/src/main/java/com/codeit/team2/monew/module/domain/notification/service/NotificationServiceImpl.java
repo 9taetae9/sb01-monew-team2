@@ -7,6 +7,7 @@ import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Notification> createInterestNotification(List<Article> articles) {
-        return null;
+        List<Notification> notifications = List.of(
+            new Notification(new User("a", "a", "a", false), "content",
+                UUID.randomUUID(), ResourceType.INTEREST));
+        notificationRepository.saveAll(notifications);
+        return notifications;
     }
 }
