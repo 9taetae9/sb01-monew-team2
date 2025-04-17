@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
+import static org.mockito.BDDMockito.then;
+
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import java.time.Instant;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.batch.item.Chunk;
 
 @ExtendWith(MockitoExtension.class)
 public class BatchArticleWriterTest {
@@ -27,7 +30,7 @@ public class BatchArticleWriterTest {
 
 
     @Test
-    void testWriteToRepository_success() {
+    void testWriteToRepository_success() throws Exception {
         //given
         List<Article> articles1 = List.of(
             new Article("a", "a", "a", "a", 0, Instant.now(), false),
@@ -39,13 +42,15 @@ public class BatchArticleWriterTest {
             new Article("d", "d", "d", "d", 0, Instant.now(), false)
         );
 
-        List<List<Article>> combined = List.of(articles1, articles2);
+        Chunk<List<Article>> combined = new Chunk(List.of(articles1, articles2));
 
         //when
         writer.write(combined);
 
         // then
         ArgumentCaptor<List<Article>> captor = ArgumentCaptor.forClass(List.class);
+        
+        then(articleRepository).should().saveAll(captor.capture());
 
         List<Article> flatList = captor.getValue();
         Assertions.assertThat(flatList).hasSize(4);
