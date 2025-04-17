@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "deleted", constant = "false")
     User toUser(UserRegisterRequest userRegisterRequest);
 
     UserDto toUserDto(User user);
