@@ -3,6 +3,7 @@ package com.codeit.team2.monew.module.domain.user.controller;
 import com.codeit.team2.monew.module.domain.user.dto.UserDto;
 import com.codeit.team2.monew.module.domain.user.dto.UserRegisterRequest;
 import com.codeit.team2.monew.module.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("")
-    public ResponseEntity<UserDto> registUser(@RequestBody UserRegisterRequest request) {
+    public ResponseEntity<UserDto> registUser(@Valid @RequestBody UserRegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(userService.registUser(request));
     }
