@@ -5,11 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.codeit.team2.monew.module.domain.user.dto.UserDto;
-import com.codeit.team2.monew.module.domain.user.dto.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserLoginRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
+import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,6 +92,56 @@ class UserServiceImplTest {
             assertThrows(Exception.class, () -> {
                 userService.registUser(request);
             });
+        }
+    }
+
+    @Nested
+    class updateUserTest {
+
+        @Test
+        void 유저_수정_성공() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname");
+
+            String email = "email";
+            String nickname = "nickname";
+            String password = "password";
+
+            User user = new User(email, nickname, password, false);
+
+            when(userRepository.findById(any())).thenReturn(Optional.of(user));
+
+            // when
+            UserDto userDto = userService.updateUser(loginId, userId, userUpdateRequest);
+
+            // then
+            assertEquals("newNickname", userDto.nickname());
+        }
+    }
+
+    @Nested
+    class loginTest {
+
+        @Test
+        void 로그인_성공() {
+            // given
+            String email = "a@a.com";
+            String password = "password";
+            String nickname = "nickname";
+
+            UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+
+            User user = new User(email, nickname, password, false);
+            when(userRepository.findByEmailAndPassword(any(), any())).thenReturn(Optional.of(user));
+
+            // when
+            UserDto userDto = userService.login(userLoginRequest);
+
+            // then
+            assertEquals(email, userDto.email());
+            assertEquals(nickname, userDto.nickname());
         }
     }
 
