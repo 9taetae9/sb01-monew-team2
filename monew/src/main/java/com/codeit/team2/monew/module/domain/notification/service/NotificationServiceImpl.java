@@ -6,6 +6,7 @@ import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     @Override
@@ -64,9 +66,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void readNotification(UUID userId, UUID notificationId) {
         // 사용자 정보 확인
-//        if (!userRepository.existsById(userId)) {
-//            throw new RuntimeException("User Not Found");
-//        }
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User Not Found");
+        }
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> new RuntimeException("Notification Not Found"));
 

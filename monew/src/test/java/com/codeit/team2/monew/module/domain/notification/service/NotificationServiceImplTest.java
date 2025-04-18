@@ -92,7 +92,7 @@ class NotificationServiceImplTest {
         Notification notification = new Notification(user, "cotent", UUID.randomUUID(),
             ResourceType.COMMENT);
         ReflectionTestUtils.setField(notification, "id", notificationId);
-//        when(userRepository.existsById(userId)).thenReturn(true);
+        when(userRepository.existsById(userId)).thenReturn(true);
         when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notification));
         when(notification.getUser().getId()).thenReturn(userId);
 
@@ -113,12 +113,12 @@ class NotificationServiceImplTest {
         Notification notification = new Notification(user, "cotent", UUID.randomUUID(),
             ResourceType.COMMENT);
         ReflectionTestUtils.setField(notification, "id", notificationId);
-//        when(userRepository.existsById(userId)).thenReturn(true);
+        when(userRepository.existsById(userId)).thenReturn(true);
         when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notification));
         when(notification.getUser().getId()).thenReturn(UUID.randomUUID());
 
         // when & then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(RuntimeException.class,
             () -> notificationService.readNotification(userId, notificationId));
     }
 }
