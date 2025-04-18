@@ -115,7 +115,7 @@ class UserServiceImplTest {
             UserDto userDto = userService.updateUser(userId, userUpdateRequest);
 
             // then
-            assertEquals("newNickname", userDto.email());
+            assertEquals("newNickname", userDto.nickname());
         }
     }
 
