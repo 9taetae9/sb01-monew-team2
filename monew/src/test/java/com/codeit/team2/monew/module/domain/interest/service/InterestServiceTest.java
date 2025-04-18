@@ -1,10 +1,11 @@
-package com.codeit.team2.monew.module.service;
+package com.codeit.team2.monew.module.domain.interest.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.codeit.team2.monew.module.controller.interest.InterestRegisterRequest;
+import com.codeit.team2.monew.module.domain.interest.controller.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.InterestDto;
-import com.codeit.team2.monew.module.repository.interest.InterestRepository;
+import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
+import com.codeit.team2.monew.module.service.InterestService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ class InterestServiceTest {
     void create() {
         // given
         List<String> keywords = List.of("이거");
-        InterestRegisterRequest request =  new InterestRegisterRequest("이름", keywords);
+        InterestRegisterRequest request = new InterestRegisterRequest("이름", keywords);
 
         // when
         InterestDto interestDto = interestService.create(request);
