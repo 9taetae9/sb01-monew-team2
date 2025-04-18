@@ -28,4 +28,9 @@ public class User extends BaseEntity {
     private String password;
 
     private Boolean deleted;
+
+    public void updateNickname(String nickname) {
+        // nickname null check
+        this.nickname = nickname;
+    }
 }
