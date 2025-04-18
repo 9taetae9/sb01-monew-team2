@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
@@ -13,7 +14,6 @@ import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -129,24 +129,13 @@ class NotificationServiceImplTest {
         UUID userId = UUID.randomUUID();
         User user = mock(User.class);
         ReflectionTestUtils.setField(user, "id", userId);
-
-        Notification notification1 = new Notification(user, "cotent", UUID.randomUUID(),
-            ResourceType.COMMENT);
-        Notification notification2 = new Notification(user, "cotent", UUID.randomUUID(),
-            ResourceType.COMMENT);
-        Notification notification3 = new Notification(user, "cotent", UUID.randomUUID(),
-            ResourceType.COMMENT);
-
-        List<Notification> notifications = List.of(notification1, notification2, notification3);
-        when(notificationRepository.findAllNotConfirmedByUserId(userId)).thenReturn(notifications);
+        when(userRepository.existsById(userId)).thenReturn(true);
 
         // when
         notificationService.readAllNotifications(userId);
 
         // then
-        assertEquals(true, notification1.isConfirmed());
-        assertEquals(true, notification2.isConfirmed());
-        assertEquals(true, notification3.isConfirmed());
+        verify(notificationRepository).confirmAllByUserId(userId);
     }
 
     @Test
