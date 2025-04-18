@@ -24,4 +24,11 @@ public class NotificationController {
         notificationService.readNotification(userId, notificationId);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("")
+    public ResponseEntity<Void> confirmAllNotifications(
+        @RequestHeader("Monew-Request-User-ID") UUID userId) {
+        notificationService.readAllNotifications(userId);
+        return ResponseEntity.ok().build();
+    }
 }
