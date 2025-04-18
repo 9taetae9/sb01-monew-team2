@@ -2,10 +2,10 @@ package com.codeit.team2.monew.module.domain.notification.service;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
-import com.codeit.team2.monew.module.domain.member.entity.User;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

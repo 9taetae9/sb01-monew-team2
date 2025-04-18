@@ -1,7 +1,7 @@
-package com.codeit.team2.monew.module.controller.interest;
+package com.codeit.team2.monew.module.domain.interest.controller;
 
 import com.codeit.team2.monew.module.domain.interest.dto.InterestDto;
-import com.codeit.team2.monew.module.service.InterestService;
+import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,29 +1,32 @@
-package com.codeit.team2.monew.module.domain.subscription.entity;
+package com.codeit.team2.monew.module.domain.relation.entity;
+
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
+import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
-import com.codeit.team2.monew.module.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "subscriptions")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "article_interest")
 @Getter
-public class Subscription extends BaseEntity {
+@NoArgsConstructor
+public class ArticleInterest extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "article_id", nullable = false)
+    private Article article;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interest_id")
+    @JoinColumn(name = "interest_id", nullable = false)
     private Interest interest;
 
 }
+
+
+

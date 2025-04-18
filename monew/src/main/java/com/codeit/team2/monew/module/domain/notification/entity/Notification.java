@@ -1,7 +1,7 @@
 package com.codeit.team2.monew.module.domain.notification.entity;
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
-import com.codeit.team2.monew.module.domain.member.entity.User;
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

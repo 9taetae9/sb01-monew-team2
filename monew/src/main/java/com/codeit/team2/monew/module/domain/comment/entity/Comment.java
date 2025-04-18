@@ -2,7 +2,7 @@ package com.codeit.team2.monew.module.domain.comment.entity;
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
-import com.codeit.team2.monew.module.domain.member.entity.User;
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
