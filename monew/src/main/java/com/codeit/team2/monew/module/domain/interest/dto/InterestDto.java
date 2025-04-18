@@ -7,7 +7,7 @@ import java.util.UUID;
 public record InterestDto(
     UUID id,
     String name,
-    List<Keyword> keywords,
+    List<String> keywords,
     int subscriberCount,
     boolean subscribedByMe
 ) {

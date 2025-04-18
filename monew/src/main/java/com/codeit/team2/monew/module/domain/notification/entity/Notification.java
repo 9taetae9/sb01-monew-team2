@@ -1,18 +1,21 @@
 package com.codeit.team2.monew.module.domain.notification.entity;
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
+import com.codeit.team2.monew.module.domain.member.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "notifications")
@@ -20,12 +23,11 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor
 @Getter
 public class Notification extends BaseEntity {
-    // User 엔티티 추가 후 수정
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    @OnDelete(action = OnDeleteAction.CASCADE)
-//    @Column(nullable = false)
-//    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
 
     @Column(nullable = false)
     private String content;
@@ -38,7 +40,14 @@ public class Notification extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private ResourceType resourceType;
+
+    public Notification(User user, String content, UUID resourceId, ResourceType resourceType) {
+        this.user = user;
+        this.content = content;
+        this.resourceId = resourceId;
+        this.resourceType = resourceType;
+        this.confirmed = false;
+    }
 
 }
