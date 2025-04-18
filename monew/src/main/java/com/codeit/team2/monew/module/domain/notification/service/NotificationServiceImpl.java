@@ -78,4 +78,10 @@ public class NotificationServiceImpl implements NotificationService {
 
         notification.confirmNotification();
     }
+
+    @Transactional
+    @Override
+    public void readAllNotification(UUID userId) {
+
+    }
 }

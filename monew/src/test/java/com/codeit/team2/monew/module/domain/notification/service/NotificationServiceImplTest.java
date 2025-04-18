@@ -13,6 +13,7 @@ import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -120,5 +121,30 @@ class NotificationServiceImplTest {
         // when & then
         assertThrows(RuntimeException.class,
             () -> notificationService.readNotification(userId, notificationId));
+    }
+
+    @Test
+    void readAllNotifications() {
+        // given
+        UUID userId = UUID.randomUUID();
+        User user = mock(User.class);
+        ReflectionTestUtils.setField(user, "id", userId);
+
+        Notification notification1 = new Notification(user, "cotent", UUID.randomUUID(),
+            ResourceType.COMMENT);
+        Notification notification2 = new Notification(user, "cotent", UUID.randomUUID(),
+            ResourceType.COMMENT);
+        Notification notification3 = new Notification(user, "cotent", UUID.randomUUID(),
+            ResourceType.COMMENT);
+
+        List<Notification> notifications = List.of(notification1, notification2, notification3);
+
+        // when
+        notificationService.readAllNotification(userId);
+
+        // then
+        assertEquals(true, notification1.isConfirmed());
+        assertEquals(true, notification2.isConfirmed());
+        assertEquals(true, notification3.isConfirmed());
     }
 }

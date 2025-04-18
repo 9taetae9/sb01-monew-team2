@@ -18,4 +18,6 @@ public interface NotificationService {
     // 개별 알림 확인
     void readNotification(UUID userID, UUID notificationId);
 
+    // 전체 알림 확인
+    void readAllNotification(UUID userId);
 }
