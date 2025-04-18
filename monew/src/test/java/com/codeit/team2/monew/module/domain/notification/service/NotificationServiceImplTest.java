@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.notification.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -92,11 +93,31 @@ class NotificationServiceImplTest {
         ReflectionTestUtils.setField(notification, "id", notificationId);
 //        when(userRepository.existsById(userId)).thenReturn(true);
         when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notification));
+        when(notification.getUser().getId()).thenReturn(userId);
 
         // when
         notificationService.readNotification(userId, notificationId);
 
         // then
         assertEquals(true, notification.isConfirmed());
+    }
+
+    @Test
+    void readNotificationShouldFail() {
+        // given
+        UUID notificationId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        User user = mock(User.class);
+        ReflectionTestUtils.setField(user, "id", userId);
+        Notification notification = new Notification(user, "cotent", UUID.randomUUID(),
+            ResourceType.COMMENT);
+        ReflectionTestUtils.setField(notification, "id", notificationId);
+//        when(userRepository.existsById(userId)).thenReturn(true);
+        when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notification));
+        when(notification.getUser().getId()).thenReturn(UUID.randomUUID());
+
+        // when & then
+        assertThrows(IllegalArgumentException.class,
+            () -> notificationService.readNotification(userId, notificationId));
     }
 }

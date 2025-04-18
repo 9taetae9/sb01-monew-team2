@@ -60,8 +60,17 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void readNotification(UUID userId, UUID notificationId) {
+        // 사용자 정보 확인
+//        if (!userRepository.existsById(userId)) {
+//            throw new NoSuchElementException();
+//        }
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> new NoSuchElementException());
+
+        if (!notification.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException();
+        }
+        
         notification.confirmNotification();
     }
 }
