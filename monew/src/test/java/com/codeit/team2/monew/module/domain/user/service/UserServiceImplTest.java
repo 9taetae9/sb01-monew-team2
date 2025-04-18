@@ -119,4 +119,28 @@ class UserServiceImplTest {
         }
     }
 
+    @Nested
+    class loginTest {
+
+        @Test
+        void 로그인_성공() {
+            // given
+            String email = "a@a.com";
+            String password = "password";
+            String nickname = "nickname";
+
+            UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+
+            User user = new User(email, nickname, password, false);
+            when(userRepository.findByEmailAndPassword(any(), any())).thenReturn(Optional.of(user));
+
+            // when
+            UserDto userDto = userService.login(userLoginRequest);
+
+            // then
+            assertEquals(email, userDto.email());
+            assertEquals(nickname, userDto.nickname());
+        }
+    }
+
 }
