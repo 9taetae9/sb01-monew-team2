@@ -1,16 +1,15 @@
 package com.codeit.team2.monew.module.service;
 
-import com.codeit.team2.monew.module.controller.interest.InterestRegisterRequest;
+import com.codeit.team2.monew.module.domain.interest.controller.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
-import com.codeit.team2.monew.module.mapper.interest.InterestMapper;
-import com.codeit.team2.monew.module.repository.interest.InterestRepository;
-import com.codeit.team2.monew.module.repository.interest.KeywordRepository;
+import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
+import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
+import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ public class InterestService {
     public InterestDto create(InterestRegisterRequest request) {
 
         // 관심사 이름 유사도 검사: 80% 이상 일치 시 등록 불가
-
 
         List<Keyword> newKeywords = new ArrayList<>();
 
@@ -46,7 +44,7 @@ public class InterestService {
             .subscriberCount(0)
             .build();
 
-        return InterestMapper.INSTANCE.toDto(interest, List.of(request.keywords().get(0)) ,true);
+        return InterestMapper.INSTANCE.toDto(interest, List.of(request.keywords().get(0)), true);
     }
 
 }
