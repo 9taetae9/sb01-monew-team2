@@ -37,6 +37,7 @@ class InterestServiceTest {
         // then
         assertEquals(interestDto.name(), "이름");
         assertEquals(interestDto.keywords().get(0), "이거");
+        assertEquals(interestDto.subscriberCount(), 0);
 
     }
 

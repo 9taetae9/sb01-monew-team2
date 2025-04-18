@@ -41,4 +41,9 @@ public class Interest extends BaseEntity {
         this.keywords = keywords;
         this.subscriptions = subscriptions;
     }
+
+    public void addInterestKeyword(Keyword keyword) {
+        InterestKeyword interestKeyword = new InterestKeyword(this, keyword);
+        this.keywords.add(interestKeyword);
+    }
 }

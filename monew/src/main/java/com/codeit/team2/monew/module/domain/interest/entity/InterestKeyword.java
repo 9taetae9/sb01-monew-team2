@@ -23,4 +23,9 @@ public class InterestKeyword extends BaseEntity {
     @JoinColumn(name = "keyword_id")
     private Keyword keyword;
 
+
+    public InterestKeyword(Interest interest, Keyword keyword) {
+        this.interest = interest;
+        this.keyword = keyword;
+    }
 }
