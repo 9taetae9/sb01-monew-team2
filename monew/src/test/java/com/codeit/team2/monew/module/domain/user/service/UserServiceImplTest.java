@@ -102,6 +102,7 @@ class UserServiceImplTest {
         void 유저_수정_성공() {
             // given
             UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
             UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname");
 
             String email = "email";
@@ -113,7 +114,7 @@ class UserServiceImplTest {
             when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
             // when
-            UserDto userDto = userService.updateUser(userId, userUpdateRequest);
+            UserDto userDto = userService.updateUser(loginId, userId, userUpdateRequest);
 
             // then
             assertEquals("newNickname", userDto.nickname());
