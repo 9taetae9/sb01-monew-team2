@@ -15,7 +15,4 @@ public record CommentRegisterRequest(
     String content
 ) {
 
-    public static CommentRegisterRequest of(UUID articleId, UUID userId, String content) {
-        return new CommentRegisterRequest(articleId, userId, content);
-    }
 }

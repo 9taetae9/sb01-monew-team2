@@ -7,7 +7,4 @@ public record CommentUpdateRequest(
     String content
 ) {
 
-    public static CommentUpdateRequest of(String content) {
-        return new CommentUpdateRequest(content);
-    }
 }
