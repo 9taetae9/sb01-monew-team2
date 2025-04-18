@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.user.service;
 
+import com.codeit.team2.monew.module.domain.user.dto.request.UserLoginRequest;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
@@ -45,6 +46,15 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new RuntimeException("not found user"));
 
         user.updateNickname(userUpdateRequest.nickname());
+
+        return userMapper.toUserDto(user);
+    }
+
+    @Override
+    public UserDto login(UserLoginRequest userLoginRequest) {
+        User user = userRepository.findByEmailAndPassword(
+            userLoginRequest.email(), userLoginRequest.password()
+        ).orElseThrow(() -> new RuntimeException("not found user"));
 
         return userMapper.toUserDto(user);
     }
