@@ -10,7 +10,7 @@ public interface UserService {
 
     UserDto registUser(UserRegisterRequest userRegisterRequest);
 
-    UserDto updateUser(UUID userId, UserUpdateRequest userUpdateRequest);
+    UserDto updateUser(UUID loginId, UUID userId, UserUpdateRequest userUpdateRequest);
 
     UserDto login(UserLoginRequest userLoginRequest);
 }
