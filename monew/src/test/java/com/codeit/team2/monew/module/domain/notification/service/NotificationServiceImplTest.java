@@ -11,6 +11,7 @@ import com.codeit.team2.monew.module.domain.member.entity.User;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,8 @@ class NotificationServiceImplTest {
 
     @Mock
     private NotificationRepository notificationRepository;
+//    @Mock
+//    private UserRepository userRepository;
 
     @InjectMocks
     private NotificationServiceImpl notificationService;
@@ -75,5 +78,25 @@ class NotificationServiceImplTest {
 //        Notification notification = notifications.get(0);
 //        assertNotNull(notification.getUser());
 //        verify(notificationRepository, times(1)).saveAll(anyList());
+    }
+
+    @Test
+    void readNotification() {
+        // given
+        UUID notificationId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        User user = mock(User.class);
+        ReflectionTestUtils.setField(user, "id", userId);
+        Notification notification = new Notification(user, "cotent", UUID.randomUUID(),
+            ResourceType.COMMENT);
+        ReflectionTestUtils.setField(notification, "id", notificationId);
+//        when(userRepository.existsById(userId)).thenReturn(true);
+        when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notification));
+
+        // when
+        notificationService.readNotification(userId, notificationId);
+
+        // then
+        assertEquals(true, notification.isConfirmed());
     }
 }

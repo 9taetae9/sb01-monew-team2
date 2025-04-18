@@ -8,6 +8,7 @@ import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +55,9 @@ public class NotificationServiceImpl implements NotificationService {
 //            });
 //        notificationRepository.saveAll(notifications);
         return notifications;
+    }
+
+    @Override
+    public void readNotification(UUID userId, UUID notificationId) {
     }
 }

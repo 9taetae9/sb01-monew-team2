@@ -5,6 +5,7 @@ import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.member.entity.User;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import java.util.List;
+import java.util.UUID;
 
 public interface NotificationService {
 
@@ -13,4 +14,7 @@ public interface NotificationService {
 
     // 구독한 관심사와 관련된 기사가 새로 등록된 경우
     List<Notification> createInterestNotification(List<Article> articles);
+
+    // 개별 알림 확인
+    void readNotification(UUID userID, UUID notificationId);
 }
