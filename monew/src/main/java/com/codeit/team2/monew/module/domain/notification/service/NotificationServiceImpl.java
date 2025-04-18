@@ -86,10 +86,6 @@ public class NotificationServiceImpl implements NotificationService {
         if (!userRepository.existsById(userId)) {
             throw new RuntimeException("User Not Found");
         }
-        List<Notification> notifications = notificationRepository.findAllNotConfirmedByUserId(
-            userId);
-        for (Notification n : notifications) {
-            n.confirm();
-        }
+        notificationRepository.confirmAllByUserId(userId);
     }
 }
