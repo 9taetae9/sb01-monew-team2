@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.codeit.team2.monew.module.domain.interest.controller.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
-import com.codeit.team2.monew.module.service.InterestService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
