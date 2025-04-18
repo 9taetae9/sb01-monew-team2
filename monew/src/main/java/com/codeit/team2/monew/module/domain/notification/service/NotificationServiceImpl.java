@@ -76,12 +76,16 @@ public class NotificationServiceImpl implements NotificationService {
             throw new RuntimeException("This user cannot access to this notification");
         }
 
-        notification.confirmNotification();
+        notification.confirm();
     }
 
     @Transactional
     @Override
     public void readAllNotification(UUID userId) {
-
+        List<Notification> notifications = notificationRepository.findAllNotConfirmedByUserId(
+            userId);
+        for (Notification n : notifications) {
+            n.confirm();
+        }
     }
 }

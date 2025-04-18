@@ -50,7 +50,7 @@ public class Notification extends BaseEntity {
         this.confirmed = false;
     }
 
-    public void confirmNotification() {
+    public void confirm() {
         this.confirmed = true;
     }
 

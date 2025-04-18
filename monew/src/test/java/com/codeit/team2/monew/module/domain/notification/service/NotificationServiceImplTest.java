@@ -138,6 +138,7 @@ class NotificationServiceImplTest {
             ResourceType.COMMENT);
 
         List<Notification> notifications = List.of(notification1, notification2, notification3);
+        when(notificationRepository.findAllNotConfirmedByUserId(userId)).thenReturn(notifications);
 
         // when
         notificationService.readAllNotification(userId);
