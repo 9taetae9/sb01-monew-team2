@@ -6,17 +6,22 @@ import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
+    @Transactional
     @Override
     public Notification createCommentNotification(Comment comment, User author, User liker) {
         // Comment, User 검증 로직 추가 예정
@@ -27,6 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notification;
     }
 
+    @Transactional
     @Override
     public List<Notification> createInterestNotification(List<Article> articles) {
         List<Notification> notifications = new ArrayList<>();
@@ -54,5 +60,32 @@ public class NotificationServiceImpl implements NotificationService {
 //            });
 //        notificationRepository.saveAll(notifications);
         return notifications;
+    }
+
+    @Transactional
+    @Override
+    public void readNotification(UUID userId, UUID notificationId) {
+        // 사용자 정보 확인
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User Not Found");
+        }
+        Notification notification = notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new RuntimeException("Notification Not Found"));
+
+        if (!notification.getUser().getId().equals(userId)) {
+            throw new RuntimeException("This user cannot access to this notification");
+        }
+
+        notification.confirm();
+    }
+
+    @Transactional
+    @Override
+    public void readAllNotifications(UUID userId) {
+        // 사용자 정보 확인
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User Not Found");
+        }
+        notificationRepository.confirmAllByUserId(userId);
     }
 }
