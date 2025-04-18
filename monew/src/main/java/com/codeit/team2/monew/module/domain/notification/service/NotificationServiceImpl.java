@@ -81,7 +81,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional
     @Override
-    public void readAllNotification(UUID userId) {
+    public void readAllNotifications(UUID userId) {
+        // 사용자 정보 확인
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User Not Found");
+        }
         List<Notification> notifications = notificationRepository.findAllNotConfirmedByUserId(
             userId);
         for (Notification n : notifications) {

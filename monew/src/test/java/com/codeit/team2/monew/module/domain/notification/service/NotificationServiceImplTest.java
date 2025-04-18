@@ -141,11 +141,22 @@ class NotificationServiceImplTest {
         when(notificationRepository.findAllNotConfirmedByUserId(userId)).thenReturn(notifications);
 
         // when
-        notificationService.readAllNotification(userId);
+        notificationService.readAllNotifications(userId);
 
         // then
         assertEquals(true, notification1.isConfirmed());
         assertEquals(true, notification2.isConfirmed());
         assertEquals(true, notification3.isConfirmed());
+    }
+
+    @Test
+    void readAllNotificationsShouldFail() {
+        // given
+        UUID userId = UUID.randomUUID();
+        when(userRepository.existsById(userId)).thenReturn(false);
+
+        // when & then
+        assertThrows(RuntimeException.class,
+            () -> notificationService.readAllNotifications(userId));
     }
 }

@@ -19,5 +19,5 @@ public interface NotificationService {
     void readNotification(UUID userID, UUID notificationId);
 
     // 전체 알림 확인
-    void readAllNotification(UUID userId);
+    void readAllNotifications(UUID userId);
 }
