@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.user.controller;
 
+import com.codeit.team2.monew.module.domain.user.dto.request.UserLoginRequest;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
@@ -36,5 +37,13 @@ public class UserController {
     ) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.updateUser(userId, request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserDto> login(@Valid @RequestBody UserLoginRequest request) {
+        UserDto userDto = userService.login(request);
+        return ResponseEntity.status(HttpStatus.OK)
+            .header("MoNew-Request-User-ID", userDto.id().toString())
+            .body(userDto);
     }
 }
