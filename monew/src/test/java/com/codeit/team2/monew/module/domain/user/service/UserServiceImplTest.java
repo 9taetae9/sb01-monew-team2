@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.codeit.team2.monew.module.domain.user.dto.UserDto;
-import com.codeit.team2.monew.module.domain.user.dto.UserRegisterRequest;
-import com.codeit.team2.monew.module.domain.user.dto.UserUpdateRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
+import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;

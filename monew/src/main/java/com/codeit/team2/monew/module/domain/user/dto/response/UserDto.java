@@ -1,4 +1,4 @@
-package com.codeit.team2.monew.module.domain.user.dto;
+package com.codeit.team2.monew.module.domain.user.dto.response;
 
 import java.time.Instant;
 import java.util.UUID;

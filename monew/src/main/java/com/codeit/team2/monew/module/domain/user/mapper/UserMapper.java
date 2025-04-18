@@ -1,7 +1,7 @@
 package com.codeit.team2.monew.module.domain.user.mapper;
 
-import com.codeit.team2.monew.module.domain.user.dto.UserDto;
-import com.codeit.team2.monew.module.domain.user.dto.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

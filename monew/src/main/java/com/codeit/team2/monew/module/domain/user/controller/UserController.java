@@ -1,7 +1,7 @@
 package com.codeit.team2.monew.module.domain.user.controller;
 
-import com.codeit.team2.monew.module.domain.user.dto.UserDto;
-import com.codeit.team2.monew.module.domain.user.dto.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
