@@ -1,4 +1,4 @@
-package com.codeit.team2.monew.module.service;
+package com.codeit.team2.monew.module.domain.interest.service;
 
 import com.codeit.team2.monew.module.domain.interest.controller.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.InterestDto;
