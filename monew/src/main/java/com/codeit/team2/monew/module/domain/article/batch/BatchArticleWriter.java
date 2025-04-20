@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-// TODO : ARTICLE_INTEREST 에도 INSERT? 
+// TODO : ARTICLE_INTEREST 에도 INSERT?
 public class BatchArticleWriter implements ItemWriter<List<Article>> {
 
     private final ArticleRepository articleRepository;
