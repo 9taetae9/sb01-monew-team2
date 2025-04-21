@@ -44,7 +44,7 @@ CREATE TABLE users
     email      VARCHAR(255)             NOT NULL UNIQUE,
     nickname   VARCHAR(100)             NOT NULL UNIQUE,
     password   VARCHAR(255)             NOT NULL,
-    deleted    BOOLEAN DEFAULT false    NOT NULL,
+    deleted    BOOLEAN                  NOT NULL DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE NULL
 );
@@ -84,7 +84,8 @@ CREATE TABLE article_interests
     created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at  TIMESTAMP WITH TIME ZONE NULL,
     FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE,
-    FOREIGN KEY (interest_id) REFERENCES interests (id) ON DELETE CASCADE
+    FOREIGN KEY (interest_id) REFERENCES interests (id) ON DELETE CASCADE,
+    UNIQUE (article_id, interest_id)
 );
 
 CREATE TABLE subscriptions
@@ -108,7 +109,7 @@ CREATE TABLE comments
     like_count BIGINT                   NOT NULL DEFAULT 0,
     deleted    BOOLEAN                  NOT NULL DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE
 );
@@ -134,7 +135,7 @@ CREATE TABLE notifications
     resource_type VARCHAR(50)              NOT NULL,
     resource_id   UUID                     NOT NULL,
     confirmed     BOOLEAN                  NOT NULL DEFAULT false,
-    created_at    TIMESTAMP WITH TIME ZONE NULL,
+    created_at    TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at    TIMESTAMP WITH TIME ZONE NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
