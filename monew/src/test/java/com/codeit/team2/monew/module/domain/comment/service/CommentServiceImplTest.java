@@ -130,4 +130,20 @@ class CommentServiceImplTest {
         verify(commentRepository).findById(commentId);
         verify(comment).delete();
     }
+
+    @Test
+    @DisplayName("댓글 삭제 - 실패: 댓글 작성자 아닐때")
+    void delete_Access_Denied() {
+        //given
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(comment.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        //when
+        //then
+        assertThatThrownBy(() -> commentService.delete(commentId, UUID.randomUUID()))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    
 }
