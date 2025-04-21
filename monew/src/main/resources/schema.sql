@@ -52,7 +52,6 @@ CREATE TABLE users
 CREATE TABLE articles
 (
     id             UUID                     NOT NULL PRIMARY KEY,
-    interest_id    UUID                     NOT NULL,
     title          VARCHAR(255)             NOT NULL,
     source         VARCHAR(255)             NOT NULL,
     source_url     VARCHAR(255)             NOT NULL UNIQUE,
@@ -61,8 +60,7 @@ CREATE TABLE articles
     published_date TIMESTAMP WITH TIME ZONE NOT NULL,
     deleted        BOOLEAN                  NOT NULL DEFAULT false,
     created_at     TIMESTAMP WITH TIME ZONE NOT NULL,
-    updated_at     TIMESTAMP WITH TIME ZONE NULL,
-    FOREIGN KEY (interest_id) REFERENCES interests (id)
+    updated_at     TIMESTAMP WITH TIME ZONE NULL
 );
 
 CREATE TABLE article_views
