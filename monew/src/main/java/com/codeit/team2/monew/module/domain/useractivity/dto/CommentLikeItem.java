@@ -3,7 +3,7 @@ package com.codeit.team2.monew.module.domain.useractivity.dto;
 import java.time.Instant;
 import java.util.UUID;
 
-public record CommentLikeItems(
+public record CommentLikeItem(
     UUID id,
     Instant createdAt,
     UUID commentId,

@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-public record SubscriptionItems(
+public record SubscriptionItem(
     UUID id,
     UUID interestId,
     String interestName,
