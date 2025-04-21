@@ -3,18 +3,28 @@ package com.codeit.team2.monew.module.domain.notification.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
+import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
+import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +40,8 @@ class NotificationServiceImplTest {
     private NotificationRepository notificationRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private SubscriptionRepository subscriptionRepository;
 
     @InjectMocks
     private NotificationServiceImpl notificationService;
@@ -67,20 +79,40 @@ class NotificationServiceImplTest {
 
     @Test
     void createInterestNotification() {
-//        // given
-//        List<Article> articles = List.of(mock(Article.class));
-//        when(notificationRepository.saveAll(anyList())).thenAnswer(
-//            invocation -> invocation.getArgument(0));
-//
-//        // when
-//        List<Notification> notifications = notificationService.createInterestNotification(articles);
-//
-//        // then
-//        assertNotNull(notifications);
-//        assertEquals(1, notifications.size());
-//        Notification notification = notifications.get(0);
-//        assertNotNull(notification.getUser());
-//        verify(notificationRepository, times(1)).saveAll(anyList());
+
+        // given
+        Interest interest = mock(Interest.class);
+        UUID interestId = UUID.randomUUID();
+        when(interest.getId()).thenReturn(interestId);
+        when(interest.getName()).thenReturn("AI");
+
+        User user = mock(User.class);
+        Subscription subscription = mock(Subscription.class);
+        when(subscription.getUser()).thenReturn(user);
+
+        Article article = mock(Article.class);
+        ArticleInterest articleInterest = mock(ArticleInterest.class);
+        when(articleInterest.getInterest()).thenReturn(interest);
+        article.getArticleInterests().add(articleInterest);
+        when(article.getArticleInterests()).thenReturn(Set.of(articleInterest));
+        when(articleInterest.getInterest()).thenReturn(interest);
+
+        when(subscriptionRepository.findAllByInterest(interest))
+            .thenReturn(List.of(subscription));
+        when(notificationRepository.saveAll(anyList()))
+            .thenAnswer(invocation -> invocation.getArgument(0)); // 저장된 알림 그대로 리턴
+
+        // when
+        List<Notification> result = notificationService.createInterestNotification(
+            List.of(article));
+
+        // then
+        assertEquals(1, result.size());
+        Notification notification = result.get(0);
+        assertEquals(user, notification.getUser());
+        assertTrue(notification.getContent().contains("AI"));
+        verify(subscriptionRepository, times(1)).findAllByInterest(interest);
+        verify(notificationRepository, times(1)).saveAll(anyList());
     }
 
     @Test
@@ -89,7 +121,6 @@ class NotificationServiceImplTest {
         UUID notificationId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         User user = mock(User.class);
-        ReflectionTestUtils.setField(user, "id", userId);
         Notification notification = new Notification(user, "cotent", UUID.randomUUID(),
             ResourceType.COMMENT);
         ReflectionTestUtils.setField(notification, "id", notificationId);
@@ -110,7 +141,6 @@ class NotificationServiceImplTest {
         UUID notificationId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         User user = mock(User.class);
-        ReflectionTestUtils.setField(user, "id", userId);
         Notification notification = new Notification(user, "cotent", UUID.randomUUID(),
             ResourceType.COMMENT);
         ReflectionTestUtils.setField(notification, "id", notificationId);
@@ -128,7 +158,6 @@ class NotificationServiceImplTest {
         // given
         UUID userId = UUID.randomUUID();
         User user = mock(User.class);
-        ReflectionTestUtils.setField(user, "id", userId);
         when(userRepository.existsById(userId)).thenReturn(true);
 
         // when

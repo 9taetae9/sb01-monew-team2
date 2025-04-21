@@ -7,6 +7,7 @@ import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     @Transactional
     @Override
@@ -59,8 +61,9 @@ public class NotificationServiceImpl implements NotificationService {
             .forEach(interest -> {
                 String content =
                     interest.getName() + "와 관련된 기사가 " + interestCount.get(interest) + "건 등록되었습니다.";
-                List<Subscription> subscriptions = subscriptionRepository.findByInterestId(
-                    interest.getId());
+                // 관심사를 구독한 유저별 알림 생성
+                List<Subscription> subscriptions = subscriptionRepository.findAllByInterest(
+                    interest);
                 for (Subscription sub : subscriptions) {
                     notifications.add(new Notification(sub.getUser(), content,
                         interest.getId(), ResourceType.INTEREST));
