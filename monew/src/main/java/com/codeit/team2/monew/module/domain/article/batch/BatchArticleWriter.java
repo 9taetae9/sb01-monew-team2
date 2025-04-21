@@ -55,18 +55,21 @@ public class BatchArticleWriter implements ItemWriter<List<ArticleInterestCreate
         articleRepository.saveAll(toSave).forEach(a -> existing.put(a.getSourceUrl(), a));
 
         // UPDATE & INSERT
-        List<ArticleInterest> articleInterests = new ArrayList<>();
+        Set<ArticleInterest> articleInterests = new HashSet<>();
         for (List<ArticleInterestCreateCommand> cmds : items) {
             for (ArticleInterestCreateCommand cmd : cmds) {
                 Article article = existing.get(cmd.article().getSourceUrl());
                 Interest interest = cmd.interest();
 
+                // TODO : 조회 쿼리 너무 많이 발생. 최적화 필요
                 if (!articleInterestRepository.existsByArticleAndInterest(article, interest)) {
                     articleInterests.add(new ArticleInterest(article, interest));
                 }
             }
         }
+        // TODO : JdbcTemplate 사용 고려
 
+        // IGNORE ON CONFLICT, ArticleInterest 전부 적재하고 메모리상에서 검사
         articleInterestRepository.saveAll(articleInterests);
     }
 }

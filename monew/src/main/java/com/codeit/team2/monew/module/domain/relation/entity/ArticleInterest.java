@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,30 @@ public class ArticleInterest extends BaseEntity {
     @JoinColumn(name = "interest_id", nullable = false)
     private Interest interest;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ArticleInterest)) {
+            return false;
+        }
+
+        ArticleInterest that = (ArticleInterest) o;
+
+        return Objects.equals(article != null ? article.getId() : null,
+            that.article != null ? that.article.getId() : null)
+            && Objects.equals(interest != null ? interest.getId() : null,
+            that.interest != null ? that.interest.getId() : null);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+            article != null ? article.getId() : null,
+            interest != null ? interest.getId() : null
+        );
+    }
 }
 
 
