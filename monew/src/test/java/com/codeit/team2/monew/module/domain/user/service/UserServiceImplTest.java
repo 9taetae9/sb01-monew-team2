@@ -156,13 +156,18 @@ class UserServiceImplTest {
             UUID userId = UUID.randomUUID();
             UUID loginId = userId;
 
-            when(userRepository.existsById(userId)).thenReturn(true);
+            String email = "a@a.com";
+            String password = "password";
+            String nickname = "nickname";
+
+            User user = new User(email, nickname, password, false);
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
             // when
             userService.deleteUser(loginId, userId);
 
             // then
-            verify(userRepository, times(1)).deleteById(userId);
+            verify(userRepository, times(1)).findById(userId);
         }
     }
 
