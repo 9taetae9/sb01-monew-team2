@@ -43,11 +43,14 @@ public class Article extends BaseEntity {
     //TODO
     public void addInterest(Interest interest, Set<String> attachedKeywords) {
         ArticleInterest articleInterest = new ArticleInterest();
-
     }
 
 
     private Integer viewCount;
     private Instant publishedDate;
     private Boolean deleted;
+
+    public void incrementView() {
+        viewCount++;
+    }
 }
