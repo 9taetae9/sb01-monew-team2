@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
@@ -137,7 +138,20 @@ public class ArticleServiceTest {
         articleService.softDelete(randomId);
 
         // then
-
         assertThat(article.getDeleted()).isTrue();
+    }
+
+    @Test
+    void test_softDelete_Fail_ArticleNotFound() {
+
+        // given
+        UUID randomId = UUID.randomUUID();
+
+        BDDMockito.given(articleRepository.findById(randomId))
+            .willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> articleService.softDelete(randomId))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }
