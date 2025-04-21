@@ -8,6 +8,7 @@ import com.codeit.team2.monew.module.domain.article.external.NaverNewsClient;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ public class KeywordToArticlesProcessorTest {
         //given
         Keyword keyword = new Keyword("AI");
         List<Article> articles = List.of(
-            new Article("AI", "NAVER", "https://test.com", "this is test summary", 0,
+            new Article("AI", "NAVER", "https://test.com", "this is test summary", Set.of(), 0,
                 Instant.now(), false));
 
         BDDMockito.given(naverNewsClient.fetchArticles(any()))
