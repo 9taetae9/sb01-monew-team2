@@ -151,7 +151,7 @@ class UserServiceImplTest {
     class deleteUserTest {
 
         @Test
-        void 유저_삭제_성공() {
+        void 유저_삭제_성공_논리() {
             // given
             UUID userId = UUID.randomUUID();
             UUID loginId = userId;
@@ -164,7 +164,7 @@ class UserServiceImplTest {
             when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
             // when
-            userService.deleteUser(loginId, userId);
+            userService.softDeleteUser(loginId, userId);
 
             // then
             verify(userRepository, times(1)).findById(userId);
