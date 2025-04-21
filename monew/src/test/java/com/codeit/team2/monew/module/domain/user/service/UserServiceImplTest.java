@@ -3,6 +3,8 @@ package com.codeit.team2.monew.module.domain.user.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.user.dto.request.UserLoginRequest;
@@ -134,7 +136,8 @@ class UserServiceImplTest {
             UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
 
             User user = new User(email, nickname, password, false);
-            when(userRepository.findByEmailAndPassword(any(), any())).thenReturn(Optional.of(user));
+            when(userRepository.findByEmailAndPasswordAndDeletedFalse(any(), any()))
+                .thenReturn(Optional.of(user));
 
             // when
             UserDto userDto = userService.login(userLoginRequest);
@@ -145,4 +148,40 @@ class UserServiceImplTest {
         }
     }
 
+    @Nested
+    class deleteUserTest {
+
+        @Test
+        void 유저_삭제_성공_논리() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
+
+            String email = "a@a.com";
+            String password = "password";
+            String nickname = "nickname";
+
+            User user = new User(email, nickname, password, false);
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+            // when
+            userService.softDeleteUser(loginId, userId);
+
+            // then
+            verify(userRepository, times(1)).findById(userId);
+        }
+
+        @Test
+        void 유저_삭제_성공_물리() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
+
+            // when
+            userService.hardDeleteUser(loginId, userId);
+
+            // then
+            verify(userRepository, times(1)).deleteById(userId);
+        }
+    }
 }

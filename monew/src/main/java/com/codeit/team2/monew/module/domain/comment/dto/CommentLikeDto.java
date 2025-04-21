@@ -15,5 +15,5 @@ public record CommentLikeDto(
     long commentLikeCount,
     Instant commentCreatedAt
 ) {
-
+    
 }
