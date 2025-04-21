@@ -1,6 +1,6 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
-import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +23,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class ArticleBatchConfig {
 
     private final ItemReader<Keyword> keywordReader;
-    private final ItemProcessor<Keyword, List<Article>> keywordProcessor;
-    private final ItemWriter<List<Article>> articleWriter;
+    private final ItemProcessor<Keyword, List<ArticleInterestCreateCommand>> keywordProcessor;
+    private final ItemWriter<List<ArticleInterestCreateCommand>> articleWriter;
 
     @Bean
     public Step articleBatchStep(JobRepository jobRepository,
         PlatformTransactionManager transactionManager) {
         return new StepBuilder("articleBatchStep", jobRepository)
-            .<Keyword, List<Article>>chunk(10, transactionManager)
+            .<Keyword, List<ArticleInterestCreateCommand>>chunk(10, transactionManager)
             .reader(keywordReader)
             .processor(keywordProcessor)
             .writer(articleWriter)
