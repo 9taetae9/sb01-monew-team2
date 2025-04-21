@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto registUser(UserRegisterRequest userRegisterRequest) {
-
         if (userRepository.existsByEmail(userRegisterRequest.email())) {
             throw new RuntimeException("duplicate eamil");
         }
@@ -40,10 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto updateUser(UUID loginId, UUID userId, UserUpdateRequest userUpdateRequest) {
-        // 사용자 본인의 userId로만 수정 가능하도록 (추후 추가)
-        if (!loginId.equals(userId)) {
-            throw new RuntimeException("You don't have permission");
-        }
+        validateAuthority(loginId, userId);
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("not found user"));
@@ -60,5 +56,22 @@ public class UserServiceImpl implements UserService {
         ).orElseThrow(() -> new RuntimeException("not found user"));
 
         return userMapper.toUserDto(user);
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteUser(UUID loginId, UUID userId) {
+        validateAuthority(loginId, userId);
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("not found user"));
+
+        user.updateDeleted(true);
+    }
+
+    private void validateAuthority(UUID loginId, UUID userId) {
+        if (!loginId.equals(userId)) {
+            throw new RuntimeException("Not Authorized");
+        }
     }
 }

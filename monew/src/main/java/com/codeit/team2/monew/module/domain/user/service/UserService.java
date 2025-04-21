@@ -13,4 +13,6 @@ public interface UserService {
     UserDto updateUser(UUID loginId, UUID userId, UserUpdateRequest userUpdateRequest);
 
     UserDto login(UserLoginRequest userLoginRequest);
+
+    void softDeleteUser(UUID loginId, UUID userId);
 }

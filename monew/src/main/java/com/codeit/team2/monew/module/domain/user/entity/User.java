@@ -33,4 +33,8 @@ public class User extends BaseEntity {
         // nickname null check
         this.nickname = nickname;
     }
+
+    public void updateDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 }
