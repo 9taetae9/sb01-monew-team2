@@ -55,7 +55,7 @@ public class BatchArticleWriter implements ItemWriter<List<ArticleInterestCreate
         articleRepository.saveAll(toSave).forEach(a -> existing.put(a.getSourceUrl(), a));
 
         // UPDATE & INSERT
-        List<ArticleInterest> articleInterests = new ArrayList<>();
+        Set<ArticleInterest> articleInterests = new HashSet<>();
         for (List<ArticleInterestCreateCommand> cmds : items) {
             for (ArticleInterestCreateCommand cmd : cmds) {
                 Article article = existing.get(cmd.article().getSourceUrl());

@@ -17,6 +17,7 @@ public interface ArticleMapper {
     @Mapping(target = "viewCount", constant = "0")
     @Mapping(target = "publishedDate", expression = "java(ZonedDateTime.parse(dto.pubDate(), DateTimeFormatter.RFC_1123_DATE_TIME).toInstant())")
     @Mapping(target = "deleted", constant = "false")
+    @Mapping(target = "source", constant = "NAVER")
     Article naverArticleItemToEntity(NaverArticleItemDto dto);
 
     List<Article> naverArticleListToEntity(List<NaverArticleItemDto> dtoList);

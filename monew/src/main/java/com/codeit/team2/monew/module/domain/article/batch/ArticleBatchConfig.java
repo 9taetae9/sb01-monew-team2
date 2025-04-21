@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.article.batch;
 
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -15,6 +16,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -34,6 +36,10 @@ public class ArticleBatchConfig {
             .reader(keywordReader)
             .processor(keywordProcessor)
             .writer(articleWriter)
+            .faultTolerant()
+            .skip(DataIntegrityViolationException.class)
+            .skip(ConstraintViolationException.class)
+            .skipLimit(100)
             .build();
     }
 
