@@ -69,6 +69,14 @@ public class UserServiceImpl implements UserService {
         user.updateDeleted(true);
     }
 
+    @Override
+    @Transactional
+    public void hardDeleteUser(UUID loginId, UUID userId) {
+        validateAuthority(loginId, userId);
+
+        userRepository.deleteById(userId);
+    }
+
     private void validateAuthority(UUID loginId, UUID userId) {
         if (!loginId.equals(userId)) {
             throw new RuntimeException("Not Authorized");

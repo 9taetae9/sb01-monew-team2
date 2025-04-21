@@ -59,4 +59,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
     }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<?> hardDeleteUser(
+        @RequestHeader("MoNew-Request-User-ID") UUID loginId,
+        @PathVariable(name = "id") UUID userId
+    ) {
+        userService.hardDeleteUser(loginId, userId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
+    }
 }

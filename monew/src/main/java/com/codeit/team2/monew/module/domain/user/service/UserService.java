@@ -15,4 +15,6 @@ public interface UserService {
     UserDto login(UserLoginRequest userLoginRequest);
 
     void softDeleteUser(UUID loginId, UUID userId);
+
+    void hardDeleteUser(UUID loginId, UUID userId);
 }
