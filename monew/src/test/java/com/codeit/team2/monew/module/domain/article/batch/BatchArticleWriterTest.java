@@ -40,7 +40,6 @@ public class BatchArticleWriterTest {
     void testWriteToRepository_success() throws Exception {
         //given
 
-
         Article a = new Article("a", "a", "a", "a", Collections.emptySet(), 0, Instant.now(),
             false);
         Article b = new Article("b", "b", "b", "b", Collections.emptySet(), 0, Instant.now(),

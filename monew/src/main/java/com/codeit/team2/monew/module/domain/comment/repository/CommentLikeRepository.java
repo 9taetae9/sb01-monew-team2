@@ -12,6 +12,7 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, UUID> 
     boolean existsByCommentIdAndUserId(UUID commentId, UUID userId);
 
     Optional<CommentLike> findByCommentIdAndUserId(UUID commentId, UUID userId);
+
     List<CommentLike> findTop10ByUserOrderByLikedAtDesc(User user);
 
 }
