@@ -9,6 +9,7 @@ import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import okhttp3.mockwebserver.MockResponse;
@@ -69,7 +70,8 @@ public class NaverNewsClientTest {
             ).addHeader("Content-Type", "application/json"));
 
         FetchCommand cmd = new FetchCommand("AI", 10, 1, "date");
-        Article article = new Article("AI", "NAVER", "https://testlink.com", "test description", Set.of(), 0,
+        Article article = new Article("AI", "NAVER", "https://testlink.com", "test description",
+            Collections.emptySet(), 0,
             Instant.now(), false);
         BDDMockito.given(mapper.naverArticleListToEntity(any())).willReturn(List.of(article));
 

@@ -45,7 +45,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
 
-
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
@@ -64,6 +63,10 @@ dependencies {
 
     // spring-webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // spring batch test
+    testImplementation 'org.springframework.batch:spring-batch-test'
+
 
     // TestContainer
     testImplementation 'org.testcontainers:junit-jupiter'
