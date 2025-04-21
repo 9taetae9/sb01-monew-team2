@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
+
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
@@ -11,12 +12,14 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordR
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+
 public class KeywordToArticlesProcessor implements
     ItemProcessor<Keyword, List<ArticleInterestCreateCommand>> {
 

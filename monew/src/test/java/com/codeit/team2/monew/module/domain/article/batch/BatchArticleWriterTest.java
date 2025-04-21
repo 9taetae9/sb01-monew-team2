@@ -11,6 +11,7 @@ import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import java.time.Instant;
 import java.util.Collections;
+
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,7 @@ public class BatchArticleWriterTest {
     @Test
     void testWriteToRepository_success() throws Exception {
         //given
+
 
         Article a = new Article("a", "a", "a", "a", Collections.emptySet(), 0, Instant.now(),
             false);
@@ -79,9 +81,11 @@ public class BatchArticleWriterTest {
         // then
         ArgumentCaptor<List<Article>> captor = ArgumentCaptor.forClass(List.class);
 
+
         then(articleRepository).should().saveAll(captor.capture());
 
         List<Article> flatList = captor.getValue();
         Assertions.assertThat(flatList).hasSize(2);
+
     }
 }
