@@ -11,9 +11,11 @@ import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,10 +29,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment register(CommentRegisterRequest request) {
         User user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("User Not Found: " + request.userId()));
 
         Article article = articleRepository.findById(request.articleId())
-            .orElseThrow(() -> new IllegalArgumentException("기사를 찾을 수 없습니다."));
+            .orElseThrow(
+                () -> new IllegalArgumentException("Article Not Found: " + request.articleId()));
 
         Comment comment = commentMapper.toEntity(request, article, user);
 
@@ -44,6 +47,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void delete(UUID commentId, UUID userId) {
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new IllegalArgumentException("Comment Not Found: " + commentId));
 
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Delete Access Denied");
+        }
+        comment.delete();
     }
 }
