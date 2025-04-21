@@ -30,11 +30,16 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment register(CommentRegisterRequest request) {
         User user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new EntityNotFoundException("User Not Found: " + request.userId()));
+            .orElseThrow(() -> {
+                log.debug("User Not Found - userId: {}", request.userId());
+                return new EntityNotFoundException("User Not Found");
+            });
 
         Article article = articleRepository.findById(request.articleId())
-            .orElseThrow(
-                () -> new EntityNotFoundException("Article Not Found: " + request.articleId()));
+            .orElseThrow(() -> {
+                log.debug("Article Not Found - userId: {}", request.articleId());
+                return new EntityNotFoundException("Article Not Found");
+            });
 
         Comment comment = commentMapper.toEntity(request, article, user);
 
@@ -44,10 +49,15 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment edit(UUID commentId, UUID userId, CommentUpdateRequest request) {
         Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new EntityNotFoundException("Comment Not Found: " + commentId));
+            .orElseThrow(() -> {
+                log.debug("Comment Not Found - commentId: {}", commentId);
+                return new EntityNotFoundException("Comment Not Found");
+            });
 
         if (!comment.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Edit Access Denied");
+            log.debug("Edit Permission Denied - Attempted UserId: {}, Author UserId: {}",
+                userId, comment.getUser().getId());
+            throw new SecurityException("Edit Permission Denied");
         }
 
         comment.update(request.content());
@@ -57,10 +67,15 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void delete(UUID commentId, UUID userId) {
         Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new EntityNotFoundException("Comment Not Found: " + commentId));
+            .orElseThrow(() -> {
+                log.debug("Comment Not Found - commentId: {}", commentId);
+                return new EntityNotFoundException("Comment Not Found");
+            });
 
         if (!comment.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Delete Access Denied");
+            log.debug("Delete Permission Denied - Attempted UserId: {}, Author UserId: {}",
+                userId, comment.getUser().getId());
+            throw new SecurityException("Delete Permission Denied");
         }
 
         comment.delete();
