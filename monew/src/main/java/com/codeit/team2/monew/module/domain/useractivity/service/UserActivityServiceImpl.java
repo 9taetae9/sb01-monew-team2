@@ -26,12 +26,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserActivityServiceImpl implements UserActivityService {
 
-    private UserRepository userRepository;
-    private SubscriptionRepository subscriptionRepository;
-    private CommentRepository commentRepository;
-    private CommentLikeRepository commentLikeRepository;
-    private ArticleViewRepository articleViewRepository;
-    private UserActivityMapper userActivityMapper;
+    private final UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
+    private final ArticleViewRepository articleViewRepository;
+    private final UserActivityMapper userActivityMapper;
 
     @Override
     public UserActivityDto findUserActivities(UUID loginId, UUID userId) {
