@@ -3,6 +3,8 @@ package com.codeit.team2.monew.module.domain.user.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.user.dto.request.UserLoginRequest;
@@ -142,6 +144,25 @@ class UserServiceImplTest {
             // then
             assertEquals(email, userDto.email());
             assertEquals(nickname, userDto.nickname());
+        }
+    }
+
+    @Nested
+    class deleteUserTest {
+
+        @Test
+        void 유저_삭제_성공() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
+
+            when(userRepository.existsById(userId)).thenReturn(true);
+
+            // when
+            userService.deleteUser(loginId, userId);
+
+            // then
+            verify(userRepository, times(1)).deleteById(userId);
         }
     }
 
