@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.interest.entity;
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -15,14 +16,13 @@ import lombok.NoArgsConstructor;
 @Getter
 public class InterestKeyword extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interest_id")
     private Interest interest;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "keyword_id")
     private Keyword keyword;
-
 
     public InterestKeyword(Interest interest, Keyword keyword) {
         this.interest = interest;

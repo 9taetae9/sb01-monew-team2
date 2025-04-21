@@ -1,12 +1,12 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import com.codeit.team2.monew.module.domain.interest.controller.InterestRegisterRequest;
-import com.codeit.team2.monew.module.domain.interest.dto.InterestDto;
+import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
-import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -16,14 +16,13 @@ import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
 class InterestServiceTest {
@@ -48,6 +47,7 @@ class InterestServiceTest {
     void create_success() {
         // given
         UUID userId = UUID.randomUUID();
+        User user = mock(User.class);
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
@@ -60,25 +60,32 @@ class InterestServiceTest {
         mockInterest.addInterestKeyword(keyword2);
 
         // mocking
-        Mockito.when(userRepository.findById(any(UUID.class)))
+        // user 를 찾았다고 가정
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(user));
+
+        // 해당 키워드가 DB에 없다고 가정
+        when(keywordRepository.findByName(any(String.class)))
             .thenReturn(Optional.empty());
 
-        Mockito.when(keywordRepository.findByName(any(String.class)))
-            .thenReturn(Optional.empty());
+        when(keywordRepository.save(any(Keyword.class)))
+            .thenAnswer(invocation -> {
+                return invocation.getArgument(0);
+            });
 
-        Mockito.when(interestRepository.save(any(Interest.class)))
+        // 생성
+        when(interestRepository.save(any(Interest.class)))
             .thenReturn(mockInterest);
 
         // when
         InterestDto result = interestService.create(request, userId.toString());
 
         // then
-        assertEquals(name, result.name());
-        assertEquals(result.keywords().size(), inputKeywords.size());
-        assertEquals("당근", result.keywords().get(0));
-        assertEquals(0, result.subscriberCount());
-        assertEquals(false, result.subscribedByMe());
-
+        Assertions.assertThat(result.name()).isEqualTo(name);
+        Assertions.assertThat(result.keywords()).hasSize(2)
+            .contains("당근", "시금치");
+        Assertions.assertThat(result.subscriberCount()).isEqualTo(0);
+        Assertions.assertThat(result.subscribedByMe()).isEqualTo(false);
     }
 
 }
