@@ -112,4 +112,32 @@ public class ArticleServiceTest {
         assertThat(response.articleViewCount()).isEqualTo(1);
     }
 
+
+    @Test
+    void test_softDeleteSuccess() {
+
+        // given
+        UUID randomId = UUID.randomUUID();
+        Article article = new Article(
+            "test",
+            "NAVER",
+            "https://test.com",
+            "test summary",
+            Set.of(),
+            0,
+            Instant.now(),
+            false
+        );
+
+        BDDMockito.given(articleRepository.findById(randomId))
+            .willReturn(Optional.of(article));
+
+        // when
+
+        articleService.softDelete(randomId);
+
+        // then
+
+        assertThat(article.getDeleted()).isTrue();
+    }
 }
