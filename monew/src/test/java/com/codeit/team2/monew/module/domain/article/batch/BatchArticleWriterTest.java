@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.Collections;
 
 import java.util.List;
+import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,6 @@ public class BatchArticleWriterTest {
 
         // then
         ArgumentCaptor<List<Article>> captor = ArgumentCaptor.forClass(List.class);
-
 
         then(articleRepository).should().saveAll(captor.capture());
 
