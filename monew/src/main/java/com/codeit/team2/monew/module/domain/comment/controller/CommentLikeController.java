@@ -35,7 +35,7 @@ public class CommentLikeController {
         CommentLike commentLike = commentLikeService.like(commentId, userId);
         CommentLikeDto result = commentMapper.toDto(commentLike);
 
-        log.info("Complete - CommentController/like: ");
+        log.info("Complete - CommentLikeController/like: commentLikeId={}", result.id());
 
         return ResponseEntity.ok(result);
     }
@@ -50,7 +50,8 @@ public class CommentLikeController {
 
         commentLikeService.unlike(commentId, userId);
 
-        log.info("Complete - CommentController/unlike");
+        log.info("Complete - CommentLikeController/unlike: commentId={}, userId={}", commentId,
+            userId);
         return ResponseEntity.ok().build();
     }
 }
