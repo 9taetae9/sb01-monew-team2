@@ -18,9 +18,12 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class CommentLikeServiceImplTest {
 
     @Mock
@@ -60,7 +63,7 @@ class CommentLikeServiceImplTest {
         when(commentLikeRepository.save(any(CommentLike.class))).thenReturn(commentLike);
 
         // when
-        CommentService result = commentLikeService.like(commentId, userId);
+        CommentLike result = commentLikeService.like(commentId, userId);
 
         assertThat(result).isEqualTo(commentLike);
         verify(commentRepository).findById(commentId);
