@@ -12,7 +12,6 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordR
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
@@ -51,28 +50,4 @@ public class KeywordToArticlesProcessor implements
             .flatMap(i -> articles.stream().map(a -> new ArticleInterestCreateCommand(a, i)))
             .toList();
     }
-
-//    @Override
-//    public List<ArticleInterestCreateCommand> process(Keyword keyword) throws Exception {
-//        List<Article> allArticles = new ArrayList<>();
-//        int start = 1;
-//        int display = 100;
-//
-//        while (start <= 1000) {
-//            FetchCommand cmd = new FetchCommand(keyword.getName(), display, start, "date");
-//            List<Article> articles = naverNewsClient.fetchArticles(cmd);
-//
-//            if (articles.isEmpty() || articles.size() < display) {
-//                allArticles.addAll(articles);
-//                break;
-//            }
-//
-//            allArticles.addAll(articles);
-//            start += display;
-//        }
-//
-//        return allArticles;
-//    }
-
-
 }
