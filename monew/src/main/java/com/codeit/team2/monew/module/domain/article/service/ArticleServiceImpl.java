@@ -47,4 +47,16 @@ public class ArticleServiceImpl implements ArticleService {
         // TODO : CommentRepository 완성시 관련 Comment 조회 로직
         return articleMapper.toResponseDto(article, articleView, userId, 0);
     }
+
+    @Override
+    public void softDelete(UUID articleId) {
+        Article optionalArticle = articleRepository.findById(articleId)
+            .orElseThrow(() -> {
+                log.debug("Article Not Found: id={}", articleId);
+                return new IllegalArgumentException();
+            });
+
+        optionalArticle.softDelete();
+        // TODO : soft delete 시 연관 entity 어떻게 처리할 지
+    }
 }

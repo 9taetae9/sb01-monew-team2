@@ -53,4 +53,8 @@ public class Article extends BaseEntity {
     public void incrementView() {
         viewCount++;
     }
+
+    public void softDelete() {
+        deleted = true;
+    }
 }

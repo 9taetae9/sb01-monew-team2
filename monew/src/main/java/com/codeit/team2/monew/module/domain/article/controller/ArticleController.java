@@ -27,4 +27,9 @@ public class ArticleController {
         ArticleViewDto dto = articleService.createUserArticleView(userId, articleId);
         return ResponseEntity.ok(dto);
     }
+
+//    @DeleteMapping("/{articleId}")
+//    public ResponseEntity<?> softDeleteArticle(@PathVariable UUID articleId) {
+//
+//    }
 }
