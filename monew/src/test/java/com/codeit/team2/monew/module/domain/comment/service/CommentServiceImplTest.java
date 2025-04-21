@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
@@ -116,6 +117,22 @@ class CommentServiceImplTest {
     }
 
     @Test
+    @DisplayName("댓글 수정 - 성공")
+    void edit_Success() {
+        //given
+        CommentUpdateRequest request = new CommentUpdateRequest("edited comment");
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(comment.getUser().getId()).thenReturn(userId);
+
+        Comment edited = commentService.edit(commentId, userId, request);
+
+        assertThat(edited).isEqualTo(comment);
+        verify(commentRepository).findById(commentId);
+        verify(commentMapper).updateEntity(comment, request);
+    }
+
+    @Test
     @DisplayName("댓글 삭제 - 성공")
     void delete_success() {
         //given
@@ -145,5 +162,4 @@ class CommentServiceImplTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
-    
 }
