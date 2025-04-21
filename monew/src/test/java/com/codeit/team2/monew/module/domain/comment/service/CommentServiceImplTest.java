@@ -114,4 +114,20 @@ class CommentServiceImplTest {
         assertThatThrownBy(() -> commentService.register(request))
             .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("댓글 삭제 - 성공")
+    void delete_success() {
+        //given
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(comment.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        //when
+        commentService.delete(commentId, userId);
+
+        //then
+        verify(commentRepository).findById(commentId);
+        verify(comment).delete();
+    }
 }
