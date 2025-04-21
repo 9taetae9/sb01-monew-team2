@@ -102,4 +102,29 @@ class CommentLikeServiceImplTest {
         assertThatThrownBy(() -> commentLikeService.like(commentId, userId))
             .isInstanceOf(RuntimeException.class);
     }
+
+    @Test
+    @DisplayName("댓글 좋아요 취소 - 성공")
+    void unlike_Success() {
+        when(commentLikeRepository.findByCommentIdAndUserId(commentId, userId))
+            .thenReturn(Optional.of(commentLike));
+        when(commentLike.getComment()).thenReturn(comment);
+
+        commentLikeService.unlike(commentId, userId);
+
+        verify(commentLikeRepository).findByCommentIdAndUserId(commentId, userId);
+        verify(commentLikeRepository).delete(commentLike);
+        verify(comment).decrementLikeCount();
+    }
+
+    @Test
+    @DisplayName("댓글 좋아요 취소 - 실패: 좋아요 존재 안함")
+    void unlike_NotLiked() {
+        when(commentLikeRepository.findByCommentIdAndUserId(commentId, userId))
+            .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> commentLikeService.unlike(commentId, userId))
+            .isInstanceOf(RuntimeException.class);
+    }
 }
+
