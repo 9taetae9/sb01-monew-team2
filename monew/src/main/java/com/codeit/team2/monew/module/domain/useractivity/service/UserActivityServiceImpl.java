@@ -21,6 +21,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class UserActivityServiceImpl implements UserActivityService {
     private final UserActivityMapper userActivityMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public UserActivityDto findUserActivities(UUID loginId, UUID userId) {
         if (!loginId.equals(userId)) {
             throw new RuntimeException("Not Authorized");
