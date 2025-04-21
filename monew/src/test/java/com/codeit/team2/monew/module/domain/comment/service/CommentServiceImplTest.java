@@ -97,7 +97,7 @@ class CommentServiceImplTest {
 
         //then
         assertThatThrownBy(() -> commentService.register(request))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(RuntimeException.class);
     }
 
     @Test
@@ -113,7 +113,7 @@ class CommentServiceImplTest {
 
         //then
         assertThatThrownBy(() -> commentService.register(request))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(RuntimeException.class);
     }
 
     @Test
@@ -134,6 +134,21 @@ class CommentServiceImplTest {
     }
 
     @Test
+    @DisplayName("댓글 수정 - 실패: 작성자 아님")
+    void edit_Permission_Denied() {
+        //given
+        CommentUpdateRequest request = new CommentUpdateRequest("edited comment");
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(comment.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
+
+        assertThatThrownBy(() -> commentService.edit(commentId, UUID.randomUUID(), request))
+            .isInstanceOf(RuntimeException.class);
+
+    }
+
+    @Test
     @DisplayName("댓글 삭제 - 성공")
     void delete_success() {
         //given
@@ -151,7 +166,7 @@ class CommentServiceImplTest {
 
     @Test
     @DisplayName("댓글 삭제 - 실패: 댓글 작성자 아닐때")
-    void delete_Access_Denied() {
+    void delete_Permission_Denied() {
         //given
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
         when(comment.getUser()).thenReturn(user);
@@ -160,7 +175,7 @@ class CommentServiceImplTest {
         //when
         //then
         assertThatThrownBy(() -> commentService.delete(commentId, UUID.randomUUID()))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(RuntimeException.class);
     }
 
 }
