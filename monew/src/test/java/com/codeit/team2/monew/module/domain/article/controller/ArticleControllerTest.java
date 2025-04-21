@@ -56,7 +56,7 @@ public class ArticleControllerTest {
             ).andExpect(status().isOk())
             .andExpect(jsonPath("$.articleId").value(articleId.toString()))
             .andExpect(jsonPath("$.viewedBy").value(userId.toString()))
-            .andExpect(jsonPath("$.articleTitle").value("뉴스제목"))
+            .andExpect(jsonPath("$.articleTitle").value("test article"))
             .andExpect(jsonPath("$.articleCommentCount").value(0))
             .andExpect(jsonPath("$.articleViewCount").value(1));
     }
