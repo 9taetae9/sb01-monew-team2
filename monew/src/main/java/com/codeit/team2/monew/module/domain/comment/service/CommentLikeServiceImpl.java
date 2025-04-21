@@ -2,7 +2,6 @@ package com.codeit.team2.monew.module.domain.comment.service;
 
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
-import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CommentLikeServiceImpl implements CommentLikeService {
 
-    private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final UserRepository userRepository;
@@ -54,5 +52,15 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     @Override
     public void unlike(UUID commentId, UUID userId) {
 
+        CommentLike commentLike = commentLikeRepository.findByCommentIdAndUserId(commentId, userId)
+            .orElseThrow(() -> {
+                log.debug("CommentLike Not Found: commentId={}, userId={}", commentId, userId);
+                return new EntityNotFoundException("CommentLike Not Found");
+            });
+
+        Comment comment = commentLike.getComment();
+        comment.decrementLikeCount();
+
+        commentLikeRepository.delete(commentLike);
     }
 }
