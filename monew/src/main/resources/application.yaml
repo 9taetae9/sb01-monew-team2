@@ -18,7 +18,7 @@ spring:
       enabled: always
   sql:
     init:
-      mode: always
+      mode: never
 
   batch:
     jdbc:
