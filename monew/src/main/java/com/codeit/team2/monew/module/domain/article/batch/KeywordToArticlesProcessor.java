@@ -29,7 +29,7 @@ public class KeywordToArticlesProcessor implements
     public List<ArticleInterestCreateCommand> process(Keyword keyword) throws Exception {
 
         // TODO : keyword 별 마지막 article? 조회하여 시간 비교 후 일찍 끝내기
-        // TODO : 하나의 keyword 당 여러 api 호출이 발생 -> 효율적인 방법 고
+        // TODO : 하나의 keyword 당 여러 api 호출이 발생 -> 효율적인 방법 고민
         List<InterestKeyword> iks = interestKeywordRepository.findAllByKeyword(keyword);
         List<Interest> interests = iks.stream().map(ik -> ik.getInterest())
             .collect(Collectors.toList());
