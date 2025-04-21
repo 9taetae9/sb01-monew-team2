@@ -6,6 +6,7 @@ import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,13 +34,13 @@ public class BatchArticleWriterTest {
     void testWriteToRepository_success() throws Exception {
         //given
         List<Article> articles1 = List.of(
-            new Article("a", "a", "a", "a", 0, Instant.now(), false),
-            new Article("b", "b", "b", "b", 0, Instant.now(), false)
+            new Article("a", "a", "a", "a", Set.of(), 0, Instant.now(), false),
+            new Article("b", "b", "b", "b", Set.of(), 0, Instant.now(), false)
         );
 
         List<Article> articles2 = List.of(
-            new Article("c", "c", "c", "c", 0, Instant.now(), false),
-            new Article("d", "d", "d", "d", 0, Instant.now(), false)
+            new Article("c", "c", "c", "c", Set.of(), 0, Instant.now(), false),
+            new Article("d", "d", "d", "d", Set.of(), 0, Instant.now(), false)
         );
 
         Chunk<List<Article>> combined = new Chunk(List.of(articles1, articles2));
@@ -49,7 +50,7 @@ public class BatchArticleWriterTest {
 
         // then
         ArgumentCaptor<List<Article>> captor = ArgumentCaptor.forClass(List.class);
-        
+
         then(articleRepository).should().saveAll(captor.capture());
 
         List<Article> flatList = captor.getValue();
