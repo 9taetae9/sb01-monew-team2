@@ -13,8 +13,8 @@ public record ArticleViewItem(
     String articleTitle,
     Instant articlePublishedDate,
     String articleSummary,
-    Integer articleCommentCount,
-    Integer articleViewCount
+    Long articleCommentCount,
+    Long articleViewCount
 ) {
 
 }

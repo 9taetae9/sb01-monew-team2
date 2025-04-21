@@ -9,7 +9,7 @@ public record SubscriptionItem(
     UUID interestId,
     String interestName,
     List<String> interestKeywords,
-    Integer interestSubscriberCount,
+    Long interestSubscriberCount,
     Instant createdAt
 ) {
 
