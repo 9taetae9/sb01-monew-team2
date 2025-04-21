@@ -7,6 +7,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -28,8 +29,15 @@ public class ArticleController {
         return ResponseEntity.ok(dto);
     }
 
-//    @DeleteMapping("/{articleId}")
-//    public ResponseEntity<?> softDeleteArticle(@PathVariable UUID articleId) {
-//
-//    }
+    @DeleteMapping("/{articleId}")
+    public ResponseEntity<?> softDeleteArticle(@PathVariable UUID articleId) {
+        articleService.softDelete(articleId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{articleId}/hard")
+    public ResponseEntity<?> hardDeleteArticle(@PathVariable UUID articleId) {
+        articleService.hardDelete(articleId);
+        return ResponseEntity.noContent().build();
+    }
 }

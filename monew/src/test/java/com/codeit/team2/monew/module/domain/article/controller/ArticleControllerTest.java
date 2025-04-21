@@ -1,6 +1,8 @@
 package com.codeit.team2.monew.module.domain.article.controller;
 
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,4 +63,17 @@ public class ArticleControllerTest {
             .andExpect(jsonPath("$.articleViewCount").value(1));
     }
 
+    @Test
+    void softDelete_success_should_toggleDeleted() throws Exception {
+        // given
+        UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        BDDMockito.willDoNothing().given(articleService).softDelete(any());
+
+        // when & then
+        mockMvc.perform(delete("/api/articles/{articleId}", id)
+                .header("MoNew-Request-User-ID", userId.toString())
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent());
+    }
 }
