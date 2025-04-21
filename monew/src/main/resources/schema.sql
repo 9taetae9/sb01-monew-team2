@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS interest_keywords;
 DROP TABLE IF EXISTS subscriptions;
 DROP TABLE IF EXISTS article_views;
+DROP TABLE IF EXISTS article_interests;
 DROP TABLE IF EXISTS articles;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS interests;
@@ -75,6 +76,17 @@ CREATE TABLE article_views
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE,
     UNIQUE (user_id, article_id)
+);
+
+CREATE TABLE article_interests
+(
+    id          UUID                     NOT NULL PRIMARY KEY,
+    article_id  UUID                     NOT NULL,
+    interest_id UUID                     NOT NULL,
+    created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at  TIMESTAMP WITH TIME ZONE NULL,
+    FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE,
+    FOREIGN KEY (interest_id) REFERENCES interests (id) ON DELETE CASCADE
 );
 
 CREATE TABLE subscriptions
