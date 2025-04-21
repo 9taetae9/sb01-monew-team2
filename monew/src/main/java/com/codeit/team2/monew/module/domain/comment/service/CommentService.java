@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface CommentService {
 
-    public Comment register(CommentRegisterRequest request);
+    Comment register(CommentRegisterRequest request);
 
-    public Comment edit(UUID commentId, UUID userId, CommentUpdateRequest request);
+    Comment edit(UUID commentId, UUID userId, CommentUpdateRequest request);
 
-    public void delete(UUID commentId, UUID userId);
+    void delete(UUID commentId, UUID userId);
 
 //    public List<CommentDto> getCommentsByArticleId(UUID articleId, UUID userId, UUID cursor,
 //        Instant cursorTime, int limit);
