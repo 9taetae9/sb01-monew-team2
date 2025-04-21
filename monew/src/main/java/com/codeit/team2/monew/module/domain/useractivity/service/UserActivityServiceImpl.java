@@ -45,7 +45,7 @@ public class UserActivityServiceImpl implements UserActivityService {
 
         // 구독 중인 관심사
         List<Subscription> subscriptions =
-            subscriptionRepository.findAllByUserOOrderByCreatedAtDesc(user);
+            subscriptionRepository.findAllByUserOrderByCreatedAtDesc(user);
         List<SubscriptionItem> subscriptionItems = subscriptions.stream().map(
             subscription -> new SubscriptionItem(
                 subscription.getId(),

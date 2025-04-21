@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
 
-    List<Subscription> findAllByUserOOrderByCreatedAtDesc(User user);
+    List<Subscription> findAllByUserOrderByCreatedAtDesc(User user);
 
 }
