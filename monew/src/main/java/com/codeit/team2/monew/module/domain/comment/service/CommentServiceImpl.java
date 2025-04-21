@@ -9,6 +9,7 @@ import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +30,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment register(CommentRegisterRequest request) {
         User user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new IllegalArgumentException("User Not Found: " + request.userId()));
+            .orElseThrow(() -> new EntityNotFoundException("User Not Found: " + request.userId()));
 
         Article article = articleRepository.findById(request.articleId())
             .orElseThrow(
-                () -> new IllegalArgumentException("Article Not Found: " + request.articleId()));
+                () -> new EntityNotFoundException("Article Not Found: " + request.articleId()));
 
         Comment comment = commentMapper.toEntity(request, article, user);
 
@@ -42,17 +43,26 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment edit(UUID commentId, UUID userId, CommentUpdateRequest request) {
-        return null;
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new EntityNotFoundException("Comment Not Found: " + commentId));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Edit Access Denied");
+        }
+
+        comment.update(request.content());
+        return comment;
     }
 
     @Override
     public void delete(UUID commentId, UUID userId) {
         Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new IllegalArgumentException("Comment Not Found: " + commentId));
+            .orElseThrow(() -> new EntityNotFoundException("Comment Not Found: " + commentId));
 
         if (!comment.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("Delete Access Denied");
         }
+
         comment.delete();
     }
 }

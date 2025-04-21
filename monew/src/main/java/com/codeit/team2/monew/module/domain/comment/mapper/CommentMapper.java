@@ -4,13 +4,11 @@ import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentLikeDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
-import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
@@ -39,10 +37,5 @@ public interface CommentMapper {
 
     default Comment toEntity(CommentRegisterRequest request, Article article, User user) {
         return Comment.create(article, user, request.content());
-    }
-
-
-    default void updateEntity(@MappingTarget Comment comment, CommentUpdateRequest request) {
-        comment.update(request.content());
     }
 }
