@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.article.entity;
 
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -21,6 +22,10 @@ import lombok.NoArgsConstructor;
 public class ArticleView extends BaseEntity {
 
     // TODO: user 엔티티 생성 후 연관관계
+    // 임시 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
