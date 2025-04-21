@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto login(UserLoginRequest userLoginRequest) {
-        User user = userRepository.findByEmailAndPassword(
+        User user = userRepository.findByEmailAndPasswordAndDeletedFalse(
             userLoginRequest.email(), userLoginRequest.password()
         ).orElseThrow(() -> new RuntimeException("not found user"));
 

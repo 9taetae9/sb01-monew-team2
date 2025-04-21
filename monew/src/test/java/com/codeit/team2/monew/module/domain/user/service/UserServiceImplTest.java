@@ -136,7 +136,8 @@ class UserServiceImplTest {
             UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
 
             User user = new User(email, nickname, password, false);
-            when(userRepository.findByEmailAndPassword(any(), any())).thenReturn(Optional.of(user));
+            when(userRepository.findByEmailAndPasswordAndDeletedFalse(any(), any()))
+                .thenReturn(Optional.of(user));
 
             // when
             UserDto userDto = userService.login(userLoginRequest);
