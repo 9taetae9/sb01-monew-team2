@@ -54,7 +54,7 @@ CREATE TABLE articles
     id             UUID                     NOT NULL PRIMARY KEY,
     title          VARCHAR(255)             NOT NULL,
     source         VARCHAR(255)             NOT NULL,
-    source_url     VARCHAR(255)             NOT NULL UNIQUE,
+    source_url     TEXT                     NOT NULL UNIQUE,
     summary        TEXT                     NULL,
     view_count     BIGINT                   NOT NULL DEFAULT 0,
     published_date TIMESTAMP WITH TIME ZONE NOT NULL,
