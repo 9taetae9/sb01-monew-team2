@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(ArticleController.class)
 public class ArticleControllerTest {
 
+
     @Autowired
     private MockMvc mockMvc;
 
