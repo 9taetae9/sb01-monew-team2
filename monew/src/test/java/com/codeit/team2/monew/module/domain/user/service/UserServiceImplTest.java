@@ -70,7 +70,7 @@ class UserServiceImplTest {
             UserRegisterRequest request =
                 new UserRegisterRequest(email, nickname, password);
 
-            when(userRepository.existsByEmailAndDeletedFalse(any())).thenReturn(true);
+            when(userRepository.existsByEmail(any())).thenReturn(true);
 
             // when & then
             assertThrows(Exception.class, () -> {
@@ -88,7 +88,7 @@ class UserServiceImplTest {
             UserRegisterRequest request =
                 new UserRegisterRequest(email, nickname, password);
 
-            when(userRepository.existsByNicknameAndDeletedFalse(any())).thenReturn(true);
+            when(userRepository.existsByNickname(any())).thenReturn(true);
 
             // when & then
             assertThrows(Exception.class, () -> {
@@ -136,8 +136,7 @@ class UserServiceImplTest {
             UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
 
             User user = new User(email, nickname, password, false);
-            when(userRepository.findByEmailAndPasswordAndDeletedFalse(any(), any()))
-                .thenReturn(Optional.of(user));
+            when(userRepository.findByEmailAndPassword(any(), any())).thenReturn(Optional.of(user));
 
             // when
             UserDto userDto = userService.login(userLoginRequest);

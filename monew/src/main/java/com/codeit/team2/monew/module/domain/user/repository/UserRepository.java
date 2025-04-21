@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-    boolean existsByEmailAndDeletedFalse(String email);
+    boolean existsByEmail(String email);
 
-    boolean existsByNicknameAndDeletedFalse(String nickname);
+    boolean existsByNickname(String nickname);
 
-    Optional<User> findByEmailAndPasswordAndDeletedFalse(String email, String password);
+    Optional<User> findByEmailAndPassword(String email, String password);
 
 }

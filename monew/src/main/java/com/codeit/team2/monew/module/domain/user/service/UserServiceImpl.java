@@ -21,11 +21,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto registUser(UserRegisterRequest userRegisterRequest) {
-        if (userRepository.existsByEmailAndDeletedFalse(userRegisterRequest.email())) {
+        if (userRepository.existsByEmail(userRegisterRequest.email())) {
             throw new RuntimeException("duplicate eamil");
         }
 
-        if (userRepository.existsByNicknameAndDeletedFalse(userRegisterRequest.nickname())) {
+        if (userRepository.existsByNickname(userRegisterRequest.nickname())) {
             throw new RuntimeException("duplicate nickname");
         }
 
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto login(UserLoginRequest userLoginRequest) {
-        User user = userRepository.findByEmailAndPasswordAndDeletedFalse(
+        User user = userRepository.findByEmailAndPassword(
             userLoginRequest.email(), userLoginRequest.password()
         ).orElseThrow(() -> new RuntimeException("not found user"));
 
