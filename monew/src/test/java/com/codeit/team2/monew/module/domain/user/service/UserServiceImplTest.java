@@ -170,6 +170,18 @@ class UserServiceImplTest {
             // then
             verify(userRepository, times(1)).findById(userId);
         }
-    }
 
+        @Test
+        void 유저_삭제_성공_물리() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
+
+            // when
+            userService.hardDeleteUser(loginId, userId);
+
+            // then
+            verify(userRepository, times(1)).deleteById(userId);
+        }
+    }
 }
