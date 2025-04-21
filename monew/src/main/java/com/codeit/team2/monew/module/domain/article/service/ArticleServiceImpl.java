@@ -28,10 +28,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleViewDto createUserArticleView(UUID userId, UUID articleId) {
 
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> {
-            log.debug("Article Not Found: id={}", articleId);
-            return new IllegalArgumentException();
-        });
+        Article article = getArticleOrThrow(articleId);
 
         User user = userRepository.findById(userId).orElseThrow(() -> {
             log.debug("User Not Found: id={}", userId);
@@ -50,13 +47,28 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void softDelete(UUID articleId) {
+        Article article = getArticleOrThrow(articleId);
+
+        article.softDelete();
+        // TODO : soft delete 시 연관 entity 어떻게 처리할 지
+    }
+
+    @Override
+    public void hardDelete(UUID articleId) {
+        Article article = getArticleOrThrow(articleId);
+
+        articleRepository.delete(article);
+
+        // TODO : Comment 도메인 완성시 같이 삭제 (CascadeType)
+    }
+
+    private Article getArticleOrThrow(UUID articleId) {
         Article optionalArticle = articleRepository.findById(articleId)
             .orElseThrow(() -> {
                 log.debug("Article Not Found: id={}", articleId);
                 return new IllegalArgumentException();
             });
-
-        optionalArticle.softDelete();
-        // TODO : soft delete 시 연관 entity 어떻게 처리할 지
+        return optionalArticle;
     }
+
 }

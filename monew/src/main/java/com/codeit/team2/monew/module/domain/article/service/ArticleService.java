@@ -8,4 +8,6 @@ public interface ArticleService {
     ArticleViewDto createUserArticleView(UUID userId, UUID articleId);
 
     void softDelete(UUID articleId);
+
+    void hardDelete(UUID articleId);
 }
