@@ -123,13 +123,14 @@ class CommentServiceImplTest {
         CommentUpdateRequest request = new CommentUpdateRequest("edited comment");
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
-        when(comment.getUser().getId()).thenReturn(userId);
+        when(comment.getUser()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
 
         Comment edited = commentService.edit(commentId, userId, request);
 
         assertThat(edited).isEqualTo(comment);
         verify(commentRepository).findById(commentId);
-        verify(commentMapper).updateEntity(comment, request);
+        verify(comment).update(request.content());
     }
 
     @Test
