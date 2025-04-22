@@ -15,6 +15,8 @@ public interface CommentService {
 
     void delete(UUID commentId, UUID userId);
 
+    void hardDelete(UUID commentId);
+
 //    public List<CommentDto> getCommentsByArticleId(UUID articleId, UUID userId, UUID cursor,
 //        Instant cursorTime, int limit);
 //
