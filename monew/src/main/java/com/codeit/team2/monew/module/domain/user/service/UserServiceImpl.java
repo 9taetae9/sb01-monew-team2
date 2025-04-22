@@ -74,6 +74,9 @@ public class UserServiceImpl implements UserService {
     public void hardDeleteUser(UUID loginId, UUID userId) {
         validateAuthority(loginId, userId);
 
+        userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("not found user"));
+
         userRepository.deleteById(userId);
     }
 
