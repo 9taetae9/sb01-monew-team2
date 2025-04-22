@@ -23,6 +23,7 @@ import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapp
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -85,7 +86,7 @@ class UserActivityServiceImplTest {
         when(mockInterest.getId()).thenReturn(UUID.randomUUID());
         when(mockInterest.getName()).thenReturn("경제");
         when(mockInterest.getSubscriberCount()).thenReturn(20);
-        when(mockInterest.getKeywords()).thenReturn(List.of(mockInterestKeyword));
+        when(mockInterest.getKeywords()).thenReturn(Set.of(mockInterestKeyword));
         when(mockInterestKeyword.getKeyword()).thenReturn(mockKeyword);
         when(mockKeyword.getName()).thenReturn("금리");
 
