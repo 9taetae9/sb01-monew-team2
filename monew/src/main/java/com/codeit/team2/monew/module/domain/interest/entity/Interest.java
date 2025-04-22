@@ -8,12 +8,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -32,10 +29,10 @@ public class Interest extends BaseEntity {
     private int subscriberCount;
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InterestKeyword> keywords = new ArrayList<>();
+    private Set<InterestKeyword> keywords = new HashSet<>();
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Subscription> subscriptions = new ArrayList<>();
+    private Set<Subscription> subscriptions = new HashSet<>();
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ArticleInterest> articleInterests = new HashSet<>();
