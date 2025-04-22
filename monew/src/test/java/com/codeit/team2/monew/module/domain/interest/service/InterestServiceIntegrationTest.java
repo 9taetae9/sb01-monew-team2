@@ -2,13 +2,10 @@ package com.codeit.team2.monew.module.domain.interest.service;
 
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
-import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InterestServiceIntegrationTest {
 
     @Autowired
-    private InterestService interestService;
+    private InterestServiceImpl interestService;
 
     @Autowired
     private UserRepository userRepository;

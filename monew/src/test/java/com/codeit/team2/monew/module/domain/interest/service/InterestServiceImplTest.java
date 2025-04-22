@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -20,7 +21,6 @@ import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class InterestServiceTest {
+class InterestServiceImplTest {
 
     @Mock
     private InterestRepository interestRepository;
@@ -47,7 +47,7 @@ class InterestServiceTest {
     private SubscriptionRepository subscriptionRepository;
 
     @InjectMocks
-    private InterestService interestService;
+    private InterestServiceImpl interestService;
 
     @DisplayName("관심사를 생성하고 정상 응답한다.")
     @Test
