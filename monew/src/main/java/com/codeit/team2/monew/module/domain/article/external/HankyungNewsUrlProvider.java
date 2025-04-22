@@ -14,7 +14,7 @@ public class NewsUrlSetFactory {
         "https://www.hankyung.com/feed/international",
         "https://www.hankyung.com/feed/life",
         "https://www.hankyung.com/feed/sports",
-        "https://www.hankyung.com/feed/video",
+//        "https://www.hankyung.com/feed/video", 추후 파싱 예정 (응답 포멧이 다름)
         "https://www.hankyung.com/feed/finance",
         "https://www.hankyung.com/feed/realestate",
         "https://www.hankyung.com/feed/politics",
