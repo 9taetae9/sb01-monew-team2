@@ -22,7 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class NotificationBatchConfig {
 
     @Bean
-    public Job deleteNotificationsJob(JobRepository jobRepository,
+    public Job deleteNotificationJob(JobRepository jobRepository,
         Step deleteNotificationStep) {
         return new JobBuilder("deleteNotificationJob", jobRepository)
             .start(deleteNotificationStep)
