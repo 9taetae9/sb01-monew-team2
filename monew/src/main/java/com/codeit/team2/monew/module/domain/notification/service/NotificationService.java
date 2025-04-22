@@ -18,10 +18,10 @@ public interface NotificationService {
     List<Notification> createInterestNotification(List<Article> articles);
 
     // 개별 알림 확인
-    void readNotification(UUID userID, UUID notificationId);
+    void confirmNotification(UUID userID, UUID notificationId);
 
     // 전체 알림 확인
-    void readAllNotifications(UUID userId);
+    void confirmAllNotifications(UUID userId);
 
     // 알림 목록 조회 - 커서페이지네이션
     CursorPageResponseNotificationDto findAll(UUID userId, Instant cursor, Instant after,

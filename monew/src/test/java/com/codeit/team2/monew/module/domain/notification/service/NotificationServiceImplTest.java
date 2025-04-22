@@ -133,7 +133,7 @@ class NotificationServiceImplTest {
         when(notification.getUser().getId()).thenReturn(userId);
 
         // when
-        notificationService.readNotification(userId, notificationId);
+        notificationService.confirmNotification(userId, notificationId);
 
         // then
         assertEquals(true, notification.isConfirmed());
@@ -154,7 +154,7 @@ class NotificationServiceImplTest {
 
         // when & then
         assertThrows(RuntimeException.class,
-            () -> notificationService.readNotification(userId, notificationId));
+            () -> notificationService.confirmNotification(userId, notificationId));
     }
 
     @Test
@@ -165,7 +165,7 @@ class NotificationServiceImplTest {
         when(userRepository.existsById(userId)).thenReturn(true);
 
         // when
-        notificationService.readAllNotifications(userId);
+        notificationService.confirmAllNotifications(userId);
 
         // then
         verify(notificationRepository).confirmAllByUserId(userId);
@@ -179,6 +179,6 @@ class NotificationServiceImplTest {
 
         // when & then
         assertThrows(RuntimeException.class,
-            () -> notificationService.readAllNotifications(userId));
+            () -> notificationService.confirmAllNotifications(userId));
     }
 }
