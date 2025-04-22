@@ -1,7 +1,6 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
 import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -15,14 +14,11 @@ import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import java.time.Instant;
 import java.util.Collections;
-
 import java.util.List;
-import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 

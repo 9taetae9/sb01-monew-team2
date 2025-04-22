@@ -11,9 +11,7 @@ import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import java.time.Instant;
 import java.util.Collections;
-
 import java.util.List;
-import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +39,6 @@ public class BatchArticleWriterTest {
     @Test
     void testWriteToRepository_success() throws Exception {
         //given
-
 
         Article a = new Article("a", "a", "a", "a", Collections.emptySet(), 0, Instant.now(),
             false);
