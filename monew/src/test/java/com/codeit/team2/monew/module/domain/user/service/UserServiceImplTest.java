@@ -177,6 +177,14 @@ class UserServiceImplTest {
             UUID userId = UUID.randomUUID();
             UUID loginId = userId;
 
+            String email = "a@a.com";
+            String password = "password";
+            String nickname = "nickname";
+
+            User user = new User(email, nickname, password, false);
+
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
             // when
             userService.hardDeleteUser(loginId, userId);
 
