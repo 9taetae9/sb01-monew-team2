@@ -141,7 +141,7 @@ class UserActivityServiceImplTest {
     }
 
     @Test
-    void 사용자_본인이_아닐_경우() {
+    void 본인_검증_예외() {
         // given
         UUID userId = UUID.randomUUID();
         UUID loginId = UUID.randomUUID();
@@ -151,5 +151,20 @@ class UserActivityServiceImplTest {
             userActivitiesService.findUserActivities(loginId, userId);
         });
     }
+
+    @Test
+    void 사용자_존재_여부_검증_예외() {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID loginId = userId;
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThrows(Exception.class, () -> {
+            userActivitiesService.findUserActivities(loginId, userId);
+        });
+    }
+
 
 }
