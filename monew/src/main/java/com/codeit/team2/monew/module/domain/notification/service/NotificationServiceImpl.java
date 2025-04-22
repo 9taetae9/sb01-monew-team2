@@ -137,6 +137,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public CursorPageResponseNotificationDto findAll(UUID userId, Instant cursor, Instant after,
         int limit) {
+        if (!userRepository.existsById(userId)) {
+            log.debug("[Notification finding] Failed: User not found - userId: {}", userId);
+            throw new RuntimeException("User Not Found");
+        }
         // 정렬 조건은 시간 순으로 고정
         Pageable pageable = PageRequest.of(0, limit, Sort.by(Direction.ASC, "createdAt"));
         Page<Notification> pages;
