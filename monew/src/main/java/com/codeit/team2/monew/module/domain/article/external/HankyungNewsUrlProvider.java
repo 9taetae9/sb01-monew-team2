@@ -2,11 +2,13 @@ package com.codeit.team2.monew.module.domain.article.external;
 
 
 import java.util.Set;
-import lombok.Getter;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-public class NewsUrlSetFactory {
+@Component
+@Qualifier("hankyung")
+public class HankyungNewsUrlProvider implements NewsUrlProvider {
 
-    @Getter
     private static final Set<String> hankyungUrlSet = Set.of(
         "https://www.hankyung.com/feed/all-news",
         "https://www.hankyung.com/feed/economy",
@@ -23,4 +25,8 @@ public class NewsUrlSetFactory {
         "https://www.hankyung.com/feed/entertainment"
     );
 
+    @Override
+    public Set<String> getUrls() {
+        return hankyungUrlSet;
+    }
 }
