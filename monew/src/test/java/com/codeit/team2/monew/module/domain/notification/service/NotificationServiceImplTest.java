@@ -54,15 +54,19 @@ class NotificationServiceImplTest {
         User liker = mock(User.class);
         UUID commentId = UUID.randomUUID();
         UUID authorId = UUID.randomUUID();
+        UUID likerId = UUID.randomUUID();
         String likerNickname = "liker";
         when(comment.getId()).thenReturn(commentId);
         when(liker.getNickname()).thenReturn(likerNickname);
         when(author.getId()).thenReturn(authorId);
+        when(liker.getId()).thenReturn(likerId);
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> {
             Notification notification = invocation.getArgument(0);
             ReflectionTestUtils.setField(notification, "id", UUID.randomUUID());
             return notification;
         });
+        when(userRepository.existsById(authorId)).thenReturn(true);
+        when(userRepository.existsById(likerId)).thenReturn(true);
 
         // when
         Notification

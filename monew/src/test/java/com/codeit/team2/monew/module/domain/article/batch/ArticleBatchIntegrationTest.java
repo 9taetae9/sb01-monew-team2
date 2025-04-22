@@ -10,6 +10,7 @@ import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.batch.core.Job;
@@ -32,6 +33,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBatchTest
 @Testcontainers
 @ActiveProfiles("test-postgre")
+@Tag("integration")
+
 public class ArticleBatchIntegrationTest {
 
     @Container

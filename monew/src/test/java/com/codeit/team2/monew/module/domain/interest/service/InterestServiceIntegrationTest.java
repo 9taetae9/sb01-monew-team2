@@ -4,6 +4,7 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestReposito
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@Tag("integration")
 public class InterestServiceIntegrationTest {
 
     @Autowired

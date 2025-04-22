@@ -1,4 +1,6 @@
 # 1기-MoNew-02팀
+#### 📈 Test Coverage 
+[![codecov](https://codecov.io/gh/9taetae9/sb01-monew-team2/graph/badge.svg?token=T3PWUF31Y6)](https://codecov.io/gh/9taetae9/sb01-monew-team2)
 
 ## 👥 팀원 구성 및 R&R
 
