@@ -54,7 +54,7 @@ class UserServiceImplTest {
             when(userRepository.save(any())).thenReturn(user);
 
             // when
-            UserDto userDto = userService.registUser(request);
+            UserDto userDto = userService.registerUser(request);
 
             // then
             assertEquals("email", userDto.email());
@@ -74,7 +74,7 @@ class UserServiceImplTest {
 
             // when & then
             assertThrows(Exception.class, () -> {
-                userService.registUser(request);
+                userService.registerUser(request);
             });
         }
 
@@ -92,7 +92,7 @@ class UserServiceImplTest {
 
             // when & then
             assertThrows(Exception.class, () -> {
-                userService.registUser(request);
+                userService.registerUser(request);
             });
         }
     }
@@ -176,6 +176,14 @@ class UserServiceImplTest {
             // given
             UUID userId = UUID.randomUUID();
             UUID loginId = userId;
+
+            String email = "a@a.com";
+            String password = "password";
+            String nickname = "nickname";
+
+            User user = new User(email, nickname, password, false);
+
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
             // when
             userService.hardDeleteUser(loginId, userId);

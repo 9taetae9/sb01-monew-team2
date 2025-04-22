@@ -22,6 +22,7 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
+
     @PostMapping("/{articleId}/article-views")
     public ResponseEntity<ArticleViewDto> createArticleView(@PathVariable UUID articleId,
         @RequestHeader("MoNew-Request-User-ID") UUID userId) {
@@ -40,4 +41,5 @@ public class ArticleController {
         articleService.hardDelete(articleId);
         return ResponseEntity.noContent().build();
     }
+
 }

@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
             .excludePathPatterns(
                 "/api/users/login",
                 "/api/users",
-                "/api/batch/run" // 임시 테스트용
+                "/api/batch/**" // 임시 테스트용
             );
     }
 

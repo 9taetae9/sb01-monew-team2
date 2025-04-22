@@ -1,6 +1,9 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
 
+import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.external.HankyungApiNewsClient;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -9,6 +12,8 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,11 +29,14 @@ public class ArticleBatchTestController {
     private final JobLauncher jobLauncher;
 
     private final Job articleBatchJob;
+    private final HankyungApiNewsClient hankyungNewsClient;
 
     public ArticleBatchTestController(JobLauncher jobLauncher,
-        @Qualifier("articleBatchJob") Job articleBatchJob) {
+        @Qualifier("articleBatchJob") Job articleBatchJob,
+        HankyungApiNewsClient hankyungNewsClient) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
+        this.hankyungNewsClient = hankyungNewsClient;
     }
 
     @PostMapping("/run")
@@ -47,5 +55,12 @@ public class ArticleBatchTestController {
         } finally {
             log.info("BATCH JOB COMPLETED");
         }
+    }
+
+
+    @GetMapping("/han")
+    public ResponseEntity<List<Article>> getHankyungArticles() {
+        List<Article> articles = hankyungNewsClient.fetchArticles();
+        return ResponseEntity.ok(articles);
     }
 }

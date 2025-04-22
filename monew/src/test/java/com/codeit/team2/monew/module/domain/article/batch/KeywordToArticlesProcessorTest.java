@@ -1,28 +1,24 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
 import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
-import com.codeit.team2.monew.module.domain.article.external.NaverNewsClient;
+import com.codeit.team2.monew.module.domain.article.external.NaverApiNewsClient;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import java.time.Instant;
 import java.util.Collections;
-
 import java.util.List;
-import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -30,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class KeywordToArticlesProcessorTest {
 
     @Mock
-    private NaverNewsClient naverNewsClient;
+    private NaverApiNewsClient naverNewsClient;
 
     @Mock
     private InterestKeywordRepository interestKeywordRepository;
