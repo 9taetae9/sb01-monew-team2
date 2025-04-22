@@ -33,7 +33,7 @@ public class InterestService {
     @Transactional
     public InterestDto create(InterestRegisterRequest request, UUID userId) {
 
-        User user = findByIdOrThrow(userId);
+        User user = findUserOrThrow(userId);
 
         // TODO: 추후에 index 추가 예정
         // 참고: pg_trgm 특성상 유사도 계산 알고리즘이 달라 사람이 판단하는 것과 다름. 보완 필요
@@ -61,24 +61,30 @@ public class InterestService {
         return InterestMapper.INSTANCE.toDto(savedInterest, keywords, subscribedByMe);
     }
 
-    private UUID convertUUID(String userId) {
-        try {
-            return UUID.fromString(userId);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("UUID 형식이 아닙니다.");
-        }
+    public InterestDto update(InterestUpdateRequest request, UUID id, UUID userId) {
+
+//        findUserOrThrow(userId);
+//
+        Interest interest = findByIdOrThrow(id);
+
+
+//        List<String> keywords = getInterest.getKeywords().stream()
+//            .map(ik -> ik.getKeyword().getName())
+//            .collect(Collectors.toList());
+
+        return InterestMapper.INSTANCE.toDto(interest, List.of("당근", "시금치", "파"), true);
     }
 
-    private User findByIdOrThrow(UUID userId) {
+    private User findUserOrThrow(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(
             () -> new RuntimeException("user not found"));
         return user;
     }
 
-    public InterestDto update(InterestUpdateRequest request, UUID interestId, UUID userId) {
-
-
-
-        return null;
+    private Interest findByIdOrThrow(UUID id) {
+        Interest interest = interestRepository.findById(id).orElseThrow(
+            () -> new RuntimeException("interest not found"));
+        return interest;
     }
+
 }

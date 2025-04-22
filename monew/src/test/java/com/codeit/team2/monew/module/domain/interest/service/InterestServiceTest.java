@@ -103,6 +103,9 @@ class InterestServiceTest {
         List<String> inputKeywords = List.of("당근", "시금치", "파");
         InterestUpdateRequest request = new InterestUpdateRequest(inputKeywords);
 
+        when(interestRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(mockInterest));
+
       // when
         InterestDto result = interestService.update(request, interestId ,userId);
 
