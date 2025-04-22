@@ -4,7 +4,8 @@ import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegiste
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
-import jakarta.validation.Valid;
+import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
+import com.codeit.team2.monew.module.domain.subscription.service.SubscriptionService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class InterestController {
 
     private final InterestService interestService;
+    private final SubscriptionService subscriptionService;
 
     @PostMapping
     public ResponseEntity<InterestDto> create(
-        @Valid @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
         @RequestBody InterestRegisterRequest request
     ) {
         log.info("Start - InterestController/create: interest name={}", request.name());
@@ -41,7 +43,7 @@ public class InterestController {
 
     @PatchMapping("/{interestId}")
     public ResponseEntity<InterestDto> update(
-        @Valid @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
         @PathVariable(name = "interestId") UUID interestId,
         @RequestBody InterestUpdateRequest request
     ) {
@@ -51,5 +53,18 @@ public class InterestController {
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(interestDto);
+    }
+
+    @PostMapping("/{interestId}/subscriptions")
+    public ResponseEntity<SubscriptionDto> subscription(
+        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @PathVariable(name = "interestId") UUID interestId
+    ) {
+        log.info("Start - InterestController/subscriptione: interest id={}, userId={}", interestId, userId);
+        SubscriptionDto subscriptionDto = subscriptionService.subscription(interestId, userId);
+        log.info("Complete - InterestController/subscription: interest id={}, userId={}", interestId, userId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(subscriptionDto);
     }
 }
