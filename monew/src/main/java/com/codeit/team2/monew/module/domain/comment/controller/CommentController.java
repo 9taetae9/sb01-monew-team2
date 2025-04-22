@@ -80,4 +80,18 @@ public class CommentController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{commentId}/hard")
+    public ResponseEntity<Void> hardDelete(
+        @PathVariable UUID commentId
+    ) {
+        log.info("Start - CommentController/hardDelete: commentId={}", commentId);
+
+        commentService.hardDelete(commentId);
+
+        log.info("Complete - CommentController/hardDelete: commentId={}", commentId);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }

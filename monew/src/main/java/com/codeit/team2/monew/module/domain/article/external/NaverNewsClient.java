@@ -4,8 +4,6 @@ import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import com.codeit.team2.monew.module.domain.article.dto.NaverArticleResponseDto;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,12 +36,11 @@ public class NaverNewsClient implements NewsClient {
     @Override
     public List<Article> fetchArticles(FetchCommand cmd) {
 
-        String encodedKeyword = URLEncoder.encode(cmd.keyword(), StandardCharsets.UTF_8);
-
+        //
         NaverArticleResponseDto response = webClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/v1/search/news.json")
-                .queryParam("query", encodedKeyword)
+                .queryParam("query", cmd.keyword())
                 .queryParam("display", cmd.pageSize())
                 .queryParam("start", cmd.offset())
                 .queryParam("sort", cmd.sortBy())

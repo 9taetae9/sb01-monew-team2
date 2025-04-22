@@ -80,4 +80,15 @@ public class CommentServiceImpl implements CommentService {
 
         comment.delete();
     }
+
+    @Override
+    public void hardDelete(UUID commentId) {
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> {
+                log.debug("Comment Not Found - commentId: {}", commentId);
+                return new EntityNotFoundException("Comment Not Found");
+            });
+
+        commentRepository.delete(comment);
+    }
 }

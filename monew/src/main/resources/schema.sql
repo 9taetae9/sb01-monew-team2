@@ -7,9 +7,9 @@ DROP TABLE IF EXISTS interest_keywords;
 DROP TABLE IF EXISTS subscriptions;
 DROP TABLE IF EXISTS article_views;
 DROP TABLE IF EXISTS article_interests;
-DROP TABLE IF EXISTS articles;
+DROP TABLE IF EXISTS articles CASCADE;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS interests;
+DROP TABLE IF EXISTS interests CASCADE;
 DROP TABLE IF EXISTS keywords;
 
 CREATE TABLE interests
@@ -56,7 +56,7 @@ CREATE TABLE articles
     id             UUID                     NOT NULL PRIMARY KEY,
     title          VARCHAR(255)             NOT NULL,
     source         VARCHAR(255)             NOT NULL,
-    source_url     TEXT                     NOT NULL UNIQUE,
+    source_url     TEXT             NOT NULL UNIQUE,
     summary        TEXT                     NULL,
     view_count     BIGINT                   NOT NULL DEFAULT 0,
     published_date TIMESTAMP WITH TIME ZONE NOT NULL,

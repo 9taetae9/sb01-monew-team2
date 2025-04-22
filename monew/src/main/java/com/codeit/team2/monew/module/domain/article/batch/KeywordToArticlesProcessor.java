@@ -12,7 +12,6 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordR
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,7 @@ public class KeywordToArticlesProcessor implements
     public List<ArticleInterestCreateCommand> process(Keyword keyword) throws Exception {
 
         // TODO : keyword 별 마지막 article? 조회하여 시간 비교 후 일찍 끝내기
-        // TODO : 하나의 keyword 당 여러 api 호출이 발생 -> 효율적인 방법 고
+        // TODO : 하나의 keyword 당 여러 api 호출이 발생 -> 효율적인 방법 고민
         List<InterestKeyword> iks = interestKeywordRepository.findAllByKeyword(keyword);
         List<Interest> interests = iks.stream().map(ik -> ik.getInterest())
             .collect(Collectors.toList());
@@ -51,28 +50,4 @@ public class KeywordToArticlesProcessor implements
             .flatMap(i -> articles.stream().map(a -> new ArticleInterestCreateCommand(a, i)))
             .toList();
     }
-
-//    @Override
-//    public List<ArticleInterestCreateCommand> process(Keyword keyword) throws Exception {
-//        List<Article> allArticles = new ArrayList<>();
-//        int start = 1;
-//        int display = 100;
-//
-//        while (start <= 1000) {
-//            FetchCommand cmd = new FetchCommand(keyword.getName(), display, start, "date");
-//            List<Article> articles = naverNewsClient.fetchArticles(cmd);
-//
-//            if (articles.isEmpty() || articles.size() < display) {
-//                allArticles.addAll(articles);
-//                break;
-//            }
-//
-//            allArticles.addAll(articles);
-//            start += display;
-//        }
-//
-//        return allArticles;
-//    }
-
-
 }
