@@ -29,7 +29,7 @@ public class UserController {
     @PostMapping("")
     public ResponseEntity<UserDto> registUser(@Valid @RequestBody UserRegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(userService.registUser(request));
+            .body(userService.registerUser(request));
     }
 
     @PatchMapping("/{id}")

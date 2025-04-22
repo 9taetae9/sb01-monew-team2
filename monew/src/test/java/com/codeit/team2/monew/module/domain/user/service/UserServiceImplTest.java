@@ -54,7 +54,7 @@ class UserServiceImplTest {
             when(userRepository.save(any())).thenReturn(user);
 
             // when
-            UserDto userDto = userService.registUser(request);
+            UserDto userDto = userService.registerUser(request);
 
             // then
             assertEquals("email", userDto.email());
@@ -74,7 +74,7 @@ class UserServiceImplTest {
 
             // when & then
             assertThrows(Exception.class, () -> {
-                userService.registUser(request);
+                userService.registerUser(request);
             });
         }
 
@@ -92,7 +92,7 @@ class UserServiceImplTest {
 
             // when & then
             assertThrows(Exception.class, () -> {
-                userService.registUser(request);
+                userService.registerUser(request);
             });
         }
     }
