@@ -44,8 +44,8 @@ public class BatchArticleWriterTest {
             false);
         Article b = new Article("b", "b", "b", "b", Collections.emptySet(), 0, Instant.now(),
             false);
-        Interest i1 = new Interest("a", 0, List.of(), List.of());
-        Interest i2 = new Interest("b", 0, List.of(), List.of());
+        Interest i1 = Interest.create("a");
+        Interest i2 = Interest.create("b");
 
         List<ArticleInterestCreateCommand> cmd1 = List.of(
             new ArticleInterestCreateCommand(
