@@ -7,17 +7,15 @@ import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
+import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +30,14 @@ public class InterestService {
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
     private final KeywordRepository keywordRepository;
+    private final InterestKeywordRepository interestKeywordRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     @Transactional
     public InterestDto create(InterestRegisterRequest request, UUID userId) {
 
         User user = findUserOrThrow(userId);
+        boolean subscribedByMe = false;
 
         // TODO: 추후에 index 추가 예정
         // 참고: pg_trgm 특성상 유사도 계산 알고리즘이 달라 사람이 판단하는 것과 다름. 보완 필요
@@ -59,27 +59,24 @@ public class InterestService {
             .map(ik -> ik.getKeyword().getName())
             .collect(Collectors.toList());
 
-        boolean subscribedByMe = false;
-
         return InterestMapper.INSTANCE.toDto(savedInterest, keywords, subscribedByMe);
     }
 
     @Transactional
     public InterestDto update(InterestUpdateRequest request, UUID id, UUID userId) {
 
-        findUserOrThrow(userId);
+        User user = findUserOrThrow(userId);
         Interest interest = findByIdOrThrow(id);
-
-        // 키워드 이름들을 가져와서 포함되어 있으면 그대로 두고 없으면 제거 시키는 키워드 (키워드가 고아가 되면 삭제되도록?)
+        boolean subscribedByMe = subscriptionRepository.existsByInterestAndUser(interest, user);
 
         Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
             .collect(Collectors.toMap(
-                ik -> ik.getKeyword().toString(),  // key
-                ik-> ik     // value
+                ik -> ik.getKeyword().toString(),
+                ik-> ik
             ));
 
         for (String keyword: request.keywords()) {
-            if (!savedKeywords.containsKey(keyword)) { // 새로운 키워드인 경우
+            if (!savedKeywords.containsKey(keyword)) {
                 Keyword getKeyword = keywordRepository.findByName(keyword)
                     .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
                 interest.addInterestKeyword(getKeyword);
@@ -88,18 +85,21 @@ public class InterestService {
             }
         }
 
-        // 남아있다면, remove 하기
         if (!savedKeywords.isEmpty()) {
-            interest.getKeywords().removeAll(savedKeywords.values());
+            for (InterestKeyword interestKeyword : savedKeywords.values()) {
+                interest.getKeywords().remove(interestKeyword);
+                Keyword keyword = interestKeyword.getKeyword();
+                if (!interestKeywordRepository.existsByKeyword(keyword)) {
+                    keywordRepository.delete(keyword);
+                }
+            }
         }
 
         List<String> keywords = interest.getKeywords().stream()
             .map(ik -> ik.getKeyword().getName())
             .collect(Collectors.toList());
 
-        // TODO : 구독 확인
-
-        return InterestMapper.INSTANCE.toDto(interest, keywords, true);
+        return InterestMapper.INSTANCE.toDto(interest, keywords, subscribedByMe);
     }
 
     private User findUserOrThrow(UUID userId) {

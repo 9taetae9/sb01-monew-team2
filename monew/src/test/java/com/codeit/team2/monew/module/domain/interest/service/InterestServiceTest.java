@@ -1,7 +1,9 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
@@ -9,6 +11,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateR
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
@@ -38,6 +41,9 @@ class InterestServiceTest {
     private KeywordRepository keywordRepository;
 
     @Mock
+    private InterestKeywordRepository interestKeywordRepository;
+
+    @Mock
     private SubscriptionRepository subscriptionRepository;
 
     @InjectMocks
@@ -53,24 +59,18 @@ class InterestServiceTest {
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
         InterestRegisterRequest request = new InterestRegisterRequest(name, inputKeywords);
-
         Interest mockInterest = createInterest(name, inputKeywords);
 
-        // mocking
-        // user 를 찾았다고 가정
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(user));
-
-        // 해당 키워드가 DB에 없다고 가정
         when(keywordRepository.findByName(any(String.class)))
             .thenReturn(Optional.empty());
-
+        when(interestRepository.existsByNameSimilarTo(any(String.class)))
+            .thenReturn(false);
         when(keywordRepository.save(any(Keyword.class)))
             .thenAnswer(invocation -> {
                 return invocation.getArgument(0);
             });
-
-        // 생성
         when(interestRepository.save(any(Interest.class)))
             .thenReturn(mockInterest);
 
@@ -85,34 +85,64 @@ class InterestServiceTest {
         assertThat(result.subscribedByMe()).isEqualTo(false);
     }
 
-    // TODO : CREATE 유사도 80% 이상으로 생성에 실패한 경우
-
-    @DisplayName("관심사 수정에서 키워드 추가가 정상적으로 수정된다.")
+    @DisplayName("비슷한 관심사명이 있는 경우 관심사 생성에 실패한다.")
     @Test
-    void update_success() {
-      // given
+    void create_failure() {
+        // given
         UUID userId = UUID.randomUUID();
         User user = mock(User.class);
 
+        String name = "채소";
+        List<String> inputKeywords = List.of("당근", "시금치");
+        InterestRegisterRequest request = new InterestRegisterRequest(name, inputKeywords);
+
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(user));
+        when(interestRepository.existsByNameSimilarTo(any(String.class)))
+            .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> interestService.create(request, userId))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("관심사 수정에서 키워드 추가/삭제가 정상적으로 수행된다.")
+    @Test
+    void update_success() {
+        // given
+        UUID userId = UUID.randomUUID();
+        User user = mock(User.class);
         UUID interestId = UUID.randomUUID();
 
         String name = "채소";
-        List<String> keywords = List.of("당근", "시금치");
+        List<String> keywords = List.of("당근");
         Interest mockInterest = createInterest(name, keywords);
 
-        List<String> inputKeywords = List.of("당근", "시금치", "파");
+        List<String> inputKeywords = List.of("시금치");
         InterestUpdateRequest request = new InterestUpdateRequest(inputKeywords);
 
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(user));
         when(interestRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(mockInterest));
+        when(keywordRepository.findByName(any(String.class)))
+            .thenReturn(Optional.empty());
+        when(keywordRepository.save(any(Keyword.class)))
+            .thenAnswer(invocation -> {
+                return invocation.getArgument(0);
+            });
+        when(interestKeywordRepository.existsByKeyword(any(Keyword.class)))
+            .thenReturn(false);
 
-      // when
+        // when
         InterestDto result = interestService.update(request, interestId ,userId);
 
-      // then
-        assertThat(result.keywords()).hasSize(3).contains("파");
+        // then
+        assertThat(result.keywords()).hasSize(1)
+            .contains("시금치").doesNotContain("당근");
+        verify(keywordRepository).delete(any(Keyword.class));
+        verify(keywordRepository).save(any(Keyword.class));
     }
-
 
     Interest createInterest(String name, List<String> keywords) {
         Interest mockInterest = Interest.create(name);
