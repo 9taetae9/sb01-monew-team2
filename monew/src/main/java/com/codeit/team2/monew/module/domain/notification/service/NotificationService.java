@@ -2,8 +2,10 @@ package com.codeit.team2.monew.module.domain.notification.service;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.notification.dto.CursorPageResponseNotificationDto;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,4 +22,8 @@ public interface NotificationService {
 
     // 전체 알림 확인
     void readAllNotifications(UUID userId);
+
+    // 알림 목록 조회 - 커서페이지네이션
+    CursorPageResponseNotificationDto findAll(UUID userId, Instant cursor, Instant after,
+        int limit);
 }
