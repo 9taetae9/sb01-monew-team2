@@ -4,7 +4,7 @@ package com.codeit.team2.monew.module.domain.article.batch;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
-import com.codeit.team2.monew.module.domain.article.external.NaverNewsClient;
+import com.codeit.team2.monew.module.domain.article.external.NaverApiNewsClient;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class KeywordToArticlesProcessor implements
     ItemProcessor<Keyword, List<ArticleInterestCreateCommand>> {
 
-    private final NaverNewsClient naverNewsClient;
+    private final NaverApiNewsClient naverNewsClient;
     private final InterestKeywordRepository interestKeywordRepository;
 
     @Override

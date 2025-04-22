@@ -25,10 +25,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @SpringBootTest
 @Disabled
-public class LiveNaverNewsClientTest {
+public class LiveNaverApiNewsClientTest {
 
     @Autowired
-    @Qualifier("naverNewsClient")
+    @Qualifier("naverApiNewsClient")
     private WebClient webClient;
 
     @Autowired
@@ -53,7 +53,7 @@ public class LiveNaverNewsClientTest {
     void realFetch() throws Exception {
 
         // given
-        NaverNewsClient client = new NaverNewsClient(webClient, clientId, clientSecret,
+        NaverApiNewsClient client = new NaverApiNewsClient(webClient, clientId, clientSecret,
             articleMapper);
         FetchCommand cmd = new FetchCommand("AI", 10, 1, "date");
 

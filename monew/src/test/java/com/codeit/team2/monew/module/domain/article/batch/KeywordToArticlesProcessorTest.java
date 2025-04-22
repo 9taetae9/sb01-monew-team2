@@ -7,7 +7,7 @@ import static org.mockito.Mockito.times;
 
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
-import com.codeit.team2.monew.module.domain.article.external.NaverNewsClient;
+import com.codeit.team2.monew.module.domain.article.external.NaverApiNewsClient;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
@@ -26,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class KeywordToArticlesProcessorTest {
 
     @Mock
-    private NaverNewsClient naverNewsClient;
+    private NaverApiNewsClient naverNewsClient;
 
     @Mock
     private InterestKeywordRepository interestKeywordRepository;

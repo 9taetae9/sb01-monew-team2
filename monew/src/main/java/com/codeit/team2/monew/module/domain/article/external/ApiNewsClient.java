@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * 외부 news api 요청에 활용될 공통 인터페이스
  */
-public interface NewsClient {
+public interface ApiNewsClient {
 
     List<Article> fetchArticles(FetchCommand cmd);
 }
