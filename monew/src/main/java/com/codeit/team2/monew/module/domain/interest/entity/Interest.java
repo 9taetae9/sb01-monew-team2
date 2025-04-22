@@ -32,10 +32,10 @@ public class Interest extends BaseEntity {
     private int subscriberCount;
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InterestKeyword> keywords = new ArrayList<>();
+    private Set<InterestKeyword> keywords = new HashSet<>();
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Subscription> subscriptions = new ArrayList<>();
+    private Set<Subscription> subscriptions = new HashSet<>();
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ArticleInterest> articleInterests = new HashSet<>();

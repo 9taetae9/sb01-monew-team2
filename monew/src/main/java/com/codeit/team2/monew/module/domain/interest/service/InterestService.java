@@ -4,6 +4,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegiste
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
@@ -13,7 +14,10 @@ import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -55,24 +59,47 @@ public class InterestService {
             .map(ik -> ik.getKeyword().getName())
             .collect(Collectors.toList());
 
-        // 초기 생성 시에는 구독하고 있지 않음, 생성 시 구독으로 처리할 건지?
         boolean subscribedByMe = false;
 
         return InterestMapper.INSTANCE.toDto(savedInterest, keywords, subscribedByMe);
     }
 
+    @Transactional
     public InterestDto update(InterestUpdateRequest request, UUID id, UUID userId) {
 
-//        findUserOrThrow(userId);
-//
+        findUserOrThrow(userId);
         Interest interest = findByIdOrThrow(id);
 
+        // 키워드 이름들을 가져와서 포함되어 있으면 그대로 두고 없으면 제거 시키는 키워드 (키워드가 고아가 되면 삭제되도록?)
 
-//        List<String> keywords = getInterest.getKeywords().stream()
-//            .map(ik -> ik.getKeyword().getName())
-//            .collect(Collectors.toList());
+        Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
+            .collect(Collectors.toMap(
+                ik -> ik.getKeyword().toString(),  // key
+                ik-> ik     // value
+            ));
 
-        return InterestMapper.INSTANCE.toDto(interest, List.of("당근", "시금치", "파"), true);
+        for (String keyword: request.keywords()) {
+            if (!savedKeywords.containsKey(keyword)) { // 새로운 키워드인 경우
+                Keyword getKeyword = keywordRepository.findByName(keyword)
+                    .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
+                interest.addInterestKeyword(getKeyword);
+            } else {
+                savedKeywords.remove(keyword);
+            }
+        }
+
+        // 남아있다면, remove 하기
+        if (!savedKeywords.isEmpty()) {
+            interest.getKeywords().removeAll(savedKeywords.values());
+        }
+
+        List<String> keywords = interest.getKeywords().stream()
+            .map(ik -> ik.getKeyword().getName())
+            .collect(Collectors.toList());
+
+        // TODO : 구독 확인
+
+        return InterestMapper.INSTANCE.toDto(interest, keywords, true);
     }
 
     private User findUserOrThrow(UUID userId) {
