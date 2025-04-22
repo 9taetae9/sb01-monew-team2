@@ -9,15 +9,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Table(name = "keywords")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
 public class Keyword extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String name;
 
+    public Keyword(String name) {
+        this.name = name;
+    }
 }
