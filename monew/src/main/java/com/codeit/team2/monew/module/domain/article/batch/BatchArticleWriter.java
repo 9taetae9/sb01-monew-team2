@@ -2,41 +2,44 @@ package com.codeit.team2.monew.module.domain.article.batch;
 
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
-import com.codeit.team2.monew.module.domain.article.repository.ArticleInterestRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-// TODO : ARTICLE_INTEREST 에도 INSERT?
 public class BatchArticleWriter implements ItemWriter<List<ArticleInterestCreateCommand>> {
 
     private final ArticleRepository articleRepository;
-    private final ArticleInterestRepository articleInterestRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void write(Chunk<? extends List<ArticleInterestCreateCommand>> items) throws Exception {
 
+        List<ArticleInterestCreateCommand> allCmd = flattenChunk(items);
+
         // 기사 링크 수집 + mapping
         Set<String> links = new HashSet<>();
         Map<String, Article> linkToArticle = new HashMap<>(); // 캐시 역할
-        for (List<ArticleInterestCreateCommand> cmds : items) {
-            for (ArticleInterestCreateCommand cmd : cmds) {
-                links.add(cmd.article().getSourceUrl());
-                linkToArticle.putIfAbsent(cmd.article().getSourceUrl(), cmd.article());
-            }
+
+        for (ArticleInterestCreateCommand cmd : allCmd) {
+            links.add(cmd.article().getSourceUrl());
+            linkToArticle.putIfAbsent(cmd.article().getSourceUrl(), cmd.article());
         }
 
         // 이미 존재하는 기사 조회
@@ -50,26 +53,40 @@ public class BatchArticleWriter implements ItemWriter<List<ArticleInterestCreate
                 toSave.add(linkToArticle.get(link));
             }
         }
-
         // 기사 저장 및 mapping
         articleRepository.saveAll(toSave).forEach(a -> existing.put(a.getSourceUrl(), a));
-
+        articleRepository.flush();
         // UPDATE & INSERT
-        Set<ArticleInterest> articleInterests = new HashSet<>();
-        for (List<ArticleInterestCreateCommand> cmds : items) {
-            for (ArticleInterestCreateCommand cmd : cmds) {
-                Article article = existing.get(cmd.article().getSourceUrl());
-                Interest interest = cmd.interest();
+        List<ArticleInterest> articleInterests = new ArrayList<>();
 
-                // TODO : 조회 쿼리 너무 많이 발생. 최적화 필요
-                if (!articleInterestRepository.existsByArticleAndInterest(article, interest)) {
-                    articleInterests.add(new ArticleInterest(article, interest));
-                }
-            }
+        for (ArticleInterestCreateCommand cmd : allCmd) {
+            Article article = existing.get(cmd.article().getSourceUrl()); // 영속화 보장
+            Interest interest = cmd.interest(); // 이전 단계에서 영속화
+            articleInterests.add(new ArticleInterest(article, interest));
         }
-        // TODO : JdbcTemplate 사용 고려
 
-        // IGNORE ON CONFLICT, ArticleInterest 전부 적재하고 메모리상에서 검사
-        articleInterestRepository.saveAll(articleInterests);
+        String sql = """
+              INSERT INTO article_interests (id, article_id, interest_id, created_at)
+              VALUES (?, ?, ?, ?)
+              ON CONFLICT (article_id, interest_id) DO NOTHING
+            """;
+        jdbcTemplate.batchUpdate(sql, articleInterests, 1000, (ps, ai) -> {
+            UUID id = UUID.randomUUID();
+            Instant now = Instant.now();
+            ps.setObject(1, id);
+            ps.setObject(2, ai.getArticle().getId());
+            ps.setObject(3, ai.getInterest().getId());
+            ps.setObject(4, Timestamp.from(now));
+        });
+    }
+
+    private List<ArticleInterestCreateCommand> flattenChunk(
+        Chunk<? extends List<ArticleInterestCreateCommand>> items) {
+        List<ArticleInterestCreateCommand> flatList = new ArrayList<>();
+        for (List<ArticleInterestCreateCommand> chunk : items) {
+            flatList.addAll(chunk);
+        }
+
+        return flatList;
     }
 }
