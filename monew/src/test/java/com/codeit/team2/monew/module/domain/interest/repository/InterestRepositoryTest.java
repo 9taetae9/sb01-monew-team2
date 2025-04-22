@@ -29,22 +29,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class InterestRepositoryTest {
 
-    @BeforeAll
-    static void setUp() {
-        try (Connection conn = DriverManager.getConnection(
-            postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
-            Statement stmt = conn.createStatement()) {
-            stmt.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
         .withDatabaseName("monew")
         .withUsername("test")
-        .withPassword("testpw");
+        .withPassword("testpw")
+        .withInitScript("init_pg_trgm.sql");
 
     @DynamicPropertySource
     static void setProps(DynamicPropertyRegistry registry) {
