@@ -1,0 +1,26 @@
+package com.codeit.team2.monew.module.domain.article.external;
+
+
+import java.util.Set;
+import lombok.Getter;
+
+public class NewsUrlSetFactory {
+
+    @Getter
+    private static final Set<String> hankyungUrlSet = Set.of(
+        "https://www.hankyung.com/feed/all-news",
+        "https://www.hankyung.com/feed/economy",
+        "https://www.hankyung.com/feed/it",
+        "https://www.hankyung.com/feed/international",
+        "https://www.hankyung.com/feed/life",
+        "https://www.hankyung.com/feed/sports",
+        "https://www.hankyung.com/feed/video",
+        "https://www.hankyung.com/feed/finance",
+        "https://www.hankyung.com/feed/realestate",
+        "https://www.hankyung.com/feed/politics",
+        "https://www.hankyung.com/feed/society",
+        "https://www.hankyung.com/feed/opinion",
+        "https://www.hankyung.com/feed/entertainment"
+    );
+
+}
