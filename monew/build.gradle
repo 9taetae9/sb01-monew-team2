@@ -74,6 +74,9 @@ dependencies {
 
     // jdbc
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    // jackson-dataformat-xml
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.3'
 }
 
 tasks.named('test') {

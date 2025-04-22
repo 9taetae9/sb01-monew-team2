@@ -20,14 +20,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @SpringBatchTest
-@ActiveProfiles("test")
+@Testcontainers
+@ActiveProfiles("test-postgre")
 public class ArticleBatchIntegrationTest {
 
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
+        .withDatabaseName("monew")
+        .withUsername("test")
+        .withPassword("testpw");
+
+    @DynamicPropertySource
+    static void setProps(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+        registry.add("spring.jpa.properties.hibernate.dialect",
+            () -> "org.hibernate.dialect.PostgreSQLDialect");
+    }
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;
@@ -55,7 +76,7 @@ public class ArticleBatchIntegrationTest {
 
 
     @Test
-    @Sql(scripts = {"/schema.sql", "/schema-batch.sql", "/insert-keywords.sql"})
+    @Sql(scripts = {"/schema-batch-postgres.sql", "/insert-keywords.sql"})
     void testArticleBatchJob_shouldFetchArticleAndSave() throws Exception {
         // when
         JobExecution execution = jobLauncherTestUtils.launchJob();
