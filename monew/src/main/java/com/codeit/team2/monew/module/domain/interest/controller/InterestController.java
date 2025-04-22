@@ -6,6 +6,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import com.codeit.team2.monew.module.domain.subscription.service.SubscriptionService;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class InterestController {
     @PostMapping
     public ResponseEntity<InterestDto> create(
         @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
-        @RequestBody InterestRegisterRequest request
+        @Valid @RequestBody InterestRegisterRequest request
     ) {
         log.info("Start - InterestController/create: interest name={}", request.name());
         InterestDto interestDto = interestService.create(request, userId);
@@ -45,7 +46,7 @@ public class InterestController {
     public ResponseEntity<InterestDto> update(
         @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
         @PathVariable(name = "interestId") UUID interestId,
-        @RequestBody InterestUpdateRequest request
+        @Valid @RequestBody InterestUpdateRequest request
     ) {
         log.info("Start - InterestController/update: interest id={}", interestId);
         InterestDto interestDto = interestService.update(request, interestId, userId);
