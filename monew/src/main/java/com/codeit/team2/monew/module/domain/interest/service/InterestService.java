@@ -1,15 +1,19 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
-import com.codeit.team2.monew.module.domain.interest.controller.InterestRegisterRequest;
-import com.codeit.team2.monew.module.domain.interest.dto.InterestDto;
+import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
+import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
+import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,32 +23,54 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InterestService {
 
+    private final UserRepository userRepository;
     private final InterestRepository interestRepository;
     private final KeywordRepository keywordRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     @Transactional
-    public InterestDto create(InterestRegisterRequest request) {
+    public InterestDto create(InterestRegisterRequest request, String userId) {
 
-        // 관심사 이름 유사도 검사: 80% 이상 일치 시 등록 불가
+        User user = findByIdOrThrow(convertUUID(userId));
 
-        List<Keyword> newKeywords = new ArrayList<>();
-
-        // 키워드 검색: keyword 테이블에 존재하는지
-        // 이미 KEYWORD 테이블에 있다면 해당 키워드를 list 에 추가하기
-        for (String keyword : request.keywords()) {
-            Keyword getKeyword = keywordRepository.findByName(keyword)
-                .orElse(new Keyword(keyword));
-            newKeywords.add(getKeyword);
+        // TODO: 추후에 index 추가 예정
+        // 참고: pg_trgm 특성상 유사도 계산 알고리즘이 달라 사람이 판단하는 것과 다름. 보완 필요
+        if(interestRepository.existsByNameSimilarTo(request.name())) {
+            throw new IllegalArgumentException("비슷한 관심사가 이미 존재합니다.");
         }
 
-        Interest interest = Interest.builder()
-            .name(request.name())
-//            .keywords(newKeywords)
-            .subscriptions(new ArrayList<>())
-            .subscriberCount(0)
-            .build();
+        Interest interest = Interest.create(request.name());
 
-        return InterestMapper.INSTANCE.toDto(interest, List.of(request.keywords().get(0)), true);
+        for (String keyword : request.keywords()) {
+            Keyword getKeyword = keywordRepository.findByName(keyword)
+                .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
+            interest.addInterestKeyword(getKeyword);
+        }
+
+        Interest savedInterest = interestRepository.save(interest);
+
+        List<String> keywords = savedInterest.getKeywords().stream()
+            .map(ik -> ik.getKeyword().getName())
+            .collect(Collectors.toList());
+
+        // 초기 생성 시에는 구독하고 있지 않음, 생성 시 구독으로 처리할 건지?
+        boolean subscribedByMe = false;
+
+        return InterestMapper.INSTANCE.toDto(savedInterest, keywords, subscribedByMe);
+    }
+
+    private UUID convertUUID(String userId) {
+        try {
+            return UUID.fromString(userId);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("UUID 형식이 아닙니다.");
+        }
+    }
+
+    private User findByIdOrThrow(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> new RuntimeException("user not found"));
+        return user;
     }
 
 }

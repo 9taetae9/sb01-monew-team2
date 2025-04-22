@@ -1,4 +1,4 @@
-package com.codeit.team2.monew.module.domain.interest.dto;
+package com.codeit.team2.monew.module.domain.interest.dto.response;
 
 import java.util.List;
 import java.util.UUID;
