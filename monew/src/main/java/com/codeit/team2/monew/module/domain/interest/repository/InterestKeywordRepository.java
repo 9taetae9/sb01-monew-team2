@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface InterestKeywordRepository extends JpaRepository<InterestKeyword, UUID> {
 
     List<InterestKeyword> findAllByKeyword(Keyword keyword);
+
+    boolean existsByKeyword(Keyword keyword);
 }
