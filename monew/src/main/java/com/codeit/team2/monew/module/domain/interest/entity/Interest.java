@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,21 +32,21 @@ public class Interest extends BaseEntity {
     private int subscriberCount;
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InterestKeyword> keywords;
+    private List<InterestKeyword> keywords = new ArrayList<>();
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Subscription> subscriptions;
+    private List<Subscription> subscriptions = new ArrayList<>();
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ArticleInterest> articleInterests = new HashSet<>();
 
-    @Builder
-    public Interest(String name, int subscriberCount, List<InterestKeyword> keywords,
-        List<Subscription> subscriptions) {
+    private Interest(String name, int subscriberCount) {
         this.name = name;
         this.subscriberCount = subscriberCount;
-        this.keywords = keywords;
-        this.subscriptions = subscriptions;
+    }
+
+    public static Interest create(String name) {
+        return new Interest(name, 0);
     }
 
     public void addInterestKeyword(Keyword keyword) {

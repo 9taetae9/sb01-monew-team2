@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 DROP TABLE IF EXISTS comment_likes;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS notifications;
