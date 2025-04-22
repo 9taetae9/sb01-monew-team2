@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserDto registUser(UserRegisterRequest userRegisterRequest);
+    UserDto registerUser(UserRegisterRequest userRegisterRequest);
 
     UserDto updateUser(UUID loginId, UUID userId, UserUpdateRequest userUpdateRequest);
 

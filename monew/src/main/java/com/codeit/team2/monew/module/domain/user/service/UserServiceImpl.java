@@ -20,9 +20,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDto registUser(UserRegisterRequest userRegisterRequest) {
+    public UserDto registerUser(UserRegisterRequest userRegisterRequest) {
         if (userRepository.existsByEmail(userRegisterRequest.email())) {
-            throw new RuntimeException("duplicate eamil");
+            throw new RuntimeException("duplicate email");
         }
 
         if (userRepository.existsByNickname(userRegisterRequest.nickname())) {
@@ -73,6 +73,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void hardDeleteUser(UUID loginId, UUID userId) {
         validateAuthority(loginId, userId);
+
+        userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("not found user"));
 
         userRepository.deleteById(userId);
     }
