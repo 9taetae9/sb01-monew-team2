@@ -12,6 +12,7 @@ import com.codeit.team2.monew.module.domain.useractivity.dto.SubscriptionItem;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,7 +28,7 @@ public interface UserActivityMapper {
     @Mapping(source = "interest.keywords", target = "interestKeywords")
     SubscriptionItem toSubscriptionItem(Subscription subscription);
 
-    default List<String> mapInterestKeywords(List<InterestKeyword> keywords) {
+    default List<String> mapInterestKeywords(Set<InterestKeyword> keywords) {
         if (keywords == null) {
             return Collections.emptyList();
         }
