@@ -1,6 +1,5 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
-import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapperImpl;
@@ -20,9 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @ExtendWith(MockitoExtension.class)
-public class HankyungNewsClientTest {
+public class HankyungApiNewsClientTest {
 
-    private HankyungNewsClient client;
+    private HankyungApiNewsClient client;
     private MockWebServer mockWebServer;
     private ArticleMapper articleMapper;
 
@@ -38,7 +37,7 @@ public class HankyungNewsClientTest {
         BDDMockito.given(provider.getUrls())
             .willReturn(Set.of("/test"));
 
-        client = new HankyungNewsClient(webClient, articleMapper, provider);
+        client = new HankyungApiNewsClient(webClient, articleMapper, provider);
     }
 
     @AfterEach
@@ -79,7 +78,7 @@ public class HankyungNewsClientTest {
             .setBody(dummyXml)
             .addHeader("Content-Type", "application/xml"));
 
-        List<Article> articles = client.fetchArticles(new FetchCommand("test", 0, 0, "test"));
+        List<Article> articles = client.fetchArticles();
 
         Assertions.assertThat(articles).hasSize(1);
     }

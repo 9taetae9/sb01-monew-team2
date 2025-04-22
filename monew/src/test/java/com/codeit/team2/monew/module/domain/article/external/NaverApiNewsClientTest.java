@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Assertions;
@@ -24,12 +23,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * {@link NaverNewsClient} 단위 테스트
+ * {@link NaverApiNewsClient} 단위 테스트
  */
 @ExtendWith(MockitoExtension.class)
-public class NaverNewsClientTest {
+public class NaverApiNewsClientTest {
 
-    private NaverNewsClient client;
+    private NaverApiNewsClient client;
     private MockWebServer mockServer;
     private ArticleMapper mapper;
 
@@ -41,7 +40,7 @@ public class NaverNewsClientTest {
 
         WebClient webClient = WebClient.builder().baseUrl(mockServer.url("/").toString()).build();
 
-        client = new NaverNewsClient(webClient, "dummy-id", "dummy-secret", mapper);
+        client = new NaverApiNewsClient(webClient, "dummy-id", "dummy-secret", mapper);
     }
 
     @AfterEach

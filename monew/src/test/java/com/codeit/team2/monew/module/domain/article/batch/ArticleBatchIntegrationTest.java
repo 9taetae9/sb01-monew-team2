@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
-import com.codeit.team2.monew.module.domain.article.external.NaverNewsClient;
+import com.codeit.team2.monew.module.domain.article.external.NaverApiNewsClient;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import java.time.Instant;
 import java.util.List;
@@ -63,7 +63,7 @@ public class ArticleBatchIntegrationTest {
     @Autowired
     private ArticleRepository articleRepository;
     @MockitoBean
-    private NaverNewsClient naverNewsClient;
+    private NaverApiNewsClient naverNewsClient;
 
 
     @BeforeEach

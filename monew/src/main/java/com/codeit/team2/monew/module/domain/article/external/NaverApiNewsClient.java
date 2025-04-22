@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * {@link NewsClient} 의 구현채로 naver news api 담당
+ * {@link ApiNewsClient} 의 구현채로 naver news api 담당
  */
 @Component
-public class NaverNewsClient implements NewsClient {
+public class NaverApiNewsClient implements ApiNewsClient {
 
     private WebClient webClient;
     private String clientId;
@@ -22,8 +22,8 @@ public class NaverNewsClient implements NewsClient {
     private final ArticleMapper articleMapper;
 
 
-    public NaverNewsClient(
-        @Qualifier("naverNewsClient") WebClient webClient,
+    public NaverApiNewsClient(
+        @Qualifier("naverApiNewsClient") WebClient webClient,
         @Value(value = "${news.naver.client-id}") String clientId,
         @Value(value = "${news.naver.client-secret}") String clientSecret,
         ArticleMapper articleMapper) {

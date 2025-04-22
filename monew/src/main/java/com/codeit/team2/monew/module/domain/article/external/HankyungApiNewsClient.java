@@ -1,6 +1,5 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
-import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import com.codeit.team2.monew.module.domain.article.dto.rss.HankyungRss;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
@@ -17,7 +16,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class HankyungNewsClient implements NewsClient {
+
+// TODO : RSSNewsClient interface 생성
+public class HankyungApiNewsClient {
 
     private final WebClient webClient;
     private final ArticleMapper articleMapper;
@@ -25,8 +26,8 @@ public class HankyungNewsClient implements NewsClient {
     @Qualifier("hankyung")
     private final NewsUrlProvider provider;
 
-    @Override
-    public List<Article> fetchArticles(FetchCommand cmd) {
+
+    public List<Article> fetchArticles() {
         XmlMapper xmlMapper = new XmlMapper();
         List<HankyungRss.Item> xmlResults = new ArrayList<>();
 

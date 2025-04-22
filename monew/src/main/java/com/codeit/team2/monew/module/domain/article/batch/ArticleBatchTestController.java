@@ -1,9 +1,8 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
 
-import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
-import com.codeit.team2.monew.module.domain.article.external.HankyungNewsClient;
+import com.codeit.team2.monew.module.domain.article.external.HankyungApiNewsClient;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
@@ -30,11 +29,11 @@ public class ArticleBatchTestController {
     private final JobLauncher jobLauncher;
 
     private final Job articleBatchJob;
-    private final HankyungNewsClient hankyungNewsClient;
+    private final HankyungApiNewsClient hankyungNewsClient;
 
     public ArticleBatchTestController(JobLauncher jobLauncher,
         @Qualifier("articleBatchJob") Job articleBatchJob,
-        HankyungNewsClient hankyungNewsClient) {
+        HankyungApiNewsClient hankyungNewsClient) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
         this.hankyungNewsClient = hankyungNewsClient;
@@ -61,8 +60,7 @@ public class ArticleBatchTestController {
 
     @GetMapping("/han")
     public ResponseEntity<List<Article>> getHankyungArticles() {
-        List<Article> articles = hankyungNewsClient.fetchArticles(
-            new FetchCommand("tmp", 0, 0, "none"));
+        List<Article> articles = hankyungNewsClient.fetchArticles();
         return ResponseEntity.ok(articles);
     }
 }

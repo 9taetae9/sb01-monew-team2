@@ -17,7 +17,7 @@ public class WebClientConfig {
      * @param url application.yml 에서 주입받는 baseUrl
      */
     @Bean
-    @Qualifier("naverNewsClient")
+    @Qualifier("naverApiNewsClient")
     public WebClient naverWebClient(@Value("${news.naver.url}") String url) {
         return WebClient.builder().baseUrl(url).build();
     }
