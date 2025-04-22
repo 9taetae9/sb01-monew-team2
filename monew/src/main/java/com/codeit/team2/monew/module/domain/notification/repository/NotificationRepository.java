@@ -15,6 +15,6 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     int confirmAllByUserId(@Param("userId") UUID userId);
 
     @Modifying
-    @Query("delete from Notification n where n.confirmed = true and n.createdAt < :time")
+    @Query("DELETE FROM Notification n WHERE n.confirmed = true AND n.createdAt < :time")
     int deleteByConfirmedIsTrueAndCreatedAtBefore(@Param("time") Instant time);
 }
