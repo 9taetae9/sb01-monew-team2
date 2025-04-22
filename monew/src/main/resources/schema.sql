@@ -7,9 +7,9 @@ DROP TABLE IF EXISTS interest_keywords;
 DROP TABLE IF EXISTS subscriptions;
 DROP TABLE IF EXISTS article_views;
 DROP TABLE IF EXISTS article_interests;
-DROP TABLE IF EXISTS articles;
+DROP TABLE IF EXISTS articles CASCADE;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS interests;
+DROP TABLE IF EXISTS interests CASCADE;
 DROP TABLE IF EXISTS keywords;
 
 CREATE TABLE interests
