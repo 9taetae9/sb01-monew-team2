@@ -50,4 +50,8 @@ public class Interest extends BaseEntity {
         InterestKeyword interestKeyword = new InterestKeyword(this, keyword);
         this.keywords.add(interestKeyword);
     }
+
+    public void incrementSubscriberCount() {
+        this.subscriberCount ++;
+    }
 }

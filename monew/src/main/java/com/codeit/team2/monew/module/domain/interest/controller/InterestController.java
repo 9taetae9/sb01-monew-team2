@@ -4,6 +4,8 @@ import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegiste
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
+import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
+import com.codeit.team2.monew.module.domain.subscription.service.SubscriptionService;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class InterestController {
 
     private final InterestService interestService;
+    private final SubscriptionService subscriptionService;
 
     @PostMapping
     public ResponseEntity<InterestDto> create(
-        @Valid @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
-        @RequestBody InterestRegisterRequest request
+        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @Valid @RequestBody InterestRegisterRequest request
     ) {
         log.info("Start - InterestController/create: interest name={}", request.name());
         InterestDto interestDto = interestService.create(request, userId);
@@ -41,9 +44,9 @@ public class InterestController {
 
     @PatchMapping("/{interestId}")
     public ResponseEntity<InterestDto> update(
-        @Valid @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
         @PathVariable(name = "interestId") UUID interestId,
-        @RequestBody InterestUpdateRequest request
+        @Valid @RequestBody InterestUpdateRequest request
     ) {
         log.info("Start - InterestController/update: interest id={}", interestId);
         InterestDto interestDto = interestService.update(request, interestId, userId);
@@ -51,5 +54,18 @@ public class InterestController {
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(interestDto);
+    }
+
+    @PostMapping("/{interestId}/subscriptions")
+    public ResponseEntity<SubscriptionDto> subscription(
+        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @PathVariable(name = "interestId") UUID interestId
+    ) {
+        log.info("Start - InterestController/subscriptione: interest id={}, userId={}", interestId, userId);
+        SubscriptionDto subscriptionDto = subscriptionService.subscription(interestId, userId);
+        log.info("Complete - InterestController/subscription: interest id={}, userId={}", interestId, userId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(subscriptionDto);
     }
 }

@@ -36,7 +36,7 @@ public class InterestService {
     @Transactional
     public InterestDto create(InterestRegisterRequest request, UUID userId) {
 
-        User user = findUserOrThrow(userId);
+        User user = getUserOrThrow(userId);
         boolean subscribedByMe = false;
 
         // TODO: 추후에 index 추가 예정
@@ -65,15 +65,12 @@ public class InterestService {
     @Transactional
     public InterestDto update(InterestUpdateRequest request, UUID id, UUID userId) {
 
-        User user = findUserOrThrow(userId);
+        User user = getUserOrThrow(userId);
         Interest interest = findByIdOrThrow(id);
         boolean subscribedByMe = subscriptionRepository.existsByInterestAndUser(interest, user);
 
         Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
-            .collect(Collectors.toMap(
-                ik -> ik.getKeyword().toString(),
-                ik-> ik
-            ));
+            .collect(Collectors.toMap(ik -> ik.getKeyword().toString(), ik-> ik ));
 
         for (String keyword: request.keywords()) {
             if (!savedKeywords.containsKey(keyword)) {
@@ -102,7 +99,7 @@ public class InterestService {
         return InterestMapper.INSTANCE.toDto(interest, keywords, subscribedByMe);
     }
 
-    private User findUserOrThrow(UUID userId) {
+    private User getUserOrThrow(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(
             () -> new RuntimeException("user not found"));
         return user;
