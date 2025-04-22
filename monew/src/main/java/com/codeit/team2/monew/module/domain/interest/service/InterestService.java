@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
@@ -11,6 +12,7 @@ import com.codeit.team2.monew.module.domain.subscription.repository.Subscription
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,9 +31,9 @@ public class InterestService {
     private final SubscriptionRepository subscriptionRepository;
 
     @Transactional
-    public InterestDto create(InterestRegisterRequest request, String userId) {
+    public InterestDto create(InterestRegisterRequest request, UUID userId) {
 
-        User user = findByIdOrThrow(convertUUID(userId));
+        User user = findByIdOrThrow(userId);
 
         // TODO: 추후에 index 추가 예정
         // 참고: pg_trgm 특성상 유사도 계산 알고리즘이 달라 사람이 판단하는 것과 다름. 보완 필요
@@ -73,4 +75,10 @@ public class InterestService {
         return user;
     }
 
+    public InterestDto update(InterestUpdateRequest request, UUID interestId, UUID userId) {
+
+
+
+        return null;
+    }
 }

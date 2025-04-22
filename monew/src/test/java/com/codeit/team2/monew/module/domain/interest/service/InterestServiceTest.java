@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
@@ -16,7 +17,7 @@ import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,11 +54,7 @@ class InterestServiceTest {
         List<String> inputKeywords = List.of("당근", "시금치");
         InterestRegisterRequest request = new InterestRegisterRequest(name, inputKeywords);
 
-        Interest mockInterest = Interest.create(name);
-        Keyword keyword1 = new Keyword("당근");
-        Keyword keyword2 = new Keyword("시금치");
-        mockInterest.addInterestKeyword(keyword1);
-        mockInterest.addInterestKeyword(keyword2);
+        Interest mockInterest = createInterest(name, inputKeywords);
 
         // mocking
         // user 를 찾았다고 가정
@@ -78,14 +75,48 @@ class InterestServiceTest {
             .thenReturn(mockInterest);
 
         // when
-        InterestDto result = interestService.create(request, userId.toString());
+        InterestDto result = interestService.create(request, userId);
 
         // then
-        Assertions.assertThat(result.name()).isEqualTo(name);
-        Assertions.assertThat(result.keywords()).hasSize(2)
+        assertThat(result.name()).isEqualTo(name);
+        assertThat(result.keywords()).hasSize(2)
             .contains("당근", "시금치");
-        Assertions.assertThat(result.subscriberCount()).isEqualTo(0);
-        Assertions.assertThat(result.subscribedByMe()).isEqualTo(false);
+        assertThat(result.subscriberCount()).isEqualTo(0);
+        assertThat(result.subscribedByMe()).isEqualTo(false);
+    }
+
+    // TODO : CREATE 유사도 80% 이상으로 생성에 실패한 경우
+
+    @DisplayName("관심사 수정에서 키워드 추가가 정상적으로 수정된다.")
+    @Test
+    void update_success() {
+      // given
+        UUID userId = UUID.randomUUID();
+        User user = mock(User.class);
+
+        UUID interestId = UUID.randomUUID();
+
+        String name = "채소";
+        List<String> keywords = List.of("당근", "시금치");
+        Interest mockInterest = createInterest(name, keywords);
+
+        List<String> inputKeywords = List.of("당근", "시금치", "파");
+        InterestUpdateRequest request = new InterestUpdateRequest(inputKeywords);
+
+      // when
+        InterestDto result = interestService.update(request, interestId ,userId);
+
+      // then
+        assertThat(result.keywords()).hasSize(3).contains("파");
+    }
+
+
+    Interest createInterest(String name, List<String> keywords) {
+        Interest mockInterest = Interest.create(name);
+        for (String keyword : keywords) {
+            mockInterest.addInterestKeyword(new Keyword(keyword));
+        }
+        return mockInterest;
     }
 
 }
