@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.useractivity.service;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -137,6 +138,18 @@ class UserActivityServiceImplTest {
 
         // then
         Assertions.assertEquals(userId, userActivityDto.id());
+    }
+
+    @Test
+    void 사용자_본인이_아닐_경우() {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID loginId = UUID.randomUUID();
+
+        // when & then
+        assertThrows(Exception.class, () -> {
+            userActivitiesService.findUserActivities(loginId, userId);
+        });
     }
 
 }
