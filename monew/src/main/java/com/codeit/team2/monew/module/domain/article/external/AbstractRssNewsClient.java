@@ -1,6 +1,6 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
-import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.url_provider.NewsUrlProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public abstract class AbstractRssNewsClient<T, R> implements RssNewsClient {
     }
 
     @Override
-    public List<Article> fetchArticles() {
+    public List<DummyArticle> fetchArticles() {
 
         List<R> allItems = new ArrayList<>();
 
@@ -40,7 +40,7 @@ public abstract class AbstractRssNewsClient<T, R> implements RssNewsClient {
         return mapToArticles(allItems);
     }
 
-    protected abstract List<Article> mapToArticles(List<R> allItems);
+    protected abstract List<DummyArticle> mapToArticles(List<R> allItems);
 
     abstract T parseXmlToDto(String xml) throws JsonProcessingException;
 

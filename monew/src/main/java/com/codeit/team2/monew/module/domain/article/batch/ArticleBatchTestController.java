@@ -1,7 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
 
-import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.ChosunRssNewsClient;
 import com.codeit.team2.monew.module.domain.article.external.HankyungRssNewsClient;
 import com.codeit.team2.monew.module.domain.article.external.YonhapRssNewsClient;
@@ -67,20 +67,20 @@ public class ArticleBatchTestController {
 
 
     @GetMapping("/han")
-    public ResponseEntity<List<Article>> getHankyungArticles() {
-        List<Article> articles = hankyungNewsClient.fetchArticles();
+    public ResponseEntity<List<DummyArticle>> getHankyungArticles() {
+        List<DummyArticle> articles = hankyungNewsClient.fetchArticles();
         return ResponseEntity.ok(articles);
     }
 
     @GetMapping("/chosun")
-    public ResponseEntity<List<Article>> getChosunArticles() {
-        List<Article> articles = chosunRssNewsClient.fetchArticles();
+    public ResponseEntity<List<DummyArticle>> getChosunArticles() {
+        List<DummyArticle> articles = chosunRssNewsClient.fetchArticles();
         return ResponseEntity.ok(articles);
     }
 
     @GetMapping("/yonhap")
-    public ResponseEntity<List<Article>> getYonhapArticles() {
-        List<Article> articles = yonhapRssNewsClient.fetchArticles();
+    public ResponseEntity<List<DummyArticle>> getYonhapArticles() {
+        List<DummyArticle> articles = yonhapRssNewsClient.fetchArticles();
         return ResponseEntity.ok(articles);
     }
 }

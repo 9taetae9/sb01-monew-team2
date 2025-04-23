@@ -2,7 +2,7 @@ package com.codeit.team2.monew.module.domain.article.external;
 
 import com.codeit.team2.monew.module.domain.article.dto.rss.HankyungRss;
 import com.codeit.team2.monew.module.domain.article.dto.rss.HankyungRss.Item;
-import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.url_provider.NewsUrlProvider;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,7 +28,7 @@ public class HankyungRssNewsClient extends AbstractRssNewsClient<HankyungRss, Ha
     }
 
     @Override
-    protected List<Article> mapToArticles(List<Item> allItems) {
+    protected List<DummyArticle> mapToArticles(List<Item> allItems) {
         return articleMapper.hankyungRssListToEntity(allItems);
     }
 
