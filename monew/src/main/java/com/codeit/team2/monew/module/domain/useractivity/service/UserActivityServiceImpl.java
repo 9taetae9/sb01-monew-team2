@@ -71,19 +71,7 @@ public class UserActivityServiceImpl implements UserActivityService {
         List<ArticleView> articleViews =
             articleViewRepository.findTop10ByUserOrderByViewedAtDesc(user);
         List<ArticleViewItemDto> articleViewItemDtos = articleViews.stream().map(
-            articleView -> new ArticleViewItemDto(
-                articleView.getId(),
-                articleView.getUser().getId(),
-                articleView.getCreatedAt(),
-                articleView.getArticle().getId(),
-                articleView.getArticle().getSource(),
-                articleView.getArticle().getSourceUrl(),
-                articleView.getArticle().getTitle(),
-                articleView.getArticle().getPublishedDate(),
-                articleView.getArticle().getSummary(),
-                commentRepository.countByArticle(articleView.getArticle()),
-                articleView.getArticle().getViewCount().longValue()
-            )
+            articleView -> userActivityMapper.toArticleViewItemDto(articleView, commentRepository)
         ).toList();
 
         return userActivityMapper.toUserActivityDto(

@@ -1,7 +1,10 @@
 package com.codeit.team2.monew.module.domain.useractivity.mapper;
 
+import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
+import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
+import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
@@ -15,10 +18,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {ArticleMapper.class})
 public interface UserActivityMapper {
 
     @Mapping(source = "id", target = "id")
@@ -76,4 +80,19 @@ public interface UserActivityMapper {
     );
 
     UserActivityDto toUserActivityDto(UserActivity userActivity);
+
+    @Mapping(source = "articleView.id", target = "id")
+    @Mapping(source = "articleView.user.id", target = "viewedBy")
+    @Mapping(source = "articleView.createdAt", target = "createdAt")
+    @Mapping(source = "articleView.article.id", target = "articleId")
+    @Mapping(source = "articleView.article.source", target = "source")
+    @Mapping(source = "articleView.article.sourceUrl", target = "sourceUrl")
+    @Mapping(source = "articleView.article.title", target = "articleTitle")
+    @Mapping(source = "articleView.article.publishedDate", target = "articlePublishedDate")
+    @Mapping(source = "articleView.article.summary", target = "articleSummary")
+    @Mapping(expression = "java(commentRepository.countByArticle(articleView.getArticle()))",
+        target = "articleCommentCount")
+    @Mapping(source = "articleView.article.viewCount", target = "articleViewCount")
+    ArticleViewItemDto toArticleViewItemDto(ArticleView articleView,
+        @Context CommentRepository commentRepository);
 }
