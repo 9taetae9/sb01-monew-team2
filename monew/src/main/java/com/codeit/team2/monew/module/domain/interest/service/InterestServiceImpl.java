@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InterestServiceImpl implements InterestService{
 
+    private final InterestMapper interestMapper;
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
     private final KeywordRepository keywordRepository;
@@ -60,7 +61,7 @@ public class InterestServiceImpl implements InterestService{
             .map(ik -> ik.getKeyword().getName())
             .collect(Collectors.toList());
 
-        return InterestMapper.INSTANCE.toDto(savedInterest, keywords, subscribedByMe);
+        return interestMapper.toDto(savedInterest, keywords, subscribedByMe);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class InterestServiceImpl implements InterestService{
     public InterestDto update(InterestUpdateRequest request, UUID id, UUID userId) {
 
         User user = getUserOrThrow(userId);
-        Interest interest = findByIdOrThrow(id);
+        Interest interest = getByIdOrThrow(id);
         boolean subscribedByMe = subscriptionRepository.existsByInterestAndUser(interest, user);
 
         Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
@@ -98,19 +99,17 @@ public class InterestServiceImpl implements InterestService{
             .map(ik -> ik.getKeyword().getName())
             .collect(Collectors.toList());
 
-        return InterestMapper.INSTANCE.toDto(interest, keywords, subscribedByMe);
+        return interestMapper.toDto(interest, keywords, subscribedByMe);
     }
 
     private User getUserOrThrow(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(
+        return userRepository.findById(userId).orElseThrow(
             () -> new RuntimeException("user not found"));
-        return user;
     }
 
-    private Interest findByIdOrThrow(UUID id) {
-        Interest interest = interestRepository.findById(id).orElseThrow(
+    private Interest getByIdOrThrow(UUID id) {
+        return interestRepository.findById(id).orElseThrow(
             () -> new RuntimeException("interest not found"));
-        return interest;
     }
 
 }
