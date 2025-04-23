@@ -51,11 +51,11 @@ public class NotificationServiceImpl implements NotificationService {
             throw new RuntimeException("Comment not found");
         }
         if (!userRepository.existsById(author.getId())) {
-            log.debug("[Notification Creation] Failed: Author not found - authorId: {}",
+            log.debug("[Notification Creation] Failed: Author not found - userId: {}",
                 author.getId());
             throw new RuntimeException("Author not found");
         } else if (!userRepository.existsById(liker.getId())) {
-            log.debug("[Notification Creation] Failed: Liker not found - likerId: {}",
+            log.debug("[Notification Creation] Failed: Liker not found - userId: {}",
                 liker.getId());
             throw new RuntimeException("Liker not found");
         }

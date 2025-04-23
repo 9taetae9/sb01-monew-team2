@@ -95,6 +95,43 @@ class NotificationServiceImplTest {
         assertEquals(ResourceType.COMMENT, notification.getResourceType());
     }
 
+    @DisplayName("내 댓글에 좋아요 눌리면 알림 생성 - 실패: 댓글 검증 실패")
+    @Test
+    void createCommentNotificationShouldFail1() {
+        // given
+        UUID commentId = UUID.randomUUID();
+        Comment comment = mock(Comment.class);
+        User author = mock(User.class);
+        User liker = mock(User.class);
+
+        when(comment.getId()).thenReturn(commentId);
+        when(commentRepository.existsById(commentId)).thenReturn(false);
+
+        // when & then
+        assertThrows(RuntimeException.class,
+            () -> notificationService.createCommentNotification(comment, author, liker));
+    }
+
+    @DisplayName("내 댓글에 좋아요 눌리면 알림 생성 - 실패: 유저 검증 실패")
+    @Test
+    void createCommentNotificationShouldFail2() {
+        // given
+        UUID commentId = UUID.randomUUID();
+        Comment comment = mock(Comment.class);
+        UUID authorId = UUID.randomUUID();
+        User author = mock(User.class);
+        User liker = mock(User.class);
+
+        when(comment.getId()).thenReturn(commentId);
+        when(commentRepository.existsById(commentId)).thenReturn(true);
+        when(author.getId()).thenReturn(authorId);
+        when(userRepository.existsById(authorId)).thenReturn(false);
+
+        // when & then
+        assertThrows(RuntimeException.class,
+            () -> notificationService.createCommentNotification(comment, author, liker));
+    }
+
     @DisplayName("구독한 관심사 관련 기사가 등록되면 알림 생성 - 성공")
     @Test
     void createInterestNotification() {
@@ -155,9 +192,34 @@ class NotificationServiceImplTest {
         assertEquals(true, notification.isConfirmed());
     }
 
-    @DisplayName("알림 확인 - 실패")
+    @DisplayName("알림 확인 - 실패: 유저 검증 실패")
     @Test
-    void confirmNotificationShouldFail() {
+    void confirmNotificationShouldFail1() {
+        // given
+        UUID notificationId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        when(userRepository.existsById(userId)).thenReturn(false);
+        // when & then
+        assertThrows(RuntimeException.class,
+            () -> notificationService.confirmNotification(userId, notificationId));
+    }
+
+    @DisplayName("알림 확인 - 실패: 알림 검증 실패")
+    @Test
+    void confirmNotificationShouldFail2() {
+        // given
+        UUID notificationId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        when(userRepository.existsById(userId)).thenReturn(true);
+        when(notificationRepository.findById(notificationId)).thenReturn(Optional.empty());
+        // when & then
+        assertThrows(RuntimeException.class,
+            () -> notificationService.confirmNotification(userId, notificationId));
+    }
+
+    @DisplayName("알림 확인 - 실패: 알림의 소유자가 아님")
+    @Test
+    void confirmNotificationShouldFail3() {
         // given
         UUID notificationId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
