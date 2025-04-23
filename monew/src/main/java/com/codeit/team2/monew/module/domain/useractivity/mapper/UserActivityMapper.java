@@ -62,10 +62,10 @@ public interface UserActivityMapper {
     @Mapping(source = "user.email", target = "email")
     @Mapping(source = "user.nickname", target = "nickname")
     @Mapping(source = "user.createdAt", target = "createdAt")
-    @Mapping(source = "subscriptionItems", target = "subscriptions")
-    @Mapping(source = "commentItems", target = "comments")
-    @Mapping(source = "commentLikeItems", target = "commentLikes")
-    @Mapping(source = "articleViewItems", target = "articleViews")
+    @Mapping(source = "subscriptionItemDtos", target = "subscriptions")
+    @Mapping(source = "commentItemDtos", target = "comments")
+    @Mapping(source = "commentLikeItemDtos", target = "commentLikes")
+    @Mapping(source = "articleViewItemDtos", target = "articleViews")
     UserActivityDto toUserActivityDto(
         User user,
         List<SubscriptionItemDto> subscriptionItemDtos,
