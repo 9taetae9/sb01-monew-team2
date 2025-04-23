@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.article.external;
 
 import com.codeit.team2.monew.module.domain.article.dto.rss.HankyungRss;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.external.url_provider.NewsUrlProvider;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
