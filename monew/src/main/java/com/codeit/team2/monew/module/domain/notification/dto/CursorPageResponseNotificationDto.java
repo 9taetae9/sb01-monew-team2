@@ -8,8 +8,8 @@ public record CursorPageResponseNotificationDto(
     Object nextCursor,
     Instant nextAfter,
     int size,
-    Long totalElements,
-    boolean hasNexts
+    long totalElements,
+    boolean hasNext
 ) {
 
 }
