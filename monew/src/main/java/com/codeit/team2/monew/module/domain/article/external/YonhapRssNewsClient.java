@@ -23,7 +23,8 @@ public class YonhapRssNewsClient implements RssNewsClient {
     private final ArticleMapper articleMapper;
     private final NewsUrlProvider provider;
 
-    public YonhapRssNewsClient(WebClient webClient, ArticleMapper articleMapper,
+    public YonhapRssNewsClient(@Qualifier("redirectClient") WebClient webClient,
+        ArticleMapper articleMapper,
         @Qualifier("yonhap") NewsUrlProvider newsUrlProvider) {
         this.webClient = webClient;
         this.articleMapper = articleMapper;
@@ -32,6 +33,7 @@ public class YonhapRssNewsClient implements RssNewsClient {
 
     @Override
     public List<Article> fetchArticles() {
+
         XmlMapper xmlMapper = new XmlMapper();
         List<YonhapRss.Item> xmlResults = new ArrayList<>();
 
@@ -48,7 +50,7 @@ public class YonhapRssNewsClient implements RssNewsClient {
                 xmlResults.addAll(rss.getItems());
             }
         } catch (JsonProcessingException e) {
-            log.warn("Chosun XML Fetch Failed: reason={}", e.getMessage());
+            log.warn("Yonhap XML Fetch Failed: reason={}", e.getMessage());
             throw new RuntimeException(e);
         }
 

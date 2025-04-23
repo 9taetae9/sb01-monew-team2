@@ -4,6 +4,7 @@ package com.codeit.team2.monew.module.domain.article.batch;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.external.ChosunRssNewsClient;
 import com.codeit.team2.monew.module.domain.article.external.HankyungRssNewsClient;
+import com.codeit.team2.monew.module.domain.article.external.YonhapRssNewsClient;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
@@ -32,15 +33,18 @@ public class ArticleBatchTestController {
     private final Job articleBatchJob;
     private final HankyungRssNewsClient hankyungNewsClient;
     private final ChosunRssNewsClient chosunRssNewsClient;
+    private final YonhapRssNewsClient yonhapRssNewsClient;
 
     public ArticleBatchTestController(JobLauncher jobLauncher,
         @Qualifier("articleBatchJob") Job articleBatchJob,
         HankyungRssNewsClient hankyungNewsClient,
-        ChosunRssNewsClient chosunRssNewsClient) {
+        ChosunRssNewsClient chosunRssNewsClient,
+        YonhapRssNewsClient yonhapRssNewsClient) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
         this.hankyungNewsClient = hankyungNewsClient;
         this.chosunRssNewsClient = chosunRssNewsClient;
+        this.yonhapRssNewsClient = yonhapRssNewsClient;
     }
 
     @PostMapping("/run")
@@ -71,6 +75,12 @@ public class ArticleBatchTestController {
     @GetMapping("/chosun")
     public ResponseEntity<List<Article>> getChosunArticles() {
         List<Article> articles = chosunRssNewsClient.fetchArticles();
+        return ResponseEntity.ok(articles);
+    }
+
+    @GetMapping("/yonhap")
+    public ResponseEntity<List<Article>> getYonhapArticles() {
+        List<Article> articles = yonhapRssNewsClient.fetchArticles();
         return ResponseEntity.ok(articles);
     }
 }

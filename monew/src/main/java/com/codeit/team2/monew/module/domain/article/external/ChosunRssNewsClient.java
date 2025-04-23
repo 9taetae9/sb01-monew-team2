@@ -24,7 +24,8 @@ public class ChosunRssNewsClient implements RssNewsClient {
 
     private final NewsUrlProvider provider;
 
-    public ChosunRssNewsClient(WebClient webClient, ArticleMapper articleMapper,
+    public ChosunRssNewsClient(@Qualifier("redirectClient") WebClient webClient,
+        ArticleMapper articleMapper,
         @Qualifier("chosun") NewsUrlProvider provider) {
         this.webClient = webClient;
         this.articleMapper = articleMapper;

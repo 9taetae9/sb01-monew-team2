@@ -12,7 +12,7 @@ import lombok.Setter;
 @JacksonXmlRootElement(localName = "rss")
 public class YonhapRss {
 
-    @JacksonXmlProperty
+    @JacksonXmlProperty(localName = "channel")
     private Channel channel;
 
     public List<Item> getItems() {

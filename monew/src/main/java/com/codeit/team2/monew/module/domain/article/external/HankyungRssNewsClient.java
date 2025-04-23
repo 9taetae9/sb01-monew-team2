@@ -22,7 +22,8 @@ public class HankyungRssNewsClient implements RssNewsClient {
     private final ArticleMapper articleMapper;
     private final NewsUrlProvider provider;
 
-    public HankyungRssNewsClient(WebClient webClient, ArticleMapper articleMapper,
+    public HankyungRssNewsClient(@Qualifier("redirectClient") WebClient webClient,
+        ArticleMapper articleMapper,
         @Qualifier("hankyung") NewsUrlProvider provider) {
         this.webClient = webClient;
         this.articleMapper = articleMapper;
