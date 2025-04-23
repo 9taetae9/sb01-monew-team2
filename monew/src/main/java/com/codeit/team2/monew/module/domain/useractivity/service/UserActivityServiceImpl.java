@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-//@Primary
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.db-type", havingValue = "postgresql")
