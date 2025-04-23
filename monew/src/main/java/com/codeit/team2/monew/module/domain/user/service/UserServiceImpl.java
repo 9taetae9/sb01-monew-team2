@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final ApplicationEventPublisher publisher;
 
     @Override
+    @Transactional
     public UserDto registerUser(UserRegisterRequest userRegisterRequest) {
         if (userRepository.existsByEmail(userRegisterRequest.email())) {
             throw new RuntimeException("duplicate email");
