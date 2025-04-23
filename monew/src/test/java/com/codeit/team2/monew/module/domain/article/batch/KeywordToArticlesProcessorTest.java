@@ -44,7 +44,7 @@ public class KeywordToArticlesProcessorTest {
         Keyword keyword = new Keyword("AI");
 
         Article article = new Article("AI", "NAVER", "https://test.com", "this is test summary",
-            Collections.emptySet(), 0,
+            Collections.emptySet(), 0L,
             Instant.now(), false);
         Interest interest = Interest.create("a");
         List<Article> articles = List.of(article);
