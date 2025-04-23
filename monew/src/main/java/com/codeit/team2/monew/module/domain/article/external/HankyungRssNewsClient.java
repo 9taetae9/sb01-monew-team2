@@ -8,7 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -16,18 +15,21 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
-
-// TODO : RSSNewsClient interface 생성
-public class HankyungApiNewsClient {
+@Qualifier("hankyungRssNewsClient")
+public class HankyungRssNewsClient implements RssNewsClient {
 
     private final WebClient webClient;
     private final ArticleMapper articleMapper;
-
-    @Qualifier("hankyung")
     private final NewsUrlProvider provider;
 
+    public HankyungRssNewsClient(WebClient webClient, ArticleMapper articleMapper,
+        @Qualifier("hankyung") NewsUrlProvider provider) {
+        this.webClient = webClient;
+        this.articleMapper = articleMapper;
+        this.provider = provider;
+    }
 
+    @Override
     public List<Article> fetchArticles() {
         XmlMapper xmlMapper = new XmlMapper();
         List<HankyungRss.Item> xmlResults = new ArrayList<>();
@@ -47,12 +49,6 @@ public class HankyungApiNewsClient {
         } catch (JsonProcessingException e) {
             log.warn("Hankyung XML Fetch Failed: reason={}", e.getMessage());
             throw new RuntimeException(e);
-        }
-
-        for (HankyungRss.Item item : xmlResults) {
-            if (item.getPubDate() == null) {
-                System.out.println(item.getTitle() + " " + item.getAuthor());
-            }
         }
 
         return articleMapper.hankyungRssListToEntity(xmlResults);
