@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.useractivity.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,6 +73,18 @@ class MongoUserActivityServiceTest {
             assertEquals(email, userActivityDto.email());
             assertEquals(nickname, userActivityDto.nickname());
             assertEquals(createdAt, userActivityDto.createdAt());
+        }
+
+        @Test
+        void 본인_검증_예외() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = UUID.randomUUID();
+
+            // when & then
+            assertThrows(Exception.class, () -> {
+                userActivityService.findUserActivities(loginId, userId);
+            });
         }
     }
 
