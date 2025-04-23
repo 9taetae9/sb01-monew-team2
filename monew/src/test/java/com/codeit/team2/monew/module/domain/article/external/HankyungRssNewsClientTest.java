@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.external.url_provider.NewsUrlProvider;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapperImpl;
 import java.io.IOException;
@@ -19,9 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @ExtendWith(MockitoExtension.class)
-public class HankyungApiNewsClientTest {
+public class HankyungRssNewsClientTest {
 
-    private HankyungApiNewsClient client;
+    private HankyungRssNewsClient client;
     private MockWebServer mockWebServer;
     private ArticleMapper articleMapper;
 
@@ -37,7 +38,7 @@ public class HankyungApiNewsClientTest {
         BDDMockito.given(provider.getUrls())
             .willReturn(Set.of("/test"));
 
-        client = new HankyungApiNewsClient(webClient, articleMapper, provider);
+        client = new HankyungRssNewsClient(webClient, articleMapper, provider);
     }
 
     @AfterEach
