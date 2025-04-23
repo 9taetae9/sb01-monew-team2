@@ -70,7 +70,7 @@ public class ArticleBatchIntegrationTest {
     void setUp() {
         jobLauncherTestUtils.setJob(articleBatchJob);
 
-        Article mockArticle = new Article("mock", "NAVER", "http://mock.com", "mock", null, 0,
+        Article mockArticle = new Article("mock", "NAVER", "http://mock.com", "mock", null, 0L,
             Instant.now(), false);
 
         BDDMockito.given(naverNewsClient.fetchArticles(any(FetchCommand.class)))

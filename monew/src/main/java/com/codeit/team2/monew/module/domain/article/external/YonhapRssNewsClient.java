@@ -1,35 +1,41 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
-import com.codeit.team2.monew.module.domain.article.dto.rss.HankyungRss;
+import com.codeit.team2.monew.module.domain.article.dto.rss.YonhapRss;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.external.url_provider.NewsUrlProvider;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+
 @Slf4j
 @Component
-@RequiredArgsConstructor
-
-// TODO : RSSNewsClient interface 생성
-public class HankyungApiNewsClient {
+@Qualifier("yonhapRssNewsClient")
+public class YonhapRssNewsClient implements RssNewsClient {
 
     private final WebClient webClient;
     private final ArticleMapper articleMapper;
-
-    @Qualifier("hankyung")
     private final NewsUrlProvider provider;
 
+    public YonhapRssNewsClient(@Qualifier("redirectClient") WebClient webClient,
+        ArticleMapper articleMapper,
+        @Qualifier("yonhap") NewsUrlProvider newsUrlProvider) {
+        this.webClient = webClient;
+        this.articleMapper = articleMapper;
+        this.provider = newsUrlProvider;
+    }
 
+    @Override
     public List<Article> fetchArticles() {
+
         XmlMapper xmlMapper = new XmlMapper();
-        List<HankyungRss.Item> xmlResults = new ArrayList<>();
+        List<YonhapRss.Item> xmlResults = new ArrayList<>();
 
         try {
             for (String url : provider.getUrls()) {
@@ -39,21 +45,15 @@ public class HankyungApiNewsClient {
                     .bodyToMono(String.class)
                     .block();
 
-                HankyungRss rss = xmlMapper.readValue(xmlString, HankyungRss.class);
+                YonhapRss rss = xmlMapper.readValue(xmlString, YonhapRss.class);
 
                 xmlResults.addAll(rss.getItems());
             }
         } catch (JsonProcessingException e) {
-            log.warn("Hankyung XML Fetch Failed: reason={}", e.getMessage());
+            log.warn("Yonhap XML Fetch Failed: reason={}", e.getMessage());
             throw new RuntimeException(e);
         }
 
-        for (HankyungRss.Item item : xmlResults) {
-            if (item.getPubDate() == null) {
-                System.out.println(item.getTitle() + " " + item.getAuthor());
-            }
-        }
-
-        return articleMapper.hankyungRssListToEntity(xmlResults);
+        return articleMapper.yonhapRssListToEntity(xmlResults);
     }
 }

@@ -70,7 +70,7 @@ public class NaverApiNewsClientTest {
 
         FetchCommand cmd = new FetchCommand("AI", 10, 1, "date");
         Article article = new Article("AI", "NAVER", "https://testlink.com", "test description",
-            Collections.emptySet(), 0,
+            Collections.emptySet(), 0L,
             Instant.now(), false);
         BDDMockito.given(mapper.naverArticleListToEntity(any())).willReturn(List.of(article));
 

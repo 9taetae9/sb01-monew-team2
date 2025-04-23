@@ -52,7 +52,7 @@ public class ArticleServiceTest {
         // given
         ArticleInterest interest = mock(ArticleInterest.class);
         Article article = new Article(
-            "test", "NAVER", "https://test.com", "this is test summary", Set.of(interest), 0,
+            "test", "NAVER", "https://test.com", "this is test summary", Set.of(interest), 0L,
             Instant.now(), false
         );
 
@@ -87,7 +87,7 @@ public class ArticleServiceTest {
         // given
         ArticleInterest interest = mock(ArticleInterest.class);
         Article article = new Article(
-            "test", "NAVER", "https://test.com", "this is test summary", Set.of(interest), 1,
+            "test", "NAVER", "https://test.com", "this is test summary", Set.of(interest), 1L,
             Instant.now(), false
         );
 
@@ -125,7 +125,7 @@ public class ArticleServiceTest {
             "https://test.com",
             "test summary",
             Set.of(),
-            0,
+            0L,
             Instant.now(),
             false
         );
