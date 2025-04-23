@@ -9,10 +9,10 @@ public record UserActivityDto(
     String email,
     String nickname,
     Instant createdAt,
-    List<SubscriptionItem> subscriptions,
-    List<CommentItem> comments,
-    List<CommentLikeItem> commentLikes,
-    List<ArticleViewItem> articleViews
+    List<SubscriptionItemDto> subscriptions,
+    List<CommentItemDto> comments,
+    List<CommentLikeItemDto> commentLikes,
+    List<ArticleViewItemDto> articleViews
 ) {
 
 }

@@ -39,3 +39,5 @@ news:
     client-id: ${NAVER_CLIENT_ID}
     client-secret: ${NAVER_CLIENT_SECRET}
 
+app:
+  db-type: postgresql  # postgresql || mongodb
