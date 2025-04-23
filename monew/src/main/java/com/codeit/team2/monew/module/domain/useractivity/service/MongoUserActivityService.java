@@ -1,10 +1,9 @@
 package com.codeit.team2.monew.module.domain.useractivity.service;
 
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserActivityRepository;
-import jakarta.annotation.PostConstruct;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +22,13 @@ public class MongoUserActivityService implements UserActivityService {
         return null;
     }
 
-    @PostConstruct
-    void init() {
+    public void createUserActivity(User user) {
         userActivityRepository.save(
             new UserActivity(
-                UUID.randomUUID(),
-                "email",
-                "nickname",
-                Instant.now(),
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
