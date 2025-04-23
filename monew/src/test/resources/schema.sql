@@ -116,3 +116,15 @@ CREATE TABLE article_interests (
     FOREIGN KEY (article_id) REFERENCES  articles (id) ON DELETE CASCADE,
     FOREIGN KEY (interest_id) REFERENCES interests (id) ON DELETE CASCADE
 );
+
+CREATE TABLE dummy_articles
+(
+    id             UUID                     NOT NULL PRIMARY KEY,
+    title          VARCHAR(255)             NOT NULL,
+    source         VARCHAR(255)             NOT NULL,
+    source_url     TEXT             NOT NULL UNIQUE,
+    summary        TEXT                     NULL,
+    view_count     BIGINT                   NOT NULL DEFAULT 0,
+    published_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted        BOOLEAN                  NOT NULL DEFAULT false
+);
