@@ -4,9 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.codeit.team2.monew.config.JpaConfig;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
-import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
-import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
@@ -45,20 +43,20 @@ public class InterestRepositoryTest {
 
         Interest interest = Interest.create("채소");
         interest.addInterestKeyword(keyword);
-        Interest savedInterest = interestRepository.saveAndFlush(interest);
-        InterestKeyword interestKeyword = interestKeywordRepository.findAllByKeyword(keyword).get(0);
+        interest.addSubscription(user);
 
-        Subscription subscription = subscriptionRepository.saveAndFlush(new Subscription(user, savedInterest));
+        Interest savedInterest = interestRepository.saveAndFlush(interest);
 
         // when
         interestRepository.delete(savedInterest);
 
         // then
         assertThat(interestRepository.findById(savedInterest.getId())).isNotPresent();
-        assertThat(interestKeywordRepository.findById(interestKeyword.getId())).isNotPresent();
-        assertThat(subscriptionRepository.findById(subscription.getId())).isNotPresent();
+        assertThat(interestKeywordRepository.findAll()).isEmpty();
+        assertThat(subscriptionRepository.findAll()).isEmpty();
         assertThat(keywordRepository.findByName(keyword.getName())).isPresent();
         assertThat(userRepository.findById(user.getId())).isPresent();
+
     }
 
 }

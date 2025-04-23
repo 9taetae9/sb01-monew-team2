@@ -3,6 +3,7 @@ package com.codeit.team2.monew.module.domain.interest.entity;
 import com.codeit.team2.monew.module.domain.BaseEntity;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,7 +53,11 @@ public class Interest extends BaseEntity {
         return interestKeyword;
     }
 
-    public void incrementSubscriberCount() {
-        this.subscriberCount ++;
+    public Subscription addSubscription(User user) {
+        Subscription subscription = new Subscription(user, this);
+        this.subscriptions.add(subscription);
+        this.subscriberCount++;
+        return subscription;
     }
+
 }

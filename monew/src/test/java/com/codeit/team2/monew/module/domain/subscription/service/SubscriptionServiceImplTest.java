@@ -10,6 +10,7 @@ import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.subscription.mapper.SubscriptionMapper;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
@@ -21,8 +22,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -37,6 +40,9 @@ class SubscriptionServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Spy
+    private SubscriptionMapper subscriptionMapper = Mappers.getMapper(SubscriptionMapper.class);
 
     @InjectMocks
     private SubscriptionServiceImpl subscriptionService;
@@ -53,7 +59,7 @@ class SubscriptionServiceImplTest {
         Interest mockInterest = createInterest(name, inputKeywords);
         ReflectionTestUtils.setField(mockInterest, "id", UUID.randomUUID());
 
-        Subscription mockSubscription = new Subscription(mockUser, mockInterest);
+        Subscription mockSubscription = mockInterest.addSubscription(mockUser);
         ReflectionTestUtils.setField(mockSubscription, "id", UUID.randomUUID());
         ReflectionTestUtils.setField(mockSubscription, "createdAt", Instant.now());
 
@@ -63,15 +69,16 @@ class SubscriptionServiceImplTest {
             .thenReturn(Optional.of(mockInterest));
         when(subscriptionRepository.existsByInterestAndUser(mockInterest, mockUser))
             .thenReturn(false);
-        when(subscriptionRepository.save(any(Subscription.class)))
-            .thenReturn(mockSubscription);
+        when(interestRepository.saveAndFlush(any(Interest.class)))
+            .thenReturn(mockInterest);
 
         // when
-        SubscriptionDto result = subscriptionService.subscription(mockInterest.getId(), mockSubscription.getId());
+        SubscriptionDto result = subscriptionService.subscription(mockInterest.getId(), mockUser.getId());
 
         // then
         assertThat(result.interestKeywords()).hasSize(2).contains("당근", "시금치");
         assertThat(result.subscriberCount()).isEqualTo(1);
+
     }
 
     @DisplayName("유저가 관심사를 이미 구독중인 경우 실패한다.")
