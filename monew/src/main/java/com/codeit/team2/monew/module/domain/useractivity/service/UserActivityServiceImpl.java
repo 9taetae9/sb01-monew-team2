@@ -19,11 +19,14 @@ import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapp
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//@Primary
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.db-type", havingValue = "postgresql")
 public class UserActivityServiceImpl implements UserActivityService {
 
     private final UserRepository userRepository;
