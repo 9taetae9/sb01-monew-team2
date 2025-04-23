@@ -5,10 +5,10 @@ import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
-import com.codeit.team2.monew.module.domain.useractivity.dto.ArticleViewItem;
-import com.codeit.team2.monew.module.domain.useractivity.dto.CommentItem;
-import com.codeit.team2.monew.module.domain.useractivity.dto.CommentLikeItem;
-import com.codeit.team2.monew.module.domain.useractivity.dto.SubscriptionItem;
+import com.codeit.team2.monew.module.domain.useractivity.dto.ArticleViewItemDto;
+import com.codeit.team2.monew.module.domain.useractivity.dto.CommentItemDto;
+import com.codeit.team2.monew.module.domain.useractivity.dto.CommentLikeItemDto;
+import com.codeit.team2.monew.module.domain.useractivity.dto.SubscriptionItemDto;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +26,7 @@ public interface UserActivityMapper {
     @Mapping(expression = "java((long) subscription.getInterest().getSubscriberCount())",
         target = "interestSubscriberCount")
     @Mapping(source = "interest.keywords", target = "interestKeywords")
-    SubscriptionItem toSubscriptionItem(Subscription subscription);
+    SubscriptionItemDto toSubscriptionItem(Subscription subscription);
 
     default List<String> mapInterestKeywords(Set<InterestKeyword> keywords) {
         if (keywords == null) {
@@ -45,7 +45,7 @@ public interface UserActivityMapper {
     @Mapping(source = "comment.content", target = "content")
     @Mapping(source = "comment.likeCount", target = "likeCount")
     @Mapping(source = "comment.createdAt", target = "createdAt")
-    CommentItem toCommentItem(User user, Comment comment);
+    CommentItemDto toCommentItem(User user, Comment comment);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "comment.id", target = "commentId")
@@ -56,7 +56,7 @@ public interface UserActivityMapper {
     @Mapping(source = "comment.content", target = "commentContent")
     @Mapping(source = "comment.likeCount", target = "commentLikeCount")
     @Mapping(source = "comment.createdAt", target = "commentCreatedAt")
-    CommentLikeItem toCommentLikeItem(CommentLike commentLike);
+    CommentLikeItemDto toCommentLikeItem(CommentLike commentLike);
 
     @Mapping(source = "user.id", target = "id")
     @Mapping(source = "user.email", target = "email")
@@ -68,9 +68,9 @@ public interface UserActivityMapper {
     @Mapping(source = "articleViewItems", target = "articleViews")
     UserActivityDto toUserActivityDto(
         User user,
-        List<SubscriptionItem> subscriptionItems,
-        List<CommentItem> commentItems,
-        List<CommentLikeItem> commentLikeItems,
-        List<ArticleViewItem> articleViewItems
+        List<SubscriptionItemDto> subscriptionItemDtos,
+        List<CommentItemDto> commentItemDtos,
+        List<CommentLikeItemDto> commentLikeItemDtos,
+        List<ArticleViewItemDto> articleViewItemDtos
     );
 }

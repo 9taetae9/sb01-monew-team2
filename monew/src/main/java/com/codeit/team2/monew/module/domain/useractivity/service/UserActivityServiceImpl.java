@@ -10,10 +10,10 @@ import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
-import com.codeit.team2.monew.module.domain.useractivity.dto.ArticleViewItem;
-import com.codeit.team2.monew.module.domain.useractivity.dto.CommentItem;
-import com.codeit.team2.monew.module.domain.useractivity.dto.CommentLikeItem;
-import com.codeit.team2.monew.module.domain.useractivity.dto.SubscriptionItem;
+import com.codeit.team2.monew.module.domain.useractivity.dto.ArticleViewItemDto;
+import com.codeit.team2.monew.module.domain.useractivity.dto.CommentItemDto;
+import com.codeit.team2.monew.module.domain.useractivity.dto.CommentLikeItemDto;
+import com.codeit.team2.monew.module.domain.useractivity.dto.SubscriptionItemDto;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
 import java.util.List;
@@ -47,28 +47,28 @@ public class UserActivityServiceImpl implements UserActivityService {
         // 구독 중인 관심사
         List<Subscription> subscriptions =
             subscriptionRepository.findAllByUserOrderByCreatedAtDesc(user);
-        List<SubscriptionItem> subscriptionItems = subscriptions.stream().map(
+        List<SubscriptionItemDto> subscriptionItemDtos = subscriptions.stream().map(
             userActivityMapper::toSubscriptionItem
         ).toList();
 
         // 최근 작성한 댓글
         List<Comment> comments = commentRepository.findTop10ByUserOrderByCreatedAtDesc(user);
-        List<CommentItem> commentItems = comments.stream().map(
+        List<CommentItemDto> commentItemDtos = comments.stream().map(
             comment -> userActivityMapper.toCommentItem(user, comment)
         ).toList();
 
         // 최근 좋아요 누른 댓글
         List<CommentLike> commentLikes =
             commentLikeRepository.findTop10ByUserOrderByLikedAtDesc(user);
-        List<CommentLikeItem> commentLikeItems = commentLikes.stream().map(
+        List<CommentLikeItemDto> commentLikeItemDtos = commentLikes.stream().map(
             userActivityMapper::toCommentLikeItem
         ).toList();
 
         // 최근 본 뉴스
         List<ArticleView> articleViews =
             articleViewRepository.findTop10ByUserOrderByViewedAtDesc(user);
-        List<ArticleViewItem> articleViewItems = articleViews.stream().map(
-            articleView -> new ArticleViewItem(
+        List<ArticleViewItemDto> articleViewItemDtos = articleViews.stream().map(
+            articleView -> new ArticleViewItemDto(
                 articleView.getId(),
                 articleView.getUser().getId(),
                 articleView.getCreatedAt(),
@@ -85,10 +85,10 @@ public class UserActivityServiceImpl implements UserActivityService {
 
         return userActivityMapper.toUserActivityDto(
             user,
-            subscriptionItems,
-            commentItems,
-            commentLikeItems,
-            articleViewItems
+            subscriptionItemDtos,
+            commentItemDtos,
+            commentLikeItemDtos,
+            articleViewItemDtos
         );
     }
 }
