@@ -37,13 +37,13 @@ public class Interest extends BaseEntity {
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ArticleInterest> articleInterests = new HashSet<>();
 
-    private Interest(String name, int subscriberCount) {
+    private Interest(String name, long subscriberCount) {
         this.name = name;
         this.subscriberCount = subscriberCount;
     }
 
     public static Interest create(String name) {
-        return new Interest(name, 0);
+        return new Interest(name, 0L);
     }
 
     public InterestKeyword addInterestKeyword(Keyword keyword) {

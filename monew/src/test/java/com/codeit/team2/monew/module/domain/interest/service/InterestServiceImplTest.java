@@ -12,6 +12,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateR
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -24,8 +25,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +48,9 @@ class InterestServiceImplTest {
 
     @Mock
     private SubscriptionRepository subscriptionRepository;
+
+    @Spy
+    private InterestMapper interestMapper = Mappers.getMapper(InterestMapper.class);
 
     @InjectMocks
     private InterestServiceImpl interestService;
