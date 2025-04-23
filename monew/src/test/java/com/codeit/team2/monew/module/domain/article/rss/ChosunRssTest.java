@@ -57,8 +57,9 @@ public class ChosunRssTest {
                </rss>
             """;
 
+        String sanitizedXml = xml.replaceAll("&(?!amp;|lt;|gt;|quot;|apos;)", "&amp;");
         XmlMapper xmlMapper = new XmlMapper();
-        ChosunRss rss = xmlMapper.readValue(xml, ChosunRss.class);
+        ChosunRss rss = xmlMapper.readValue(sanitizedXml, ChosunRss.class);
 
         Assertions.assertThat(rss.getItems()).hasSize(1);
         Assertions.assertThat(rss.getItems().get(0).getTitle()).contains("비판 여론이 국민의힘 1차 경선 갈랐다");
