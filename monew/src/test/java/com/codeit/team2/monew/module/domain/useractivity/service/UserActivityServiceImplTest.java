@@ -128,7 +128,7 @@ class UserActivityServiceImplTest {
         when(mockArticle.getSourceUrl()).thenReturn("https://...");
         when(mockArticle.getPublishedDate()).thenReturn(Instant.now());
         when(mockArticle.getSummary()).thenReturn("요약");
-        when(mockArticle.getViewCount()).thenReturn(100);
+        when(mockArticle.getViewCount()).thenReturn(100L);
 
         when(articleViewRepository.findTop10ByUserOrderByViewedAtDesc(mockUser)).thenReturn(
             List.of(mockView));
