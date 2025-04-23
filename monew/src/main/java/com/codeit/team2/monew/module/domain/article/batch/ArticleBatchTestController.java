@@ -32,6 +32,7 @@ public class ArticleBatchTestController {
     private final JobLauncher jobLauncher;
 
     private final Job articleBatchJob;
+    private final Job rssArticleBatchJob;
     private final HankyungRssNewsClient hankyungNewsClient;
     private final ChosunRssNewsClient chosunRssNewsClient;
     private final YonhapRssNewsClient yonhapRssNewsClient;
@@ -39,12 +40,14 @@ public class ArticleBatchTestController {
 
     public ArticleBatchTestController(JobLauncher jobLauncher,
         @Qualifier("articleBatchJob") Job articleBatchJob,
+        @Qualifier("rssArticleBatchJob") Job rssArticleBatchJob,
         HankyungRssNewsClient hankyungNewsClient,
         ChosunRssNewsClient chosunRssNewsClient,
         YonhapRssNewsClient yonhapRssNewsClient,
         RssFetchService rssFetchService) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
+        this.rssArticleBatchJob = rssArticleBatchJob;
         this.hankyungNewsClient = hankyungNewsClient;
         this.chosunRssNewsClient = chosunRssNewsClient;
         this.yonhapRssNewsClient = yonhapRssNewsClient;
@@ -62,6 +65,22 @@ public class ArticleBatchTestController {
                 log.info("BATCH SUCCESSFUL");
             }
 
+        } catch (Exception e) {
+            log.info("BATCH JOB FAILED: {}", e.getMessage());
+        } finally {
+            log.info("BATCH JOB COMPLETED");
+        }
+    }
+
+    @PostMapping("/run-rss")
+    public void runRssBatch() {
+        try {
+            JobParameters parameters = new JobParametersBuilder().addLong("timestamp",
+                System.currentTimeMillis()).toJobParameters();
+            JobExecution execution = jobLauncher.run(rssArticleBatchJob, parameters);
+            if (execution.getStatus() == BatchStatus.COMPLETED) {
+                log.info("RSS BATCH SUCCESSFUL");
+            }
         } catch (Exception e) {
             log.info("BATCH JOB FAILED: {}", e.getMessage());
         } finally {

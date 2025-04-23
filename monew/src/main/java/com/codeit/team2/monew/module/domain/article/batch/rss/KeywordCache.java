@@ -29,7 +29,7 @@ public class KeywordCache {
 
     @PostConstruct
     public void init() {
-        log.debug("Creating Cache");
+        log.info("Creating Cache");
 
         cache = new HashMap<>();
 
@@ -49,6 +49,6 @@ public class KeywordCache {
 
     @PreDestroy
     public void destroy() {
-        log.debug("Destroying Cache");
+        log.info("Destroying Cache");
     }
 }
