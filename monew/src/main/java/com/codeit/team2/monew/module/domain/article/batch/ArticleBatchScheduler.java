@@ -19,11 +19,14 @@ public class ArticleBatchScheduler {
     private final JobLauncher jobLauncher;
 
     private final Job articleBatchJob;
+    private final Job rssArticleBatchJob;
 
     public ArticleBatchScheduler(JobLauncher jobLauncher,
-        @Qualifier("articleBatchJob") Job articleBatchJob) {
+        @Qualifier("articleBatchJob") Job articleBatchJob,
+        @Qualifier("rssArticleBatchJob") Job rssArticleBatchJob) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
+        this.rssArticleBatchJob = rssArticleBatchJob;
     }
 
     @Scheduled(cron = "0 0 * * * *")
@@ -32,6 +35,24 @@ public class ArticleBatchScheduler {
             JobParameters params = new JobParametersBuilder().addLong("timestamp",
                 System.currentTimeMillis()).toJobParameters();
             JobExecution execution = jobLauncher.run(articleBatchJob, params);
+
+            if (execution.getStatus() == BatchStatus.COMPLETED) {
+                log.info("BATCH SUCCESSFUL, Continuing to rssArticleBatchJob");
+                runRssBatch();
+            }
+
+        } catch (Exception e) {
+            log.info("BATCH JOB FAILED: {}", e.getMessage());
+        } finally {
+            log.info("BATCH JOB COMPLETED");
+        }
+    }
+
+    private void runRssBatch() {
+        try {
+            JobParameters params = new JobParametersBuilder().addLong("timestamp",
+                System.currentTimeMillis()).toJobParameters();
+            JobExecution execution = jobLauncher.run(rssArticleBatchJob, params);
 
             if (execution.getStatus() == BatchStatus.COMPLETED) {
                 log.info("BATCH SUCCESSFUL");
