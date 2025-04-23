@@ -102,6 +102,19 @@ public class InterestServiceImpl implements InterestService{
         return interestMapper.toDto(interest, keywords, subscribedByMe);
     }
 
+    @Override
+    @Transactional
+    public void delete(UUID id, UUID userId) {
+
+        getUserOrThrow(userId);
+        Interest interest = getByIdOrThrow(id);
+
+        interestRepository.delete(interest);
+
+        // TODO: 배치 작업 추가 필요 or 비동기로 처리
+        keywordRepository.deleteAllOrphanKeywords();
+    }
+
     private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId).orElseThrow(
             () -> new RuntimeException("user not found"));

@@ -25,8 +25,8 @@ public class Interest extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
-    private int subscriberCount;
+    @ColumnDefault("0L")
+    private long subscriberCount;
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<InterestKeyword> keywords = new HashSet<>();
@@ -46,9 +46,10 @@ public class Interest extends BaseEntity {
         return new Interest(name, 0);
     }
 
-    public void addInterestKeyword(Keyword keyword) {
+    public InterestKeyword addInterestKeyword(Keyword keyword) {
         InterestKeyword interestKeyword = new InterestKeyword(this, keyword);
         this.keywords.add(interestKeyword);
+        return interestKeyword;
     }
 
     public void incrementSubscriberCount() {

@@ -152,4 +152,28 @@ class InterestServiceImplTest {
         return mockInterest;
     }
 
+    @DisplayName("관심사 삭제가 수행된다.")
+    @Test
+    void delete() {
+        // given
+        UUID userId = UUID.randomUUID();
+        User user = mock(User.class);
+
+        UUID interestId = UUID.randomUUID();
+        String name = "채소";
+        List<String> keywords = List.of("당근");
+        Interest mockInterest = createInterest(name, keywords);
+
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(user));
+        when(interestRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(mockInterest));
+
+        // when
+        interestService.delete(interestId, userId);
+
+        // then
+        verify(interestRepository).delete(any(Interest.class));
+        verify(keywordRepository).deleteAllOrphanKeywords();
+    }
 }

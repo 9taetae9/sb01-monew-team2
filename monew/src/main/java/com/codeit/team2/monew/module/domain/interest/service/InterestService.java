@@ -11,4 +11,5 @@ public interface InterestService {
 
     InterestDto update(InterestUpdateRequest request, UUID id, UUID userId);
 
+    void delete(UUID id, UUID userId);
 }
