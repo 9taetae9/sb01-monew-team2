@@ -5,6 +5,7 @@ import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.ChosunRssNewsClient;
 import com.codeit.team2.monew.module.domain.article.external.HankyungRssNewsClient;
 import com.codeit.team2.monew.module.domain.article.external.YonhapRssNewsClient;
+import com.codeit.team2.monew.module.domain.article.service.RssFetchService;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
@@ -34,17 +35,20 @@ public class ArticleBatchTestController {
     private final HankyungRssNewsClient hankyungNewsClient;
     private final ChosunRssNewsClient chosunRssNewsClient;
     private final YonhapRssNewsClient yonhapRssNewsClient;
+    private final RssFetchService rssFetchService;
 
     public ArticleBatchTestController(JobLauncher jobLauncher,
         @Qualifier("articleBatchJob") Job articleBatchJob,
         HankyungRssNewsClient hankyungNewsClient,
         ChosunRssNewsClient chosunRssNewsClient,
-        YonhapRssNewsClient yonhapRssNewsClient) {
+        YonhapRssNewsClient yonhapRssNewsClient,
+        RssFetchService rssFetchService) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
         this.hankyungNewsClient = hankyungNewsClient;
         this.chosunRssNewsClient = chosunRssNewsClient;
         this.yonhapRssNewsClient = yonhapRssNewsClient;
+        this.rssFetchService = rssFetchService;
     }
 
     @PostMapping("/run")
@@ -82,5 +86,11 @@ public class ArticleBatchTestController {
     public ResponseEntity<List<DummyArticle>> getYonhapArticles() {
         List<DummyArticle> articles = yonhapRssNewsClient.fetchArticles();
         return ResponseEntity.ok(articles);
+    }
+
+    @GetMapping("/all")
+    public String runAllRssFetch() {
+        rssFetchService.fetchAllRss();
+        return "ok";
     }
 }
