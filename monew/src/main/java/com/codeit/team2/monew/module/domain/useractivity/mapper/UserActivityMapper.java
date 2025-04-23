@@ -5,6 +5,7 @@ import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.ArticleViewItemDto;
 import com.codeit.team2.monew.module.domain.useractivity.dto.CommentItemDto;
 import com.codeit.team2.monew.module.domain.useractivity.dto.CommentLikeItemDto;
@@ -73,4 +74,6 @@ public interface UserActivityMapper {
         List<CommentLikeItemDto> commentLikeItemDtos,
         List<ArticleViewItemDto> articleViewItemDtos
     );
+
+    UserActivityDto toUserActivityDto(UserActivity userActivity);
 }
