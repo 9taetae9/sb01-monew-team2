@@ -112,7 +112,7 @@ class NotificationServiceImplTest {
             () -> notificationService.createCommentNotification(comment, author, liker));
     }
 
-    @DisplayName("내 댓글에 좋아요 눌리면 알림 생성 - 실패: 유저 검증 실패")
+    @DisplayName("내 댓글에 좋아요 눌리면 알림 생성 - 실패: 유저1 검증 실패")
     @Test
     void createCommentNotificationShouldFail2() {
         // given
@@ -126,6 +126,29 @@ class NotificationServiceImplTest {
         when(commentRepository.existsById(commentId)).thenReturn(true);
         when(author.getId()).thenReturn(authorId);
         when(userRepository.existsById(authorId)).thenReturn(false);
+
+        // when & then
+        assertThrows(RuntimeException.class,
+            () -> notificationService.createCommentNotification(comment, author, liker));
+    }
+
+    @DisplayName("내 댓글에 좋아요 눌리면 알림 생성 - 실패: 유저2 검증 실패")
+    @Test
+    void createCommentNotificationShouldFail3() {
+        // given
+        UUID commentId = UUID.randomUUID();
+        Comment comment = mock(Comment.class);
+        UUID authorId = UUID.randomUUID();
+        User author = mock(User.class);
+        UUID likerId = UUID.randomUUID();
+        User liker = mock(User.class);
+
+        when(comment.getId()).thenReturn(commentId);
+        when(commentRepository.existsById(commentId)).thenReturn(true);
+        when(author.getId()).thenReturn(authorId);
+        when(userRepository.existsById(authorId)).thenReturn(true);
+        when(liker.getId()).thenReturn(likerId);
+        when(userRepository.existsById(likerId)).thenReturn(false);
 
         // when & then
         assertThrows(RuntimeException.class,
@@ -299,5 +322,17 @@ class NotificationServiceImplTest {
         assertNull(result.nextCursor());
         verify(notificationRepository).findFirstPage(any(), any());
         verify(notificationRepository).countForPagination(any());
+    }
+
+    @DisplayName("알림 목록 조회 - 실패: 유저 검증 실패")
+    @Test
+    void findAllShouldFail() {
+        // given
+        UUID userId = UUID.randomUUID();
+        when(userRepository.existsById(userId)).thenReturn(false);
+
+        // when & then
+        assertThrows(RuntimeException.class,
+            () -> notificationService.findAll(userId, null, null, 50));
     }
 }
