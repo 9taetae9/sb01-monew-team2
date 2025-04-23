@@ -41,9 +41,9 @@ public class BatchArticleWriterTest {
     void testWriteToRepository_success() throws Exception {
         //given
 
-        Article a = new Article("a", "a", "a", "a", Collections.emptySet(), 0, Instant.now(),
+        Article a = new Article("a", "a", "a", "a", Collections.emptySet(), 0L, Instant.now(),
             false);
-        Article b = new Article("b", "b", "b", "b", Collections.emptySet(), 0, Instant.now(),
+        Article b = new Article("b", "b", "b", "b", Collections.emptySet(), 0L, Instant.now(),
             false);
         Interest i1 = Interest.create("a");
         Interest i2 = Interest.create("b");

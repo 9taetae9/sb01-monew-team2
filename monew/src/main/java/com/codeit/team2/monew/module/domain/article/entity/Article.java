@@ -46,7 +46,7 @@ public class Article extends BaseEntity {
     }
 
 
-    private Integer viewCount;
+    private Long viewCount;
     private Instant publishedDate;
     private Boolean deleted;
 
