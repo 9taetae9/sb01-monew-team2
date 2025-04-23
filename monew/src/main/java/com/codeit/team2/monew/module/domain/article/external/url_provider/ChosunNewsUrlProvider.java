@@ -1,7 +1,12 @@
 package com.codeit.team2.monew.module.domain.article.external.url_provider;
 
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+
+@Component
+@Qualifier("chosun")
 public class ChosunNewsUrlProvider implements NewsUrlProvider {
 
     private static final Set<String> chosunUrlSet = Set.of(
