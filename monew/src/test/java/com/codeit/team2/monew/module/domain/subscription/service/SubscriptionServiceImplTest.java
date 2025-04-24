@@ -59,10 +59,6 @@ class SubscriptionServiceImplTest {
         Interest mockInterest = createInterest(name, inputKeywords);
         ReflectionTestUtils.setField(mockInterest, "id", UUID.randomUUID());
 
-        Subscription mockSubscription = mockInterest.addSubscriber(mockUser);
-        ReflectionTestUtils.setField(mockSubscription, "id", UUID.randomUUID());
-        ReflectionTestUtils.setField(mockSubscription, "createdAt", Instant.now());
-
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(mockUser));
         when(interestRepository.findById(any(UUID.class)))
