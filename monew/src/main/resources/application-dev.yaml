@@ -11,3 +11,6 @@ spring:
   sql:
     init:
       mode: always
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/monew
