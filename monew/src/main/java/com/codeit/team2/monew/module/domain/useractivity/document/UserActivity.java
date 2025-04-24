@@ -23,5 +23,9 @@ public class UserActivity {
     private List<CommentItem> comments;
     private List<CommentLikeItem> commentLikes;
     private List<ArticleViewItem> articleViews;
+
+    public void addCommentItem(CommentItem commentItem) {
+        this.comments.add(commentItem);
+    }
 }
 

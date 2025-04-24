@@ -1,15 +1,20 @@
 package com.codeit.team2.monew.module.domain.useractivity.service;
 
+import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
+import com.codeit.team2.monew.module.domain.useractivity.repository.MongoCommentItemRepository;
 import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserActivityRepository;
 import java.util.Collections;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class MongoUserActivityService implements UserActivityService {
 
     private final MongoUserActivityRepository userActivityRepository;
+    private final MongoCommentItemRepository commentItemRepository;
     private final UserActivityMapper userActivityMapper;
 
     @Override
@@ -44,5 +50,27 @@ public class MongoUserActivityService implements UserActivityService {
                 Collections.emptyList()
             )
         );
+    }
+
+    @Transactional
+    public void createCommentItem(Comment comment, Article article, User user) {
+        CommentItem commentItem = commentItemRepository.save(
+            new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            )
+        );
+
+        UserActivity userActivity = userActivityRepository.findById(user.getId())
+            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+
+        userActivity.addCommentItem(commentItem);
+        userActivityRepository.save(userActivity);
     }
 }

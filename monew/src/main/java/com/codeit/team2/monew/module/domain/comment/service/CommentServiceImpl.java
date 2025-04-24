@@ -5,6 +5,7 @@ import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
@@ -13,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ public class CommentServiceImpl implements CommentService {
     private final ArticleRepository articleRepository;
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public Comment register(CommentRegisterRequest request) {
@@ -42,6 +45,9 @@ public class CommentServiceImpl implements CommentService {
             });
 
         Comment comment = commentMapper.toEntity(request, article, user);
+
+        // comment 생성 이벤트 발생
+        publisher.publishEvent(new CommentRegisterEvent(comment, article, user));
 
         return commentRepository.save(comment);
     }
