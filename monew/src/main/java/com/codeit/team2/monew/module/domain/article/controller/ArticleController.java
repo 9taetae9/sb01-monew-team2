@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.controller;
 
 
+import com.codeit.team2.monew.module.domain.article.controller.docs.ArticleControllerDocs;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
 import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticleDto;
 import com.codeit.team2.monew.module.domain.article.dto.request.ArticleFindRequest;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/articles")
 @RequiredArgsConstructor
-public class ArticleController {
+public class ArticleController implements ArticleControllerDocs {
 
     private final ArticleService articleService;
 
