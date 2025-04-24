@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -11,6 +12,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateR
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -20,16 +22,17 @@ import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class InterestServiceTest {
+class InterestServiceImplTest {
 
     @Mock
     private InterestRepository interestRepository;
@@ -46,8 +49,11 @@ class InterestServiceTest {
     @Mock
     private SubscriptionRepository subscriptionRepository;
 
+    @Spy
+    private InterestMapper interestMapper = Mappers.getMapper(InterestMapper.class);
+
     @InjectMocks
-    private InterestService interestService;
+    private InterestServiceImpl interestService;
 
     @DisplayName("관심사를 생성하고 정상 응답한다.")
     @Test
@@ -147,9 +153,33 @@ class InterestServiceTest {
     Interest createInterest(String name, List<String> keywords) {
         Interest mockInterest = Interest.create(name);
         for (String keyword : keywords) {
-            mockInterest.addInterestKeyword(new Keyword(keyword));
+            mockInterest.addKeyword(new Keyword(keyword));
         }
         return mockInterest;
     }
 
+    @DisplayName("관심사 삭제가 수행된다.")
+    @Test
+    void delete() {
+        // given
+        UUID userId = UUID.randomUUID();
+        User user = mock(User.class);
+
+        UUID interestId = UUID.randomUUID();
+        String name = "채소";
+        List<String> keywords = List.of("당근");
+        Interest mockInterest = createInterest(name, keywords);
+
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(user));
+        when(interestRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(mockInterest));
+
+        // when
+        interestService.delete(interestId, userId);
+
+        // then
+        verify(interestRepository).delete(any(Interest.class));
+        verify(keywordRepository).deleteAllOrphanKeywords();
+    }
 }

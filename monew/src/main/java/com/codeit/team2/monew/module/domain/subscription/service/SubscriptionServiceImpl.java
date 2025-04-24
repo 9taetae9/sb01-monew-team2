@@ -25,6 +25,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     private final InterestRepository interestRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
+    private final SubscriptionMapper subscriptionMapper;
 
     @Override
     @Transactional
@@ -37,15 +38,14 @@ public class SubscriptionServiceImpl implements SubscriptionService{
             throw new DuplicateRequestException("이미 관심사를 구독하고 있습니다.");
         }
 
-        Subscription subscription = new Subscription(user, interest);
-        subscriptionRepository.save(subscription);
+        Subscription subscription = interest.addSubscriber(user);
+        interestRepository.saveAndFlush(interest);
 
-        interest.incrementSubscriberCount();
         List<String> keywords = interest.getKeywords().stream()
             .map(keyword -> keyword.getKeyword().getName())
             .collect(Collectors.toList());
 
-        return SubscriptionMapper.INSTANCE.toDto(subscription, interest, keywords);
+        return subscriptionMapper.toDto(subscription, interest, keywords);
     }
 
     private User getUserOrThrow(UUID userId) {

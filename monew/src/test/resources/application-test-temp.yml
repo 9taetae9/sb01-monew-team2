@@ -1,3 +1,5 @@
+### 임시 파일입니다.
+
 spring:
   h2:
     console:
@@ -25,4 +27,6 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    com.sprint.mission.discodeit: DEBUG
+    org.hibernate.engine.internal.Cascade: TRACE
+    org.hibernate.event.internal.AbstractFlushingEventListener: TRACE
+    org.hibernate.persister.entity.AbstractEntityPersister: TRACE
