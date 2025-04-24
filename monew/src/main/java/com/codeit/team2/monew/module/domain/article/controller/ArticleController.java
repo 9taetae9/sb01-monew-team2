@@ -51,7 +51,10 @@ public class ArticleController {
     public ResponseEntity<CursorPageResponseArticleDto> findAll(
         @RequestHeader("MoNew-Request-User-ID") UUID userId,
         @Valid @ModelAttribute ArticleFindRequest articleFindRequest) {
-        return ResponseEntity.ok().body(articleService.findAll(userId, articleFindRequest));
+        log.info("Start - ArticleController/findAll");
+        CursorPageResponseArticleDto result = articleService.findAll(userId, articleFindRequest);
+        log.info("Complete - ArticleController/findAll");
+        return ResponseEntity.ok().body(result);
     }
 
 }
