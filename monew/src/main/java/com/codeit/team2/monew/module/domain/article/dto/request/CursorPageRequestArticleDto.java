@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Sort.Direction;
 
-public record ArticleFindRequest(
+public record CursorPageRequestArticleDto(
     @Nullable
     String keyword,
     @Nullable
