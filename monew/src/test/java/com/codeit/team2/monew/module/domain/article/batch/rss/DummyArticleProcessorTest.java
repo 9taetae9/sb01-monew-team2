@@ -43,7 +43,7 @@ public class DummyArticleProcessorTest {
         Article article = articleMapper.dummyArticleToArticle(dummy);
         Keyword keyword = new Keyword("test");
         Interest interest = Interest.create("test");
-        interest.addInterestKeyword(keyword);
+        interest.addKeyword(keyword);
 
         BDDMockito.given(keywordCache.getCache())
             .willReturn(Map.of("test", List.of(interest)));
