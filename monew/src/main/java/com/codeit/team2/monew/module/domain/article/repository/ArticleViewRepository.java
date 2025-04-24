@@ -15,4 +15,6 @@ public interface ArticleViewRepository extends JpaRepository<ArticleView, UUID> 
 
     @EntityGraph(attributePaths = {"article", "user"})
     List<ArticleView> findTop10ByUserOrderByViewedAtDesc(User user);
+
+    boolean existsByUserIdAndArticleId(UUID userId, UUID articleId);
 }

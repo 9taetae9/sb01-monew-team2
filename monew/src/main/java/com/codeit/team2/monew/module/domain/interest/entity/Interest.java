@@ -1,8 +1,10 @@
 package com.codeit.team2.monew.module.domain.interest.entity;
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
+import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +15,6 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "interests")
@@ -25,8 +26,7 @@ public class Interest extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
-    private int subscriberCount;
+    private long subscriberCount;
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<InterestKeyword> keywords = new HashSet<>();
@@ -37,21 +37,32 @@ public class Interest extends BaseEntity {
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ArticleInterest> articleInterests = new HashSet<>();
 
-    private Interest(String name, int subscriberCount) {
+    private Interest(String name, long subscriberCount) {
         this.name = name;
         this.subscriberCount = subscriberCount;
     }
 
     public static Interest create(String name) {
-        return new Interest(name, 0);
+        return new Interest(name, 0L);
     }
 
-    public void addInterestKeyword(Keyword keyword) {
+    public InterestKeyword addKeyword(Keyword keyword) {
         InterestKeyword interestKeyword = new InterestKeyword(this, keyword);
         this.keywords.add(interestKeyword);
+        return interestKeyword;
     }
 
-    public void incrementSubscriberCount() {
-        this.subscriberCount ++;
+    public Subscription addSubscriber(User user) {
+        Subscription subscription = new Subscription(user, this);
+        this.subscriptions.add(subscription);
+        this.subscriberCount++;
+        return subscription;
     }
+
+    public ArticleInterest addArticle(Article article) {
+        ArticleInterest articleInterest = new ArticleInterest(article, this);
+        this.articleInterests.add(articleInterest);
+        return articleInterest;
+    }
+
 }

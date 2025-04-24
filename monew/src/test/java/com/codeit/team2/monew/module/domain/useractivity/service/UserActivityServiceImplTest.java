@@ -85,7 +85,7 @@ class UserActivityServiceImplTest {
 
         when(mockInterest.getId()).thenReturn(UUID.randomUUID());
         when(mockInterest.getName()).thenReturn("경제");
-        when(mockInterest.getSubscriberCount()).thenReturn(20);
+        when(mockInterest.getSubscriberCount()).thenReturn(20L);
         when(mockInterest.getKeywords()).thenReturn(Set.of(mockInterestKeyword));
         when(mockInterestKeyword.getKeyword()).thenReturn(mockKeyword);
         when(mockKeyword.getName()).thenReturn("금리");

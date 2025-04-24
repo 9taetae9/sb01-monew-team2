@@ -5,12 +5,9 @@ import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface InterestMapper {
-
-    InterestMapper INSTANCE = Mappers.getMapper(InterestMapper.class);
 
     @Mapping(source = "interest.name", target = "name")
     @Mapping(source = "keywords", target = "keywords")

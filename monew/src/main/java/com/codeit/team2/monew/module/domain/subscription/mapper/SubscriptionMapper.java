@@ -6,12 +6,9 @@ import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface SubscriptionMapper {
-
-    SubscriptionMapper INSTANCE = Mappers.getMapper(SubscriptionMapper.class);
 
     @Mapping(source = "subscription.id", target = "id")
     @Mapping(source = "interest.id", target = "interestId")
