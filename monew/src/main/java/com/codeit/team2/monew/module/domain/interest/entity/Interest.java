@@ -47,13 +47,13 @@ public class Interest extends BaseEntity {
     }
 
     public InterestKeyword addKeyword(Keyword keyword) {
-        InterestKeyword interestKeyword = new InterestKeyword(this, keyword);
+        InterestKeyword interestKeyword = InterestKeyword.create(this, keyword);
         this.keywords.add(interestKeyword);
         return interestKeyword;
     }
 
     public Subscription addSubscriber(User user) {
-        Subscription subscription = new Subscription(user, this);
+        Subscription subscription = Subscription.create(user, this);
         this.subscriptions.add(subscription);
         this.subscriberCount++;
         return subscription;

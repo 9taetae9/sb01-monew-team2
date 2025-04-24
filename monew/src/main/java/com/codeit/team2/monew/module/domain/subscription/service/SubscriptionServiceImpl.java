@@ -54,12 +54,10 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         User user = getUserOrThrow(userId);
         Interest interest = getInterestOrThrow(interestId);
 
-        if (!subscriptionRepository.existsByInterestAndUser(interest, user)) {
-            throw new DuplicateRequestException("관심사를 구독하고 있지 않습니다.");
-        }
+        Subscription subscription = subscriptionRepository.findByInterestAndUser(interest, user)
+            .orElseThrow(() -> new IllegalArgumentException("subscription not found"));
 
-        // 구독 취소 subscription remove
-
+        subscriptionRepository.delete(subscription);
     }
 
     private User getUserOrThrow(UUID userId) {

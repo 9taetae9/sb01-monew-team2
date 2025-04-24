@@ -31,4 +31,8 @@ public class Subscription extends BaseEntity {
     @JoinColumn(name = "interest_id", nullable = false)
     private Interest interest;
 
+    public static Subscription create(User user, Interest interest) {
+        return new Subscription(user, interest);
+    }
+
 }
