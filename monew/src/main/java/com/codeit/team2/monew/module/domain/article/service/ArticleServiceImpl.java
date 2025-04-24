@@ -96,8 +96,8 @@ public class ArticleServiceImpl implements ArticleService {
             slices = articleCustomRepository.findByPublishDate(articleFindRequest.keyword(),
                 articleFindRequest.interestId(),
                 articleFindRequest.sourceIn(),
-                articleFindRequest.publishDateFrom(),
-                articleFindRequest.publishDateTo(),
+                articleFindRequest.getPublishDateFromInstant(),
+                articleFindRequest.getPublishDateToInstant(),
                 articleFindRequest.direction(),
                 articleFindRequest.cursor(),
                 articleFindRequest.after(),
@@ -106,8 +106,8 @@ public class ArticleServiceImpl implements ArticleService {
             slices = articleCustomRepository.findByViewCount(articleFindRequest.keyword(),
                 articleFindRequest.interestId(),
                 articleFindRequest.sourceIn(),
-                articleFindRequest.publishDateFrom(),
-                articleFindRequest.publishDateTo(),
+                articleFindRequest.getPublishDateFromInstant(),
+                articleFindRequest.getPublishDateToInstant(),
                 articleFindRequest.direction(),
                 articleFindRequest.cursor(),
                 articleFindRequest.after(),
@@ -116,8 +116,8 @@ public class ArticleServiceImpl implements ArticleService {
             slices = articleCustomRepository.findByCommentCount(articleFindRequest.keyword(),
                 articleFindRequest.interestId(),
                 articleFindRequest.sourceIn(),
-                articleFindRequest.publishDateFrom(),
-                articleFindRequest.publishDateTo(),
+                articleFindRequest.getPublishDateFromInstant(),
+                articleFindRequest.getPublishDateToInstant(),
                 articleFindRequest.direction(),
                 articleFindRequest.cursor(),
                 articleFindRequest.after(),
@@ -145,8 +145,8 @@ public class ArticleServiceImpl implements ArticleService {
 
         long totalElements = articleCustomRepository.countFilteredTotalElements(
             articleFindRequest.keyword(), articleFindRequest.interestId(),
-            articleFindRequest.sourceIn(), articleFindRequest.publishDateFrom(),
-            articleFindRequest.publishDateTo());
+            articleFindRequest.sourceIn(), articleFindRequest.getPublishDateFromInstant(),
+            articleFindRequest.getPublishDateToInstant());
 
         boolean hasNext = slices.hasNext();
 
