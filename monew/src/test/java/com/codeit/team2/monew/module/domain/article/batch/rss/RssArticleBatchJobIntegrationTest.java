@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.Job;
@@ -75,16 +76,26 @@ public class RssArticleBatchJobIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
         registry.add("spring.batch.jdbc.initialize-schema", () -> "always");
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
-        registry.add("spring.sql.init.mode", () -> "never");
         registry.add("spring.jpa.properties.hibernate.dialect",
             () -> "org.hibernate.dialect.PostgreSQLDialect");
+//        registry.add("spring.batch.jdbc.initialize-schema", () -> "always");
+//        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
+//        registry.add("spring.sql.init.mode", () -> "never");
+//        registry.add("spring.jpa.properties.hibernate.dialect",
+//            () -> "org.hibernate.dialect.PostgreSQLDialect");
     }
 
     @BeforeAll
     static void startContainer() {
         postgres.start();
+    }
+
+    @BeforeEach
+    void setup() {
+        jobLauncherTestUtils.setJob(rssArticleBatchJob);
+
     }
 
     @Test
@@ -106,7 +117,7 @@ public class RssArticleBatchJobIntegrationTest {
         interestKeywordRepository.save(ik);
 
         //when
-        jobLauncherTestUtils.setJob(rssArticleBatchJob);
+//        jobLauncherTestUtils.setJob(rssArticleBatchJob);
         JobExecution execution = jobLauncherTestUtils.launchJob();
 
         // then

@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS comment_likes;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS interest_keywords;
+DROP TABLE IF EXISTS subscriptions;
+DROP TABLE IF EXISTS article_views;
+DROP TABLE IF EXISTS article_interests;
+DROP TABLE IF EXISTS articles CASCADE;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS interests CASCADE;
+DROP TABLE IF EXISTS keywords;
+DROP TABLE IF EXISTS dummy_articles;
 
 CREATE TABLE interests (
                            id UUID NOT NULL PRIMARY KEY,
