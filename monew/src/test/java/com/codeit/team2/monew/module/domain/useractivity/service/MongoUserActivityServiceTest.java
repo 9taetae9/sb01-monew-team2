@@ -3,10 +3,14 @@ package com.codeit.team2.monew.module.domain.useractivity.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
@@ -30,6 +34,9 @@ class MongoUserActivityServiceTest {
 
     @Mock
     private MongoUserActivityRepository userActivityRepository;
+
+    @Mock
+    private MongoCommentItemRepository commentItemRepository;
 
     @Spy
     private UserActivityMapper userActivitiesMapper = Mappers.getMapper(
@@ -111,6 +118,54 @@ class MongoUserActivityServiceTest {
         assertThat(saved.getComments()).isEmpty();
         assertThat(saved.getCommentLikes()).isEmpty();
         assertThat(saved.getArticleViews()).isEmpty();
+    }
+
+    @Test
+    void CommentItem_추가_성공() {
+        // given
+        User user = mock(User.class);
+        Comment comment = mock(Comment.class);
+        Article article = mock(Article.class);
+
+        UUID commentId = UUID.randomUUID();
+        UUID articleId = UUID.randomUUID();
+        String articleTitle = "title";
+        UUID userId = UUID.randomUUID();
+        String userNickname = "nickname";
+        String content = "content";
+        Long likeCount = 0L;
+        Instant createdAt = Instant.now();
+
+        // comment
+        when(comment.getId()).thenReturn(commentId);
+        when(comment.getContent()).thenReturn(content);
+        when(comment.getLikeCount()).thenReturn(likeCount);
+        when(comment.getCreatedAt()).thenReturn(createdAt);
+
+        // article
+        when(article.getId()).thenReturn(articleId);
+        when(article.getTitle()).thenReturn(articleTitle);
+
+        // user
+        when(user.getId()).thenReturn(userId);
+        when(user.getNickname()).thenReturn(userNickname);
+
+        // when
+        userActivityService.createCommentItem(Comment comment, Article article, User user);
+
+        // then
+        ArgumentCaptor<CommentItem> captor = ArgumentCaptor.forClass(CommentItem.class);
+        verify(commentItemRepository).save(captor.capture());
+
+        CommentItem saved = captor.getValue();
+        assertEquals(commentId, saved.getId());
+        assertEquals(articleId, saved.getArticleId());
+        assertEquals(articleTitle, saved.getArticleTitle());
+        assertEquals(userId, saved.getUserId());
+        assertEquals(userNickname, saved.getUserNickname());
+        assertEquals(content, saved.getContent());
+        assertEquals(likeCount, saved.getLikeCount());
+        assertEquals(createdAt, saved.getCreatedAt());
     }
 
 }

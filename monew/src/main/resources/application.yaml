@@ -40,4 +40,4 @@ news:
     client-secret: ${NAVER_CLIENT_SECRET}
 
 app:
-  db-type: postgresql  # postgresql || mongodb
+  db-type: mongodb  # postgresql || mongodb
