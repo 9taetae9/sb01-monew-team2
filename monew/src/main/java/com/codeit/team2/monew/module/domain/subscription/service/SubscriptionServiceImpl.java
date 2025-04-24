@@ -38,7 +38,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
             throw new DuplicateRequestException("이미 관심사를 구독하고 있습니다.");
         }
 
-        Subscription subscription = interest.addSubscription(user);
+        Subscription subscription = interest.addSubscriber(user);
         interestRepository.saveAndFlush(interest);
 
         List<String> keywords = interest.getKeywords().stream()

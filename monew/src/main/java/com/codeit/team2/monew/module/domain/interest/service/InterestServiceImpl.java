@@ -52,7 +52,7 @@ public class InterestServiceImpl implements InterestService{
         for (String keyword : request.keywords()) {
             Keyword getKeyword = keywordRepository.findByName(keyword)
                 .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
-            interest.addInterestKeyword(getKeyword);
+            interest.addKeyword(getKeyword);
         }
 
         Interest savedInterest = interestRepository.save(interest);
@@ -79,7 +79,7 @@ public class InterestServiceImpl implements InterestService{
             if (!savedKeywords.containsKey(keyword)) {
                 Keyword getKeyword = keywordRepository.findByName(keyword)
                     .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
-                interest.addInterestKeyword(getKeyword);
+                interest.addKeyword(getKeyword);
             } else {
                 savedKeywords.remove(keyword);
             }

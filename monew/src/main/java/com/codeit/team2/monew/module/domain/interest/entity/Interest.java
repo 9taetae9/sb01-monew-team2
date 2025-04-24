@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.interest.entity;
 
 import com.codeit.team2.monew.module.domain.BaseEntity;
+import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
@@ -47,17 +48,23 @@ public class Interest extends BaseEntity {
         return new Interest(name, 0L);
     }
 
-    public InterestKeyword addInterestKeyword(Keyword keyword) {
+    public InterestKeyword addKeyword(Keyword keyword) {
         InterestKeyword interestKeyword = new InterestKeyword(this, keyword);
         this.keywords.add(interestKeyword);
         return interestKeyword;
     }
 
-    public Subscription addSubscription(User user) {
+    public Subscription addSubscriber(User user) {
         Subscription subscription = new Subscription(user, this);
         this.subscriptions.add(subscription);
         this.subscriberCount++;
         return subscription;
+    }
+
+    public ArticleInterest addArticle(Article article) {
+        ArticleInterest articleInterest = new ArticleInterest(article, this);
+        this.articleInterests.add(articleInterest);
+        return articleInterest;
     }
 
 }

@@ -59,7 +59,7 @@ class SubscriptionServiceImplTest {
         Interest mockInterest = createInterest(name, inputKeywords);
         ReflectionTestUtils.setField(mockInterest, "id", UUID.randomUUID());
 
-        Subscription mockSubscription = mockInterest.addSubscription(mockUser);
+        Subscription mockSubscription = mockInterest.addSubscriber(mockUser);
         ReflectionTestUtils.setField(mockSubscription, "id", UUID.randomUUID());
         ReflectionTestUtils.setField(mockSubscription, "createdAt", Instant.now());
 
@@ -112,7 +112,7 @@ class SubscriptionServiceImplTest {
     Interest createInterest(String name, List<String> keywords) {
         Interest mockInterest = Interest.create(name);
         for (String keyword : keywords) {
-            mockInterest.addInterestKeyword(new Keyword(keyword));
+            mockInterest.addKeyword(new Keyword(keyword));
         }
         return mockInterest;
     }

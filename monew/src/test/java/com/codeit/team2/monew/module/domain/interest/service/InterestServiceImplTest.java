@@ -153,7 +153,7 @@ class InterestServiceImplTest {
     Interest createInterest(String name, List<String> keywords) {
         Interest mockInterest = Interest.create(name);
         for (String keyword : keywords) {
-            mockInterest.addInterestKeyword(new Keyword(keyword));
+            mockInterest.addKeyword(new Keyword(keyword));
         }
         return mockInterest;
     }

@@ -42,8 +42,8 @@ public class InterestRepositoryTest {
         Keyword keyword = keywordRepository.saveAndFlush(new Keyword("당근"));
 
         Interest interest = Interest.create("채소");
-        interest.addInterestKeyword(keyword);
-        interest.addSubscription(user);
+        interest.addKeyword(keyword);
+        interest.addSubscriber(user);
 
         Interest savedInterest = interestRepository.saveAndFlush(interest);
 
