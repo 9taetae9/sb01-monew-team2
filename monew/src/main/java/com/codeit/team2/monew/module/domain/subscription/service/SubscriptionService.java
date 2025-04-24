@@ -7,4 +7,5 @@ public interface SubscriptionService {
 
     SubscriptionDto subscription(UUID interestId, UUID userId);
 
+    void cancelSubscription(UUID id, UUID userId);
 }

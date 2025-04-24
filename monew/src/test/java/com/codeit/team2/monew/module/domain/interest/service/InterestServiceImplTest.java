@@ -3,10 +3,10 @@ package com.codeit.team2.monew.module.domain.interest.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeit.team2.monew.module.domain.interest.TestInterestFactory;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
@@ -17,6 +17,7 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordR
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
+import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.List;
@@ -59,13 +60,12 @@ class InterestServiceImplTest {
     @Test
     void create_success() {
         // given
-        UUID userId = UUID.randomUUID();
-        User user = mock(User.class);
+        User user = TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
         InterestRegisterRequest request = new InterestRegisterRequest(name, inputKeywords);
-        Interest mockInterest = createInterest(name, inputKeywords);
+        Interest mockInterest = TestInterestFactory.create(name, inputKeywords);
 
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(user));
@@ -81,7 +81,7 @@ class InterestServiceImplTest {
             .thenReturn(mockInterest);
 
         // when
-        InterestDto result = interestService.create(request, userId);
+        InterestDto result = interestService.create(request, user.getId());
 
         // then
         assertThat(result.name()).isEqualTo(name);
@@ -95,8 +95,7 @@ class InterestServiceImplTest {
     @Test
     void create_failure() {
         // given
-        UUID userId = UUID.randomUUID();
-        User user = mock(User.class);
+        User user = TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
@@ -108,7 +107,7 @@ class InterestServiceImplTest {
             .thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> interestService.create(request, userId))
+        assertThatThrownBy(() -> interestService.create(request, user.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -116,13 +115,11 @@ class InterestServiceImplTest {
     @Test
     void update_success() {
         // given
-        UUID userId = UUID.randomUUID();
-        User user = mock(User.class);
-        UUID interestId = UUID.randomUUID();
+        User user = TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> keywords = List.of("당근");
-        Interest mockInterest = createInterest(name, keywords);
+        Interest interest = TestInterestFactory.create(name, keywords);
 
         List<String> inputKeywords = List.of("시금치");
         InterestUpdateRequest request = new InterestUpdateRequest(inputKeywords);
@@ -130,7 +127,7 @@ class InterestServiceImplTest {
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(user));
         when(interestRepository.findById(any(UUID.class)))
-            .thenReturn(Optional.of(mockInterest));
+            .thenReturn(Optional.of(interest));
         when(keywordRepository.findByName(any(String.class)))
             .thenReturn(Optional.empty());
         when(keywordRepository.save(any(Keyword.class)))
@@ -141,7 +138,7 @@ class InterestServiceImplTest {
             .thenReturn(false);
 
         // when
-        InterestDto result = interestService.update(request, interestId ,userId);
+        InterestDto result = interestService.update(request, interest.getId() ,user.getId());
 
         // then
         assertThat(result.keywords()).hasSize(1)
@@ -162,21 +159,19 @@ class InterestServiceImplTest {
     @Test
     void delete() {
         // given
-        UUID userId = UUID.randomUUID();
-        User user = mock(User.class);
+        User user = TestUserFactory.createWithName("name");
 
-        UUID interestId = UUID.randomUUID();
         String name = "채소";
         List<String> keywords = List.of("당근");
-        Interest mockInterest = createInterest(name, keywords);
+        Interest interest = TestInterestFactory.create(name, keywords);
 
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(user));
         when(interestRepository.findById(any(UUID.class)))
-            .thenReturn(Optional.of(mockInterest));
+            .thenReturn(Optional.of(interest));
 
         // when
-        interestService.delete(interestId, userId);
+        interestService.delete(interest.getId(), user.getId());
 
         // then
         verify(interestRepository).delete(any(Interest.class));
