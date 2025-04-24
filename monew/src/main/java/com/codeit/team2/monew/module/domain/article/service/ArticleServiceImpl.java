@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
@@ -39,6 +40,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleCustomRepository articleCustomRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     @Override
     public ArticleViewDto createUserArticleView(UUID userId, UUID articleId) {
 
@@ -100,6 +102,16 @@ public class ArticleServiceImpl implements ArticleService {
                 articleFindRequest.cursor(),
                 articleFindRequest.after(),
                 pageable);
+        } else if (articleFindRequest.orderBy().equals(ArticleOrderBy.viewCount)) {
+            slices = articleCustomRepository.findByViewCount(articleFindRequest.keyword(),
+                articleFindRequest.interestId(),
+                articleFindRequest.sourceIn(),
+                articleFindRequest.publishDateFrom(),
+                articleFindRequest.publishDateTo(),
+                articleFindRequest.direction(),
+                articleFindRequest.cursor(),
+                articleFindRequest.after(),
+                pageable);
         } else {
             slices = null;
         }
@@ -128,12 +140,14 @@ public class ArticleServiceImpl implements ArticleService {
 
         boolean hasNext = slices.hasNext();
 
-        Object cursor;
-        if (hasNext && !articles.isEmpty() && articleFindRequest.orderBy()
-            .equals(ArticleOrderBy.publishDate)) {
-            cursor = articleDtos.get(articleDtos.size() - 1).publishDate();
-        } else {
-            cursor = null;
+        Object cursor = null;
+        if (hasNext && !articles.isEmpty()) {
+            ArticleDto last = articleDtos.get(articleDtos.size() - 1);
+            switch (articleFindRequest.orderBy()) {
+                case publishDate -> cursor = last.publishDate();
+                case viewCount -> cursor = last.viewCount();
+                case commentCount -> cursor = last.commentCount();
+            }
         }
 
         Instant after =
