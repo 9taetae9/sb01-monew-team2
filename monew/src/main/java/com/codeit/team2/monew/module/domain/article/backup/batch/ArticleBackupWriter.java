@@ -40,7 +40,6 @@ public class ArticleBackupWriter implements ItemWriter<ArticleBackupDto> {
         LocalDate backupDate = LocalDate.parse(backupDateStr);
         String formattedDate = backupDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
 
-        // 백업 파일 경로: articles/yyyy-MM-dd/batch_uuid.json
         String backupKey = String.format("articles/%s/batch_%s.json",
             formattedDate,
             java.util.UUID.randomUUID());
