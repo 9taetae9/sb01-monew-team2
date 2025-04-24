@@ -10,8 +10,10 @@ import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapperImpl;
+import com.codeit.team2.monew.module.domain.article.repository.ArticleCustomRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
+import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
@@ -39,12 +41,14 @@ public class ArticleServiceTest {
     private ArticleViewRepository articleViewRepository;
     private ArticleMapper articleMapper;
     private ArticleService articleService;
+    private ArticleCustomRepository articleCustomRepository;
+    private CommentRepository commentRepository;
 
     @BeforeEach
     void setup() {
         articleMapper = new ArticleMapperImpl();
         articleService = new ArticleServiceImpl(articleRepository, articleViewRepository,
-            userRepository, articleMapper);
+            userRepository, articleMapper, articleCustomRepository, commentRepository);
     }
 
     @Test

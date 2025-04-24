@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 @Getter
 public class InterestKeyword extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interest_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "interest_id", nullable = false)
     private Interest interest;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "keyword_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "keyword_id", nullable = false)
     private Keyword keyword;
 
     public InterestKeyword(Interest interest, Keyword keyword) {

@@ -1,7 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
 
-import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.url_provider.NewsUrlProvider;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapperImpl;
@@ -81,7 +81,7 @@ public class ChosunRssNewsClientTest {
             .setBody(xml)
             .addHeader("Content-Type", "application/xml"));
 
-        List<Article> articles = client.fetchArticles();
+        List<DummyArticle> articles = client.fetchArticles();
 
         Assertions.assertThat(articles).hasSize(1);
         Assertions.assertThat(articles.get(0).getTitle()).contains("비판 여론이 국민의힘 1차 경선 갈랐다");

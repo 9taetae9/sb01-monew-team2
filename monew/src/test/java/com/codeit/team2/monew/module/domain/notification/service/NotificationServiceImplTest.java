@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +29,6 @@ import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -155,44 +153,6 @@ class NotificationServiceImplTest {
             () -> notificationService.createCommentNotification(comment, author, liker));
     }
 
-    @DisplayName("구독한 관심사 관련 기사가 등록되면 알림 생성 - 성공")
-    @Test
-    void createInterestNotification() {
-
-        // given
-        Interest interest = mock(Interest.class);
-        UUID interestId = UUID.randomUUID();
-        when(interest.getId()).thenReturn(interestId);
-        when(interest.getName()).thenReturn("AI");
-
-        User user = mock(User.class);
-        Subscription subscription = mock(Subscription.class);
-        when(subscription.getUser()).thenReturn(user);
-
-        Article article = mock(Article.class);
-        ArticleInterest articleInterest = mock(ArticleInterest.class);
-        when(articleInterest.getInterest()).thenReturn(interest);
-        article.getArticleInterests().add(articleInterest);
-        when(article.getArticleInterests()).thenReturn(Set.of(articleInterest));
-        when(articleInterest.getInterest()).thenReturn(interest);
-
-        when(subscriptionRepository.findAllByInterest(interest))
-            .thenReturn(List.of(subscription));
-        when(notificationRepository.saveAll(anyList()))
-            .thenAnswer(invocation -> invocation.getArgument(0)); // 저장된 알림 그대로 리턴
-
-        // when
-        List<Notification> result = notificationService.createInterestNotification(
-            List.of(article));
-
-        // then
-        assertEquals(1, result.size());
-        Notification notification = result.get(0);
-        assertEquals(user, notification.getUser());
-        assertTrue(notification.getContent().contains("AI"));
-        verify(subscriptionRepository, times(1)).findAllByInterest(interest);
-        verify(notificationRepository, times(1)).saveAll(anyList());
-    }
 
     @DisplayName("알림 확인 - 성공")
     @Test
@@ -273,7 +233,7 @@ class NotificationServiceImplTest {
         // then
         verify(notificationRepository).confirmAllByUserId(userId);
     }
-
+    
     @DisplayName("알림 전체 확인 - 실패")
     @Test
     void confirmAllNotificationsShouldFail() {
@@ -334,5 +294,43 @@ class NotificationServiceImplTest {
         // when & then
         assertThrows(RuntimeException.class,
             () -> notificationService.findAll(userId, null, null, 50));
+    }
+
+    @DisplayName("구독한 관심사 관련 기사 등록 시 알림 생성 - 성공")
+    @Test
+    void createArticleInterestNotification() {
+
+        Interest interest = mock(Interest.class);
+        UUID interestId = UUID.randomUUID();
+        when(interest.getId()).thenReturn(interestId);
+        when(interest.getName()).thenReturn("AI");
+
+        User user = mock(User.class);
+        Subscription subscription = mock(Subscription.class);
+        when(subscription.getUser()).thenReturn(user);
+
+        Article article = mock(Article.class);
+        ArticleInterest articleInterest = mock(ArticleInterest.class);
+        when(articleInterest.getInterest()).thenReturn(interest);
+        article.getArticleInterests().add(articleInterest);
+        when(articleInterest.getInterest()).thenReturn(interest);
+        when(articleInterest.getArticle()).thenReturn(article);
+
+        when(subscriptionRepository.findAllByInterest(interest))
+            .thenReturn(List.of(subscription));
+        when(notificationRepository.saveAll(anyList()))
+            .thenAnswer(invocation -> invocation.getArgument(0)); // 저장된 알림 그대로 리턴
+
+        // when
+        List<Notification> result = notificationService.createArticleInterestNotification(
+            List.of(articleInterest));
+
+        // then
+        assertEquals(1, result.size());
+        Notification notification = result.get(0);
+        assertEquals(user, notification.getUser());
+        assertTrue(notification.getContent().contains("AI"));
+        verify(subscriptionRepository).findAllByInterest(interest);
+        verify(notificationRepository).saveAll(anyList());
     }
 }

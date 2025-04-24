@@ -15,6 +15,7 @@
 //import java.time.Instant;
 //import java.util.Set;
 //import lombok.RequiredArgsConstructor;
+//import org.springframework.stereotype.Component;
 //
 //@Component
 //@RequiredArgsConstructor
@@ -42,7 +43,7 @@
 //                "sourceUrl" + i,
 //                "summary" + i,
 //                Set.of(),
-//                0,
+//                0L,
 //                Instant.now(),
 //                false
 //            );
@@ -53,6 +54,7 @@
 //                user,
 //                "content" + i
 //            );
+//            comment.incrementLikeCount();
 //            commentRepository.save(comment);
 //
 //            CommentLike commentLike = CommentLike.create(

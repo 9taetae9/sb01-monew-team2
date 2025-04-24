@@ -8,10 +8,10 @@ public record ArticleDto(
     String source,
     String sourceUrl,
     String title,
-    Instant publishedDate,
+    Instant publishDate,
     String summary,
-    Integer commentCount,
-    Integer viewCount,
+    Long commentCount,
+    Long viewCount,
     Boolean viewedByMe
 ) {
 

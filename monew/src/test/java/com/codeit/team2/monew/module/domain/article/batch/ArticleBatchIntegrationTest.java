@@ -34,7 +34,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @ActiveProfiles("test-postgre")
 @Tag("integration")
-
 public class ArticleBatchIntegrationTest {
 
     @Container

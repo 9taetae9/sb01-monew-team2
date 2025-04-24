@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,12 +46,12 @@ public class InterestController {
     @PatchMapping("/{interestId}")
     public ResponseEntity<InterestDto> update(
         @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
-        @PathVariable(name = "interestId") UUID interestId,
+        @PathVariable(name = "interestId") UUID id,
         @Valid @RequestBody InterestUpdateRequest request
     ) {
-        log.info("Start - InterestController/update: interest id={}", interestId);
-        InterestDto interestDto = interestService.update(request, interestId, userId);
-        log.info("Complete - InterestController/update: interest id={}", interestId);
+        log.info("Start - InterestController/update: interest id={}", id);
+        InterestDto interestDto = interestService.update(request, id, userId);
+        log.info("Complete - InterestController/update: interest id={}", id);
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(interestDto);
@@ -59,13 +60,27 @@ public class InterestController {
     @PostMapping("/{interestId}/subscriptions")
     public ResponseEntity<SubscriptionDto> subscription(
         @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
-        @PathVariable(name = "interestId") UUID interestId
+        @PathVariable(name = "interestId") UUID id
     ) {
-        log.info("Start - InterestController/subscriptione: interest id={}, userId={}", interestId, userId);
-        SubscriptionDto subscriptionDto = subscriptionService.subscription(interestId, userId);
-        log.info("Complete - InterestController/subscription: interest id={}, userId={}", interestId, userId);
+        log.info("Start - InterestController/subscriptione: interest id={}, userId={}", id, userId);
+        SubscriptionDto subscriptionDto = subscriptionService.subscription(id, userId);
+        log.info("Complete - InterestController/subscription: interest id={}, userId={}", id, userId);
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(subscriptionDto);
     }
+
+    @DeleteMapping("/{interestId}")
+    public ResponseEntity<Void> delete(
+        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @PathVariable(name = "interestId") UUID id
+    ) {
+        log.info("Start - InterestController/subscriptione: interest id={}", id);
+        interestService.delete(id, userId);
+        log.info("Complete - InterestController/subscription: interest id={}", id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
+    }
+
 }

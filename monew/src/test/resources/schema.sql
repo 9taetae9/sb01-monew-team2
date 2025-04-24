@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS comment_likes;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS interest_keywords;
+DROP TABLE IF EXISTS subscriptions;
+DROP TABLE IF EXISTS article_views;
+DROP TABLE IF EXISTS article_interests;
+DROP TABLE IF EXISTS articles CASCADE;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS interests CASCADE;
+DROP TABLE IF EXISTS keywords;
+DROP TABLE IF EXISTS dummy_articles;
 
 CREATE TABLE interests (
                            id UUID NOT NULL PRIMARY KEY,
@@ -115,4 +127,16 @@ CREATE TABLE article_interests (
     updated_at TIMESTAMP WITH TIME ZONE NULL,
     FOREIGN KEY (article_id) REFERENCES  articles (id) ON DELETE CASCADE,
     FOREIGN KEY (interest_id) REFERENCES interests (id) ON DELETE CASCADE
+);
+
+CREATE TABLE dummy_articles
+(
+    id             UUID                     NOT NULL PRIMARY KEY,
+    title          VARCHAR(255)             NOT NULL,
+    source         VARCHAR(255)             NOT NULL,
+    source_url     TEXT             NOT NULL UNIQUE,
+    summary        TEXT                     NULL,
+    view_count     BIGINT                   NOT NULL DEFAULT 0,
+    published_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted        BOOLEAN                  NOT NULL DEFAULT false
 );

@@ -3,81 +3,80 @@ package com.codeit.team2.monew.module.domain.interest.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.codeit.team2.monew.config.JpaConfig;
+import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.repository.ArticleInterestRepository;
+import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
-import lombok.extern.slf4j.Slf4j;
+import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
+import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
+import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import java.time.Instant;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.context.ActiveProfiles;
 
-@Slf4j
 @DataJpaTest
-@Testcontainers
+@ActiveProfiles("test-temp")
 @Import(JpaConfig.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class InterestRepositoryTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
-        .withDatabaseName("monew")
-        .withUsername("test")
-        .withPassword("testpw")
-        .withInitScript("init_pg_trgm.sql");
-
-    @DynamicPropertySource
-    static void setProps(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
-        registry.add("spring.jpa.properties.hibernate.dialect",
-            () -> "org.hibernate.dialect.PostgreSQLDialect");
-        registry.add("spring.sql.init.mode", () -> "never");
-    }
+public class InterestRepositoryTest {
+    @Autowired
+    private KeywordRepository keywordRepository;
 
     @Autowired
-    InterestRepository interestRepository;
+    private ArticleRepository articleRepository;
 
-    @DisplayName("관심사 이름 비교: 유사도 0.6, word_similarity 비교 성공")
+    @Autowired
+    private ArticleInterestRepository articleInterestRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private InterestRepository interestRepository;
+
+    @Autowired
+    private InterestKeywordRepository interestKeywordRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    @DisplayName("관심사 삭제 시, 키워드와 구독 테이블 확인")
     @Test
-    void existsByNameSimilarTo_success() {
+    void deleteInterest_check_success() {
         // given
-        String name = "programming";
-        interestRepository.save(Interest.create(name));
-        interestRepository.flush();
+        User user = userRepository.save(new User("test@test.com", "test", "pw", false));
+        Keyword keyword = keywordRepository.saveAndFlush(new Keyword("당근"));
+
+        Interest interest = Interest.create("채소");
+        interest.addKeyword(keyword);
+        interest.addSubscriber(user);
+        Interest savedInterest = interestRepository.saveAndFlush(interest);
+
+        Article article = new Article("a", "a", "a", "a", Set.of(), 0L, Instant.now(), false);
+        articleRepository.saveAndFlush(article);
+
+        ArticleInterest articleInterest = new ArticleInterest(article, savedInterest);
+        articleInterestRepository.saveAndFlush(articleInterest);
+        savedInterest.getArticleInterests().add(articleInterest);
+        Interest finalInterest = interestRepository.saveAndFlush(savedInterest);
 
         // when
-        String input = "programmi";
-        boolean result = interestRepository.existsByNameSimilarTo(input);
-        Double sim = interestRepository.getSimilarity(name, input);
-        log.debug("유사도 = {}", sim);
+        interestRepository.delete(finalInterest);
 
         // then
-        assertThat(result).isEqualTo(true);
+        assertThat(interestRepository.findById(savedInterest.getId())).isNotPresent();
+        assertThat(interestKeywordRepository.findAll()).isEmpty();
+        assertThat(articleInterestRepository.findAll()).isEmpty();
+        assertThat(subscriptionRepository.findAll()).isEmpty();
+        assertThat(keywordRepository.findByName(keyword.getName())).isPresent();
+        assertThat(userRepository.findById(user.getId())).isPresent();
+
     }
 
-    @DisplayName("관심사 이름 비교: 유사도 0.6, word_similarity, 유사 비교 실패")
-    @Test
-    void existsByNameSimilarTo_failure() {
-        // given
-        String name = "programming";
-        interestRepository.save(Interest.create(name));
-        interestRepository.flush();
-
-        // when
-        String input = "progrannnn";
-        boolean result = interestRepository.existsByNameSimilarTo(input);
-        Double sim = interestRepository.getSimilarity(name, input);
-        log.debug("유사도 = {}", sim);
-
-        // then
-        assertThat(result).isEqualTo(false);
-    }
 }

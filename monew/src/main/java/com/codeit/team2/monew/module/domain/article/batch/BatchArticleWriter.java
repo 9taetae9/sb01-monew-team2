@@ -4,6 +4,7 @@ import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCom
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import com.codeit.team2.monew.module.domain.notification.service.NotificationService;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -18,15 +19,18 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Qualifier("batchArticleWriter")
 public class BatchArticleWriter implements ItemWriter<List<ArticleInterestCreateCommand>> {
 
     private final ArticleRepository articleRepository;
     private final JdbcTemplate jdbcTemplate;
+    private final NotificationService notificationService;
 
     @Override
     public void write(Chunk<? extends List<ArticleInterestCreateCommand>> items) throws Exception {
@@ -78,6 +82,19 @@ public class BatchArticleWriter implements ItemWriter<List<ArticleInterestCreate
             ps.setObject(3, ai.getInterest().getId());
             ps.setObject(4, Timestamp.from(now));
         });
+
+        // 알림 생성
+        Set<UUID> newlySavedArticleIds = toSave.stream()
+            .map(Article::getId)
+            .collect(Collectors.toSet());
+        // 새롭게 등록된 기사(toSave)만 필터링
+        List<ArticleInterest> newlyCreatedInterests = articleInterests.stream()
+            .filter(ai -> newlySavedArticleIds.contains(ai.getArticle().getId()))
+            .toList();
+
+        if (!newlyCreatedInterests.isEmpty()) {
+            notificationService.createArticleInterestNotification(newlyCreatedInterests);
+        }
     }
 
     private List<ArticleInterestCreateCommand> flattenChunk(

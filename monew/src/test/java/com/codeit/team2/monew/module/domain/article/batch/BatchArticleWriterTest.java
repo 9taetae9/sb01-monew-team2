@@ -9,6 +9,7 @@ import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCom
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import com.codeit.team2.monew.module.domain.notification.service.NotificationService;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -29,11 +30,13 @@ public class BatchArticleWriterTest {
     private ArticleRepository articleRepository;
     @Mock
     private JdbcTemplate jdbcTemplate;
+    @Mock
+    private NotificationService notificationService;
     private BatchArticleWriter writer;
 
     @BeforeEach
     void setup() {
-        writer = new BatchArticleWriter(articleRepository, jdbcTemplate);
+        writer = new BatchArticleWriter(articleRepository, jdbcTemplate, notificationService);
     }
 
 
