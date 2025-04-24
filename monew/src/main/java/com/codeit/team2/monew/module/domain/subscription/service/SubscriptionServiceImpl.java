@@ -48,6 +48,20 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         return subscriptionMapper.toDto(subscription, interest, keywords);
     }
 
+    @Override
+    public void cancelSubscription(UUID interestId, UUID userId) {
+
+        User user = getUserOrThrow(userId);
+        Interest interest = getInterestOrThrow(interestId);
+
+        if (!subscriptionRepository.existsByInterestAndUser(interest, user)) {
+            throw new DuplicateRequestException("관심사를 구독하고 있지 않습니다.");
+        }
+
+        // 구독 취소 subscription remove
+
+    }
+
     private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId).orElseThrow(
             () -> new IllegalArgumentException("user not found"));
@@ -55,6 +69,6 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
     private Interest getInterestOrThrow(UUID interestId) {
         return interestRepository.findById(interestId).orElseThrow(
-            () -> new IllegalArgumentException("user not found"));
+            () -> new IllegalArgumentException("interest not found"));
     }
 }

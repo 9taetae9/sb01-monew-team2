@@ -105,6 +105,19 @@ class SubscriptionServiceImplTest {
             .isInstanceOf(DuplicateRequestException.class);
     }
 
+    @DisplayName("유저가 관심사 구독을 취소한다.")
+    @Test
+    void cancelSubscription_success() {
+        // given
+
+
+        // when
+
+
+        // then
+
+    }
+
     Interest createInterest(String name, List<String> keywords) {
         Interest mockInterest = Interest.create(name);
         for (String keyword : keywords) {
