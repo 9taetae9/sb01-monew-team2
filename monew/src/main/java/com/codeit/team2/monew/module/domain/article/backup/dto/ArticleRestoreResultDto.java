@@ -1,4 +1,4 @@
-package com.codeit.team2.monew.module.domain.article.dto;
+package com.codeit.team2.monew.module.domain.article.backup.dto;
 
 import java.time.Instant;
 import java.util.List;
