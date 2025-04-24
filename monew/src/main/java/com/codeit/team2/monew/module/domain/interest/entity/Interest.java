@@ -15,7 +15,6 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "interests")
@@ -27,7 +26,6 @@ public class Interest extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    @ColumnDefault("0L")
     private long subscriberCount;
 
     @OneToMany(mappedBy = "interest", cascade = CascadeType.ALL, orphanRemoval = true)
