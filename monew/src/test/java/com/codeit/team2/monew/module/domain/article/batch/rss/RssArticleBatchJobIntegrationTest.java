@@ -16,6 +16,7 @@ import jakarta.persistence.PersistenceContext;
 import java.time.Instant;
 import java.util.List;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.Job;
@@ -79,6 +80,11 @@ public class RssArticleBatchJobIntegrationTest {
         registry.add("spring.sql.init.mode", () -> "never");
         registry.add("spring.jpa.properties.hibernate.dialect",
             () -> "org.hibernate.dialect.PostgreSQLDialect");
+    }
+
+    @BeforeAll
+    static void startContainer() {
+        postgres.start();
     }
 
     @Test
