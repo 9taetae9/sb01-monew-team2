@@ -41,9 +41,9 @@ news:
 
 aws:
   profile-name: monew-acc
-  region: ap-northeast-2
+  region: ${AWS_REGION}
   s3:
-    bucket-name: monew-article-backup-dev
+    bucket-name: ${AWS_S3_BUCKET_NAME}
 
 app:
   db-type: postgresql  # postgresql || mongodb
