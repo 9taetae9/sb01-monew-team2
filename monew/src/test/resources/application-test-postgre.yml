@@ -8,6 +8,6 @@ spring:
       initialize-schema: always
 aws:
   profile-name: monew-acc
-  region: ${AWS_REGION}
+  region: tmp
   s3:
-    bucket-name: ${AWS_S3_BUCKET_NAME}
+    bucket-name: tmp
