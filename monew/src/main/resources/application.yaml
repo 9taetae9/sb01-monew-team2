@@ -47,3 +47,7 @@ aws:
 
 app:
   db-type: postgresql  # postgresql || mongodb
+
+server:
+  tomcat:
+    relaxed-query-chars: '[,]'
