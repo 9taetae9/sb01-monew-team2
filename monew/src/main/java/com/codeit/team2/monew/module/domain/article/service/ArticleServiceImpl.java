@@ -112,6 +112,16 @@ public class ArticleServiceImpl implements ArticleService {
                 articleFindRequest.cursor(),
                 articleFindRequest.after(),
                 pageable);
+        } else if (articleFindRequest.orderBy().equals(ArticleOrderBy.commentCount)) {
+            slices = articleCustomRepository.findByCommentCount(articleFindRequest.keyword(),
+                articleFindRequest.interestId(),
+                articleFindRequest.sourceIn(),
+                articleFindRequest.publishDateFrom(),
+                articleFindRequest.publishDateTo(),
+                articleFindRequest.direction(),
+                articleFindRequest.cursor(),
+                articleFindRequest.after(),
+                pageable);
         } else {
             slices = null;
         }

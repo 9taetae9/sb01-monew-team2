@@ -3,6 +3,7 @@ package com.codeit.team2.monew.module.domain.article.repository;
 import com.codeit.team2.monew.module.domain.article.dto.request.ArticleSourceIn;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.QArticle;
+import com.codeit.team2.monew.module.domain.comment.entity.QComment;
 import com.codeit.team2.monew.module.domain.relation.entity.QArticleInterest;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
@@ -175,6 +176,49 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
     public Slice<Article> findByCommentCount(String keyword, UUID interestId,
         List<ArticleSourceIn> sourceIn, Instant publishDateFrom, Instant publishDateTo,
         Direction direction, String cursor, Instant after, Pageable pageable) {
-        return null;
+        QArticle article = QArticle.article;
+        QArticleInterest articleInterest = QArticleInterest.articleInterest;
+        QComment comment = QComment.comment;
+
+        JPAQuery<Article> query = queryFactory
+            .select(article)
+            .from(article)
+            .leftJoin(article.articleInterests, articleInterest)
+            .leftJoin(comment).on(comment.article.eq(article))
+            .groupBy(article.id);
+
+        BooleanBuilder where = buildCommonFilters(article, articleInterest,
+            keyword, interestId, sourceIn, publishDateFrom, publishDateTo, query);
+
+        if (cursor != null && after != null) {
+            Long commentCursor = Long.parseLong(cursor);
+            if (direction.isAscending()) {
+                query.having(comment.count().gt(commentCursor)
+                    .or(comment.count().eq(commentCursor).and(article.createdAt.gt(after))));
+            } else {
+                query.having(comment.count().lt(commentCursor)
+                    .or(comment.count().eq(commentCursor).and(article.createdAt.lt(after))));
+            }
+        }
+
+        query.where(where);
+
+        Order order = direction.isAscending() ? Order.ASC : Order.DESC;
+        query.orderBy(
+            new OrderSpecifier<>(order, comment.count()),
+            // commentCount 기준으로 세야함 -> 쿼리에서 left join으로 가져온 comment의 수
+            new OrderSpecifier<>(order, article.createdAt)
+        );
+
+        List<Article> articles = query
+            .limit(pageable.getPageSize() + 1)
+            .fetch();
+
+        boolean hasNext = articles.size() > pageable.getPageSize();
+        if (hasNext) {
+            articles.remove(pageable.getPageSize());
+        }
+
+        return new SliceImpl<>(articles, pageable, hasNext);
     }
 }
