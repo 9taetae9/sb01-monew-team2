@@ -4,6 +4,7 @@ import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
+import com.codeit.team2.monew.module.domain.notification.service.NotificationService;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,6 +23,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Override
     public CommentLike like(UUID commentId, UUID userId) {
@@ -45,6 +47,9 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
         CommentLike commentLike = CommentLike.create(comment, user);
         comment.incrementLikeCount();
+
+        // 알림 생성
+        notificationService.createCommentNotification(comment, comment.getUser(), user);
 
         return commentLikeRepository.save(commentLike);
     }

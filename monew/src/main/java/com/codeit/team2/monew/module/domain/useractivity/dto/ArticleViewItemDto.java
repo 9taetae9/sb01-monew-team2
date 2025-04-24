@@ -3,7 +3,7 @@ package com.codeit.team2.monew.module.domain.useractivity.dto;
 import java.time.Instant;
 import java.util.UUID;
 
-public record ArticleViewItem(
+public record ArticleViewItemDto(
     UUID id,
     UUID viewedBy,
     Instant createdAt,
