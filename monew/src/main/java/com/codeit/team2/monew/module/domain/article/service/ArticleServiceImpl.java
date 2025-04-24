@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -88,10 +88,10 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public CursorPageResponseArticleDto findAll(UUID userId,
         ArticleFindRequest articleFindRequest) {
-        Page<Article> pages;
+        Slice<Article> slices;
         Pageable pageable = PageRequest.of(0, articleFindRequest.limit(), Sort.unsorted());
         if (articleFindRequest.orderBy().equals(ArticleOrderBy.publishDate)) {
-            pages = articleCustomRepository.findByPublishDate(articleFindRequest.keyword(),
+            slices = articleCustomRepository.findByPublishDate(articleFindRequest.keyword(),
                 articleFindRequest.interestId(),
                 articleFindRequest.sourceIn(),
                 articleFindRequest.publishDateFrom(),
@@ -101,10 +101,10 @@ public class ArticleServiceImpl implements ArticleService {
                 articleFindRequest.after(),
                 pageable);
         } else {
-            pages = null;
+            slices = null;
         }
 
-        List<Article> articles = pages.getContent();
+        List<Article> articles = slices.getContent();
         List<ArticleDto> articleDtos = new ArrayList<>();
         articles.stream().forEach(article -> {
             Long commentCount = commentRepository.countByArticle(article);
@@ -126,7 +126,7 @@ public class ArticleServiceImpl implements ArticleService {
             articleFindRequest.sourceIn(), articleFindRequest.publishDateFrom(),
             articleFindRequest.publishDateTo());
 
-        boolean hasNext = pages.hasNext();
+        boolean hasNext = slices.hasNext();
 
         Object cursor;
         if (hasNext && !articles.isEmpty() && articleFindRequest.orderBy()

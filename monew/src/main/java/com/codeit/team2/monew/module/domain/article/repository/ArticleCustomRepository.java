@@ -5,13 +5,13 @@ import com.codeit.team2.monew.module.domain.article.entity.Article;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort.Direction;
 
 public interface ArticleCustomRepository {
 
-    Page<Article> findByPublishDate(
+    Slice<Article> findByPublishDate(
         String keyword,
         UUID interestId,
         List<ArticleSourceIn> sourceIn,
@@ -23,7 +23,7 @@ public interface ArticleCustomRepository {
         Pageable pageable
     );
 
-    Page<Article> findByViewCount(
+    Slice<Article> findByViewCount(
         String keyword,
         UUID interestId,
         List<ArticleSourceIn> sourceIn,
@@ -35,7 +35,7 @@ public interface ArticleCustomRepository {
         Pageable pageable
     );
 
-    Page<Article> findByCommentCount(
+    Slice<Article> findByCommentCount(
         String keyword,
         UUID interestId,
         List<ArticleSourceIn> sourceIn,

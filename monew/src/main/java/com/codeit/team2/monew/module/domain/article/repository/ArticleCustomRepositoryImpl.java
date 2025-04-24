@@ -13,9 +13,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Repository;
 
@@ -77,7 +77,7 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
     }
 
     @Override
-    public Page<Article> findByPublishDate(String keyword, UUID interestId,
+    public Slice<Article> findByPublishDate(String keyword, UUID interestId,
         List<ArticleSourceIn> sourceIn, Instant publishDateFrom, Instant publishDateTo,
         Direction direction, String cursor, Instant after, Pageable pageable) {
 
@@ -115,10 +115,12 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
             new OrderSpecifier<>(order, article.createdAt));
 
         // totalElements: 전체 데이터 중 where 조건을 만족하는 데이터 수
-        long totalElements = queryFactory
-            .selectFrom(article)
-            .where(where)
-            .fetchCount();
+//        long totalElements = queryFactory
+//            .selectFrom(article)
+//            .where(where)
+//            .fetchCount();
+        long totalElements = countFilteredTotalElements(keyword, interestId, sourceIn,
+            publishDateFrom, publishDateTo);
 
         List<Article> result = query.limit(pageable.getPageSize() + 1).fetch();
 
@@ -127,18 +129,18 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
             result.remove(pageable.getPageSize());
         }
 
-        return new PageImpl<>(result, pageable, totalElements);
+        return new SliceImpl<>(result, pageable, hasNext);
     }
 
     @Override
-    public Page<Article> findByViewCount(String keyword, UUID interestId,
+    public Slice<Article> findByViewCount(String keyword, UUID interestId,
         List<ArticleSourceIn> sourceIn, Instant publishDateFrom, Instant publishDateTo,
         Direction direction, String cursor, Instant after, Pageable pageable) {
         return null;
     }
 
     @Override
-    public Page<Article> findByCommentCount(String keyword, UUID interestId,
+    public Slice<Article> findByCommentCount(String keyword, UUID interestId,
         List<ArticleSourceIn> sourceIn, Instant publishDateFrom, Instant publishDateTo,
         Direction direction, String cursor, Instant after, Pageable pageable) {
         return null;
