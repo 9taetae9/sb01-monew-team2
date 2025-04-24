@@ -69,6 +69,7 @@ public interface ArticleMapper {
     List<DummyArticle> yonhapRssListToEntity(List<YonhapRss.Item> items);
 
     @Mapping(target = "articleInterests", ignore = true)
+    @Mapping(target = "id", ignore = true)
     Article dummyArticleToArticle(DummyArticle dummyArticle);
 
     @Mapping(target = "id", source = "articleView.id")
