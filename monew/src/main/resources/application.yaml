@@ -39,3 +39,11 @@ news:
     client-id: ${NAVER_CLIENT_ID}
     client-secret: ${NAVER_CLIENT_SECRET}
 
+aws:
+  profile-name: monew-acc
+  region: ap-northeast-2
+  s3:
+    bucket-name: monew-article-backup-dev
+
+app:
+  db-type: postgresql  # postgresql || mongodb
