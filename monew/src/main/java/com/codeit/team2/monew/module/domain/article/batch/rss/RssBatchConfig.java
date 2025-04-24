@@ -1,7 +1,8 @@
-package com.codeit.team2.monew.module.domain.article.batch;
+package com.codeit.team2.monew.module.domain.article.batch.rss;
+
 
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
-import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.springframework.batch.core.Job;
@@ -21,40 +22,43 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @EnableBatchProcessing
-public class ArticleBatchConfig {
+public class RssBatchConfig {
 
-    private final ItemReader<Keyword> keywordReader;
-    private final ItemProcessor<Keyword, List<ArticleInterestCreateCommand>> keywordProcessor;
+    private final ItemReader<DummyArticle> dummyArticleReader;
+    private final ItemProcessor<DummyArticle, List<ArticleInterestCreateCommand>> articleProcessor;
     private final ItemWriter<List<ArticleInterestCreateCommand>> articleWriter;
 
-    public ArticleBatchConfig(ItemReader<Keyword> keywordReader,
-        ItemProcessor<Keyword, List<ArticleInterestCreateCommand>> keywordProcessor,
+    public RssBatchConfig(ItemReader<DummyArticle> dummyArticleReader,
+        ItemProcessor<DummyArticle, List<ArticleInterestCreateCommand>> articleProcessor,
         @Qualifier("batchArticleWriter") ItemWriter<List<ArticleInterestCreateCommand>> articleWriter) {
-        this.keywordReader = keywordReader;
-        this.keywordProcessor = keywordProcessor;
+        this.dummyArticleReader = dummyArticleReader;
+        this.articleProcessor = articleProcessor;
         this.articleWriter = articleWriter;
     }
 
     @Bean
-    public Step articleBatchStep(JobRepository jobRepository,
-        PlatformTransactionManager transactionManager) {
-        return new StepBuilder("articleBatchStep", jobRepository)
-            .<Keyword, List<ArticleInterestCreateCommand>>chunk(10, transactionManager)
-            .reader(keywordReader)
-            .processor(keywordProcessor)
+    public Step rssArticleBatchStep(JobRepository jobRepository,
+        PlatformTransactionManager transactionManager,
+        DummyArticleCleanupListener listener) {
+        return new StepBuilder("rssArticleBatchStep", jobRepository)
+            .<DummyArticle, List<ArticleInterestCreateCommand>>chunk(100, transactionManager)
+            .reader(dummyArticleReader)
+            .processor(articleProcessor)
             .writer(articleWriter)
             .faultTolerant()
             .skip(DataIntegrityViolationException.class)
             .skip(ConstraintViolationException.class)
             .skipLimit(100)
+            .listener(listener)
             .build();
     }
 
     @Bean
-    public Job articleBatchJob(JobRepository jobRepository,
-        PlatformTransactionManager transactionManager) {
-        return new JobBuilder("articleBatchJob", jobRepository)
-            .start(articleBatchStep(jobRepository, transactionManager))
+    public Job rssArticleBatchJob(JobRepository jobRepository,
+        PlatformTransactionManager transactionManager,
+        DummyArticleCleanupListener listener) {
+        return new JobBuilder("rssArticleBatchJob", jobRepository)
+            .start(rssArticleBatchStep(jobRepository, transactionManager, listener))
             .build();
     }
 }

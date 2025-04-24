@@ -1,6 +1,6 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
-import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.url_provider.NewsUrlProvider;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapperImpl;
@@ -79,7 +79,7 @@ public class HankyungRssNewsClientTest {
             .setBody(dummyXml)
             .addHeader("Content-Type", "application/xml"));
 
-        List<Article> articles = client.fetchArticles();
+        List<DummyArticle> articles = client.fetchArticles();
 
         Assertions.assertThat(articles).hasSize(1);
     }

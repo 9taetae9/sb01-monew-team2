@@ -8,6 +8,7 @@ import com.codeit.team2.monew.module.domain.article.dto.rss.HankyungRss;
 import com.codeit.team2.monew.module.domain.article.dto.rss.YonhapRss;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
+import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,43 +30,46 @@ public interface ArticleMapper {
 
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "title", source = "title")
     @Mapping(target = "source", constant = "HANKYUNG")
     @Mapping(target = "sourceUrl", source = "link")
     @Mapping(target = "viewCount", constant = "0L")
     @Mapping(target = "summary", constant = "")
     @Mapping(target = "publishedDate", expression = "java(ZonedDateTime.parse(item.getPubDate(), DateTimeFormatter.RFC_1123_DATE_TIME).toInstant())")
-    @Mapping(target = "articleInterests", ignore = true)
     @Mapping(target = "deleted", constant = "false")
-    Article hankyungRssToEntity(HankyungRss.Item item);
+    DummyArticle hankyungRssToEntity(HankyungRss.Item item);
 
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "title", source = "title")
     @Mapping(target = "source", constant = "CHOSUN")
     @Mapping(target = "sourceUrl", source = "link")
     @Mapping(target = "viewCount", constant = "0L")
     @Mapping(target = "summary", constant = "")
     @Mapping(target = "publishedDate", expression = "java(ZonedDateTime.parse(item.getPubDate(), DateTimeFormatter.RFC_1123_DATE_TIME).toInstant())")
-    @Mapping(target = "articleInterests", ignore = true)
     @Mapping(target = "deleted", constant = "false")
-    Article chosunRsstoEntity(ChosunRss.Item item);
+    DummyArticle chosunRsstoEntity(ChosunRss.Item item);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "title", source = "title")
     @Mapping(target = "source", constant = "YONHAP")
     @Mapping(target = "sourceUrl", source = "link")
     @Mapping(target = "viewCount", constant = "0L")
     @Mapping(target = "summary", source = "description")
     @Mapping(target = "publishedDate", expression = "java(ZonedDateTime.parse(item.getPubDate(), DateTimeFormatter.RFC_1123_DATE_TIME).toInstant())")
-    @Mapping(target = "articleInterests", ignore = true)
     @Mapping(target = "deleted", constant = "false")
-    Article yonhapRssToEntity(YonhapRss.Item item);
+    DummyArticle yonhapRssToEntity(YonhapRss.Item item);
 
     List<Article> naverArticleListToEntity(List<NaverArticleItemDto> dtoList);
 
-    List<Article> hankyungRssListToEntity(List<HankyungRss.Item> items);
+    List<DummyArticle> hankyungRssListToEntity(List<HankyungRss.Item> items);
 
-    List<Article> chosunRssListToEntity(List<ChosunRss.Item> items);
+    List<DummyArticle> chosunRssListToEntity(List<ChosunRss.Item> items);
 
-    List<Article> yonhapRssListToEntity(List<YonhapRss.Item> items);
+    List<DummyArticle> yonhapRssListToEntity(List<YonhapRss.Item> items);
+
+    @Mapping(target = "articleInterests", ignore = true)
+    Article dummyArticleToArticle(DummyArticle dummyArticle);
 
     @Mapping(target = "id", source = "articleView.id")
     @Mapping(target = "viewedBy", source = "userId")
