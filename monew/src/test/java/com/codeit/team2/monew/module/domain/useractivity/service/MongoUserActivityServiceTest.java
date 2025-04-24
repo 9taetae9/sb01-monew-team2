@@ -3,6 +3,7 @@ package com.codeit.team2.monew.module.domain.useractivity.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
+import com.codeit.team2.monew.module.domain.useractivity.repository.MongoCommentItemRepository;
 import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserActivityRepository;
 import java.time.Instant;
 import java.util.Collections;
@@ -126,6 +128,7 @@ class MongoUserActivityServiceTest {
         User user = mock(User.class);
         Comment comment = mock(Comment.class);
         Article article = mock(Article.class);
+        UserActivity userActivity = mock(UserActivity.class);
 
         UUID commentId = UUID.randomUUID();
         UUID articleId = UUID.randomUUID();
@@ -150,8 +153,10 @@ class MongoUserActivityServiceTest {
         when(user.getId()).thenReturn(userId);
         when(user.getNickname()).thenReturn(userNickname);
 
+        when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
         // when
-        userActivityService.createCommentItem(Comment comment, Article article, User user);
+        userActivityService.createCommentItem(comment, article, user);
 
         // then
         ArgumentCaptor<CommentItem> captor = ArgumentCaptor.forClass(CommentItem.class);
