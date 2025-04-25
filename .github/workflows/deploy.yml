@@ -19,9 +19,9 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY2 }}
   AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY2 }}
-  ECS_TASK_DEFINITION: 
-  ECS_SERVICE:
-  ECS_CLUSTER:
+  ECS_TASK_DEFINITION: .github/workflows/ecs/task-definition.json
+  ECS_SERVICE: monew-service
+  ECS_CLUSTER: monew-cluster
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -84,6 +84,13 @@ jobs:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: monew-app
           image: ${{ env.ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
+
+      - name: ECS 서비스 중지(프리티어 환경 고려)
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE }} \
+            --desired-count 0
         
       - name: ECS 배포
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -92,3 +99,10 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+
+      - name: ECS 서비스 다시 시작
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE }} \
+            --desired-count 1
