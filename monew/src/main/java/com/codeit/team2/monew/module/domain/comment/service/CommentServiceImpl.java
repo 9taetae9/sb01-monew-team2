@@ -59,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment edit(UUID commentId, UUID userId, CommentUpdateRequest request) {
+    public CommentDto edit(UUID commentId, UUID userId, CommentUpdateRequest request) {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found - commentId: {}", commentId);
@@ -73,7 +73,9 @@ public class CommentServiceImpl implements CommentService {
         }
 
         comment.update(request.content());
-        return comment;
+
+        boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(), userId);
+        return commentMapper.toDto(comment, likedByMe);
     }
 
     @Override

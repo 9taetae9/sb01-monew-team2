@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentOrderBy;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
@@ -140,7 +141,7 @@ class CommentServiceImplTest {
         when(comment.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
 
-        Comment edited = commentService.edit(commentId, userId, request);
+        CommentDto edited = commentService.edit(commentId, userId, request);
 
         assertThat(edited).isEqualTo(comment);
         verify(commentRepository).findById(commentId);
