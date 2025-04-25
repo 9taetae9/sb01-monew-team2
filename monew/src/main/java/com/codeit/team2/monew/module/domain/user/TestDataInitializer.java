@@ -8,30 +8,36 @@ import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
-import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
+import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
+import com.codeit.team2.monew.module.domain.interest.service.InterestService;
+import com.codeit.team2.monew.module.domain.subscription.service.SubscriptionService;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import com.codeit.team2.monew.module.domain.user.service.UserService;
-import jakarta.annotation.PostConstruct;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TestDataInitializer {
+public class TestDataInitializer implements ApplicationRunner {
 
     private final UserRepository userRepository;
-    private final SubscriptionRepository subscriptionRepository;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final ArticleRepository articleRepository;
     private final ArticleViewRepository articleViewRepository;
     private final UserService userService;
+    private final InterestService interestService;
+    private final SubscriptionService subscriptionService;
 
-
-    //    @PostConstruct
     void init() {
         User user = userRepository.save(
             new User("email@a.com", "nickname", "passowrd", false)
@@ -74,15 +80,14 @@ public class TestDataInitializer {
         }
     }
 
-    @PostConstruct
     void initCommentRegisterEventData() {
-//        userService.registerUser(
-//            new UserRegisterRequest(
-//                "email@a.com",
-//                "nickname",
-//                "passowrd"
-//            )
-//        );
+        userService.registerUser(
+            new UserRegisterRequest(
+                "email@a.com",
+                "nickname",
+                "passowrd"
+            )
+        );
         Article article = new Article(
             "title",
             "NAVER",
@@ -96,4 +101,26 @@ public class TestDataInitializer {
         articleRepository.save(article);
     }
 
+    void intiSubscriptionRegisterEventData() {
+        UserDto userDto = userService.registerUser(new UserRegisterRequest(
+                "email@a.com",
+                "nickname1",
+                "password"
+            )
+        );
+
+        InterestRegisterRequest request = new InterestRegisterRequest(
+            "IT",
+            List.of("java", "python")
+        );
+
+        InterestDto interestDto = interestService.create(request, userDto.id());
+
+        subscriptionService.subscription(interestDto.id(), userDto.id());
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+
+    }
 }

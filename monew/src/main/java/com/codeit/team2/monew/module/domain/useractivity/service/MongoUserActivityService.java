@@ -2,13 +2,17 @@ package com.codeit.team2.monew.module.domain.useractivity.service;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
+import com.codeit.team2.monew.module.domain.useractivity.document.SubscriptionItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
 import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserActivityRepository;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -51,6 +55,27 @@ public class MongoUserActivityService implements UserActivityService {
     }
 
     @Transactional
+    public void createSubscriptionItem(Subscription subscription, Interest interest, UUID userId) {
+        UserActivity userActivity = findUserActivityOrThrow(userId);
+
+        List<String> keywords = interest.getKeywords().stream().map(
+            interestKeyword -> interestKeyword.getKeyword().getName()
+        ).toList();
+
+        SubscriptionItem subscriptionItem = new SubscriptionItem(
+            subscription.getId(),
+            interest.getId(),
+            interest.getName(),
+            keywords,
+            interest.getSubscriberCount(),
+            subscription.getCreatedAt()
+        );
+
+        userActivity.addSubscriptionItem(subscriptionItem);
+        userActivityRepository.save(userActivity);
+    }
+
+    @Transactional
     public void createCommentItem(Comment comment, Article article, User user) {
         CommentItem commentItem = new CommentItem(
             comment.getId(),
@@ -63,10 +88,14 @@ public class MongoUserActivityService implements UserActivityService {
             comment.getCreatedAt()
         );
 
-        UserActivity userActivity = userActivityRepository.findById(user.getId())
-            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+        UserActivity userActivity = findUserActivityOrThrow(user.getId());
 
         userActivity.addCommentItem(commentItem);
         userActivityRepository.save(userActivity);
+    }
+
+    private UserActivity findUserActivityOrThrow(UUID userId) {
+        return userActivityRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
     }
 }

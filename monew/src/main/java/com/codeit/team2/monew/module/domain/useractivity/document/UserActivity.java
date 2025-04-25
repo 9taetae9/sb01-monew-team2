@@ -30,5 +30,12 @@ public class UserActivity {
         }
         this.comments.add(0, commentItem);
     }
+
+    public void addSubscriptionItem(SubscriptionItem subscriptionItem) {
+        if (this.subscriptions.size() >= 10) {
+            this.subscriptions.remove(this.subscriptions.size() - 1);
+        }
+        this.subscriptions.add(0, subscriptionItem);
+    }
 }
 
