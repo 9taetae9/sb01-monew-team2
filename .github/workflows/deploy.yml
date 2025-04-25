@@ -3,11 +3,11 @@ name: CD - Deploy To ECS
 on:
   push:
     branches:
-      - release/*
+      - release*
       - release
   pull_request:
     branches:
-      - release/*
+      - release*
       - release
 
 permissions:
