@@ -6,3 +6,9 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
+
+aws:
+  profile-name: monew-acc
+  region: tmp
+  s3:
+    bucket-name: tmp

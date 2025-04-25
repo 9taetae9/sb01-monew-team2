@@ -4,7 +4,7 @@ package com.codeit.team2.monew.module.domain.article.controller;
 import com.codeit.team2.monew.module.domain.article.controller.docs.ArticleControllerDocs;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
 import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticleDto;
-import com.codeit.team2.monew.module.domain.article.dto.request.ArticleFindRequest;
+import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageRequestArticleDto;
 import com.codeit.team2.monew.module.domain.article.service.ArticleService;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -51,9 +51,10 @@ public class ArticleController implements ArticleControllerDocs {
     @GetMapping("")
     public ResponseEntity<CursorPageResponseArticleDto> findAll(
         @RequestHeader("MoNew-Request-User-ID") UUID userId,
-        @Valid @ModelAttribute ArticleFindRequest articleFindRequest) {
+        @Valid @ModelAttribute CursorPageRequestArticleDto cursorPageRequestArticleDto) {
         log.info("Start - ArticleController/findAll");
-        CursorPageResponseArticleDto result = articleService.findAll(userId, articleFindRequest);
+        CursorPageResponseArticleDto result = articleService.findAll(userId,
+            cursorPageRequestArticleDto);
         log.info("Complete - ArticleController/findAll");
         return ResponseEntity.ok().body(result);
     }
