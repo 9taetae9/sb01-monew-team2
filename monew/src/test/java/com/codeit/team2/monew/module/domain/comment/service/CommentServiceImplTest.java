@@ -22,6 +22,7 @@ import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeReposi
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -134,18 +135,36 @@ class CommentServiceImplTest {
     @Test
     @DisplayName("댓글 수정 - 성공")
     void edit_Success() {
-        //given
+        // given
         CommentUpdateRequest request = new CommentUpdateRequest("edited comment");
+        CommentDto expectedDto = new CommentDto(
+            commentId,
+            articleId,
+            userId,
+            "testUser",
+            "edited comment",
+            0L,
+            false,
+            Instant.now()
+        );
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
         when(comment.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
+        when(comment.getId()).thenReturn(commentId);
 
-        CommentDto edited = commentService.edit(commentId, userId, request);
+        when(commentLikeRepository.existsByCommentIdAndUserId(commentId, userId)).thenReturn(false);
 
-        assertThat(edited).isEqualTo(comment);
+        when(commentMapper.toDto(comment, false)).thenReturn(expectedDto);
+
+        // when
+        CommentDto result = commentService.edit(commentId, userId, request);
+
+        // then
+        assertThat(result).isEqualTo(expectedDto);
         verify(commentRepository).findById(commentId);
         verify(comment).update(request.content());
+        verify(commentMapper).toDto(comment, false);
     }
 
     @Test
