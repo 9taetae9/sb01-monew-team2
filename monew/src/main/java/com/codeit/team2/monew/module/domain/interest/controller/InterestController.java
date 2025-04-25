@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.interest.controller;
 
+import com.codeit.team2.monew.module.domain.interest.controller.docs.InterestControllerDocs;
 import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/interests")
 @RequiredArgsConstructor
-public class InterestController {
+public class InterestController implements InterestControllerDocs {
 
     private final InterestService interestService;
     private final SubscriptionService subscriptionService;
