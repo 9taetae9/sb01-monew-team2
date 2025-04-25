@@ -1,6 +1,9 @@
 spring:
   application:
     name: monew
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/monew
   jpa:
     hibernate:
       ddl-auto: none
