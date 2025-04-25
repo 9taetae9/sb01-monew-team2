@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.article.backup.controller;
 
+import com.codeit.team2.monew.module.domain.article.backup.controller.docs.ArticleRestoreControllerDocs;
 import com.codeit.team2.monew.module.domain.article.backup.service.ArticleRestoreService;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/articles")
 @RequiredArgsConstructor
-public class ArticleRestoreController {
+public class ArticleRestoreController implements ArticleRestoreControllerDocs {
 
     private final ArticleRestoreService articleRestoreService;
 
