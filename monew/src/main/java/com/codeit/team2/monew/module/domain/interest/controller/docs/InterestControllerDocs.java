@@ -2,8 +2,10 @@ package com.codeit.team2.monew.module.domain.interest.controller.docs;
 
 import com.codeit.team2.monew.config.SwaggerTags.Descriptions;
 import com.codeit.team2.monew.config.SwaggerTags.Tags;
+import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResponseInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,8 +18,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -115,4 +119,23 @@ public interface InterestControllerDocs {
     })
     @DeleteMapping("/{interestId}/subscriptions")
     ResponseEntity<Void> cancelSubscription(UUID userId, UUID id);
+
+    @Operation(
+        summary = "관심사 목록 조회",
+        description = "조건에 맞는 관심사 목록을 커서 기반 페이지네이션으로 조회합니다.",
+        parameters = {
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
+        }
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공",
+            content = @Content(schema = @Schema(implementation = CursorPageRequestInterestDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 (정렬 기준 오류, 페이지네이션 파라미터 오류 등)"),
+        @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    })
+    @GetMapping("")
+    ResponseEntity<CursorPageResponseInterestDto> findAll(
+        UUID userId,
+        @ParameterObject CursorPageRequestInterestDto cursorPageRequestInterestDto
+    );
 }
