@@ -26,9 +26,9 @@ public interface NotificationControllerDocs {
         summary = "알림 목록 조회",
         description = "요청자의 알림 목록을 조회합니다.",
         parameters = {
-            @Parameter(name = "cursor", description = "커서 값"),
-            @Parameter(name = "after", description = "보조 커서 (createdAt 값)"),
-            @Parameter(name = "limit", description = "커서 페이지 크기", example = "50"),
+            @Parameter(name = "cursor", description = "커서 값", in = ParameterIn.QUERY),
+            @Parameter(name = "after", description = "보조 커서 (createdAt 값)", in = ParameterIn.QUERY),
+            @Parameter(name = "limit", description = "커서 페이지 크기", example = "50", in = ParameterIn.QUERY),
             @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )

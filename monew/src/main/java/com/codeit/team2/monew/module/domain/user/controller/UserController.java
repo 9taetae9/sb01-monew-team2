@@ -52,7 +52,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> softDeleteUser(
+    public ResponseEntity<Void> softDeleteUser(
         @RequestHeader("Monew-Request-User-ID") UUID loginId,
         @PathVariable(name = "userId") UUID userId
     ) {
@@ -62,7 +62,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @DeleteMapping("/{userId}/hard")
-    public ResponseEntity<?> hardDeleteUser(
+    public ResponseEntity<Void> hardDeleteUser(
         @RequestHeader("Monew-Request-User-ID") UUID loginId,
         @PathVariable(name = "userId") UUID userId
     ) {

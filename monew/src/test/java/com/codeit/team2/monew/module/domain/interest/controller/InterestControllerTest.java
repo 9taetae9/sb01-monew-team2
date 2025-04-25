@@ -68,7 +68,7 @@ class InterestControllerTest {
 
         //when & then
         mockMvc.perform(post("/api/interests")
-            .header("MoNew-Request-User-ID", userId.toString())
+            .header("", userId.toString())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(requestDto))
         ).andExpect(status().isCreated())
@@ -105,7 +105,7 @@ class InterestControllerTest {
 
         //when & then
         mockMvc.perform(patch("/api/interests/{interestId}", interestId)
-                .header("MoNew-Request-User-ID", userId.toString())
+                .header("", userId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto))
             ).andExpect(status().isOk())
@@ -137,7 +137,7 @@ class InterestControllerTest {
 
         //when & then
         mockMvc.perform(post("/api/interests/{interestId}/subscriptions", interestId)
-                .header("MoNew-Request-User-ID", userId.toString())
+                .header("", userId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk())
             .andExpect(jsonPath("$.interestId").value(interestId.toString()))

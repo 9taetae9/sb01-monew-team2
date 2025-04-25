@@ -105,9 +105,9 @@ public class InterestController implements InterestControllerDocs {
         @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
         @PathVariable(name = "interestId") UUID id
     ) {
-        log.info("Start - InterestController/subscription: interest id={}, userId={}", id, userId);
+        log.info("Start - InterestController/cancelSubscription: interest id={}, userId={}", id, userId);
         subscriptionService.cancelSubscription(id, userId);
-        log.info("Complete - InterestController/subscription: interest id={}, userId={}", id,
+        log.info("Complete - InterestController/cancelSubscription: interest id={}, userId={}", id,
             userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)

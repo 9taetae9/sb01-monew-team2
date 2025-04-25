@@ -31,26 +31,26 @@ public class ArticleController implements ArticleControllerDocs {
 
     @PostMapping("/{articleId}/article-views")
     public ResponseEntity<ArticleViewDto> createArticleView(@PathVariable UUID articleId,
-        @RequestHeader("MoNew-Request-User-ID") UUID userId) {
+        @RequestHeader("Monew-Request-User-ID") UUID userId) {
         ArticleViewDto dto = articleService.createUserArticleView(userId, articleId);
         return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/{articleId}")
-    public ResponseEntity<?> softDeleteArticle(@PathVariable UUID articleId) {
+    public ResponseEntity<Void> softDeleteArticle(@PathVariable UUID articleId) {
         articleService.softDelete(articleId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{articleId}/hard")
-    public ResponseEntity<?> hardDeleteArticle(@PathVariable UUID articleId) {
+    public ResponseEntity<Void> hardDeleteArticle(@PathVariable UUID articleId) {
         articleService.hardDelete(articleId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("")
     public ResponseEntity<CursorPageResponseArticleDto> findAll(
-        @RequestHeader("MoNew-Request-User-ID") UUID userId,
+        @RequestHeader("Monew-Request-User-ID") UUID userId,
         @Valid @ModelAttribute CursorPageRequestArticleDto cursorPageRequestArticleDto) {
         log.info("Start - ArticleController/findAll");
         CursorPageResponseArticleDto result = articleService.findAll(userId,
