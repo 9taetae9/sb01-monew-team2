@@ -14,7 +14,7 @@ FROM amazoncorretto:17-alpine
 WORKDIR /app
 
 ENV PROJECT_NAME=monew
-ENV PROJECT_VERSION=0.0.1
+ENV PROJECT_VERSION=v1.0.0
 ENV JVM_OPTS=""
 COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.jar
 EXPOSE 80
