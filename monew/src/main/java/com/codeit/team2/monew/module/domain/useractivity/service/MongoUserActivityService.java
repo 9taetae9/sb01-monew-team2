@@ -8,7 +8,7 @@ import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
 import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserActivityRepository;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -42,10 +42,10 @@ public class MongoUserActivityService implements UserActivityService {
                 user.getEmail(),
                 user.getNickname(),
                 user.getCreatedAt(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
             )
         );
     }

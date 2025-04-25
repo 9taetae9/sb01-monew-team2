@@ -25,7 +25,10 @@ public class UserActivity {
     private List<ArticleViewItem> articleViews;
 
     public void addCommentItem(CommentItem commentItem) {
-        this.comments.add(commentItem);
+        if (this.comments.size() >= 10) {
+            this.comments.remove(this.comments.size() - 1);
+        }
+        this.comments.add(0, commentItem);
     }
 }
 
