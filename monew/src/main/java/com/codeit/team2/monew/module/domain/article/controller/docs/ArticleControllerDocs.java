@@ -1,8 +1,10 @@
 package com.codeit.team2.monew.module.domain.article.controller.docs;
 
+import com.codeit.team2.monew.config.SwaggerTags.Descriptions;
+import com.codeit.team2.monew.config.SwaggerTags.Tags;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
 import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticleDto;
-import com.codeit.team2.monew.module.domain.article.dto.request.ArticleFindRequest;
+import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageRequestArticleDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -13,9 +15,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "뉴스 기사 관리", description = "뉴스 기사 관련 API")
+@Tag(name = Tags.ARTICLE, description = Descriptions.ARTICLE)
 @RequestMapping("/api/articles")
 public interface ArticleControllerDocs {
 
@@ -81,5 +86,5 @@ public interface ArticleControllerDocs {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("")
-    ResponseEntity<CursorPageResponseArticleDto> findAll(UUID userId, ArticleFindRequest articleFindRequest);
+    ResponseEntity<CursorPageResponseArticleDto> findAll(UUID userId, CursorPageRequestArticleDto cursorPageRequestArticleDto);
 }

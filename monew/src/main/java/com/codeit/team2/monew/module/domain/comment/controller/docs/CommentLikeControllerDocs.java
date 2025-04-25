@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.comment.controller.docs;
 
+import com.codeit.team2.monew.config.SwaggerTags.Descriptions;
+import com.codeit.team2.monew.config.SwaggerTags.Tags;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentLikeDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "댓글 좋아요 관리", description = "댓글 좋아요 관련 API")
+@Tag(name = Tags.COMMENT, description = Descriptions.COMMENT)
 @RequestMapping("/api/comments/{commentId}/comment-likes")
 public interface CommentLikeControllerDocs {
 

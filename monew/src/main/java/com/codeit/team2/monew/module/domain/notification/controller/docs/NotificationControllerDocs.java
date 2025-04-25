@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.notification.controller.docs;
 
+import com.codeit.team2.monew.config.SwaggerTags.Descriptions;
+import com.codeit.team2.monew.config.SwaggerTags.Tags;
 import com.codeit.team2.monew.module.domain.notification.dto.CursorPageResponseNotificationDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "알림 관리", description = "알림 관련 API")
+@Tag(name = Tags.NOTIFICATION, description = Descriptions.NOTIFICATION)
 @RequestMapping("/api/notifications")
 public interface NotificationControllerDocs {
 

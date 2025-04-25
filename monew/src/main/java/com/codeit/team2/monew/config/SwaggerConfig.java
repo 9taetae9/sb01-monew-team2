@@ -23,11 +23,24 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public GroupedOpenApi enabledApiGroup() {
+    public GroupedOpenApi customerApiGroup() {
+        String[] pathsToMatch = {"/api/**"};
+        String[] pathsToExclude = {"/api/batch/**", "/api/backup/**"};
+
         return GroupedOpenApi.builder()
-            .group("monew") // Swagger UI 탭 이름
-            .pathsToMatch("/api/**") // 이 패키지만 Swagger에 노출
-            .pathsToExclude("/api/batch/**")
+            .group("customer") // Swagger UI 탭 이름
+            .pathsToMatch(pathsToMatch) // 이 패키지만 Swagger에 노출
+            .pathsToExclude(pathsToExclude)
+            .build();
+    }
+
+    @Bean
+    public GroupedOpenApi adminApiGroup() {
+        String[] pathsToMatch = {"/admin/**" ,"/api/batch/**", "/api/backup/**"};
+
+        return GroupedOpenApi.builder()
+            .group("admin") // Swagger UI 탭 이름
+            .pathsToMatch(pathsToMatch) // 이 패키지만 Swagger에 노출
             .build();
     }
 }

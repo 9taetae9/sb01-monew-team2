@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.comment.controller.docs;
 
+import com.codeit.team2.monew.config.SwaggerTags.Descriptions;
+import com.codeit.team2.monew.config.SwaggerTags.Tags;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "댓글 관리", description = "댓글 관련 API")
+@Tag(name = Tags.COMMENT, description = Descriptions.COMMENT)
 @RequestMapping("/api/comments")
 public interface CommentControllerDocs {
 

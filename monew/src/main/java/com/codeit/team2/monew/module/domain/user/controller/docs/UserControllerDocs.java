@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.user.controller.docs;
 
+import com.codeit.team2.monew.config.SwaggerTags.Descriptions;
+import com.codeit.team2.monew.config.SwaggerTags.Tags;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserLoginRequest;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "사용자 관리", description = "사용자 관련 API")
+@Tag(name = Tags.USER, description = Descriptions.USER)
 @RequestMapping("/api/users")
 public interface UserControllerDocs {
 

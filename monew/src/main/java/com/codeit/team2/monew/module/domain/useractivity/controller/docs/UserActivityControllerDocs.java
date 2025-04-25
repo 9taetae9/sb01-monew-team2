@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.useractivity.controller.docs;
 
+import com.codeit.team2.monew.config.SwaggerTags.Descriptions;
+import com.codeit.team2.monew.config.SwaggerTags.Tags;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "사용자 활동 내역 관리", description = "사용자 활동 내역 관련 API")
+@Tag(name = Tags.USER_ACTIVITY, description = Descriptions.USER_ACTIVITY)
 @RequestMapping("/api/user-activities")
 public interface UserActivityControllerDocs {
 

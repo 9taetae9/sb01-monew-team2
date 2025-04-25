@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.interest.controller.docs;
 
+import com.codeit.team2.monew.config.SwaggerTags.Descriptions;
+import com.codeit.team2.monew.config.SwaggerTags.Tags;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "관심사 관리", description = "관심사 관련 API")
+@Tag(name = Tags.INTEREST, description = Descriptions.INTEREST)
 @RequestMapping("/api/interests")
 public interface InterestControllerDocs {
 
