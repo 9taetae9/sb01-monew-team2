@@ -2,7 +2,7 @@ package com.codeit.team2.monew.module.domain.comment.dto;
 
 import java.util.List;
 
-public record CusorPageResponseCommentDto(
+public record CursorPageResponseCommentDto(
     List<CommentDto> content,
     Object nextCursor,
     Object nextAfter,

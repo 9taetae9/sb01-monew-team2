@@ -4,6 +4,8 @@ import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
+import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestCommentDto;
+import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
@@ -90,5 +92,11 @@ public class CommentServiceImpl implements CommentService {
             });
 
         commentRepository.delete(comment);
+    }
+
+    @Override
+    public CursorPageResponseCommentDto findAll(UUID userId,
+        CursorPageRequestCommentDto cursorPageRequestCommentDto) {
+        return null;
     }
 }
