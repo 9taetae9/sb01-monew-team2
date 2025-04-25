@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,12 +44,14 @@ public class ArticleServiceTest {
     private ArticleService articleService;
     private ArticleCustomRepository articleCustomRepository;
     private CommentRepository commentRepository;
+    private ApplicationEventPublisher publisher;
 
     @BeforeEach
     void setup() {
         articleMapper = new ArticleMapperImpl();
         articleService = new ArticleServiceImpl(articleRepository, articleViewRepository,
-            userRepository, articleMapper, articleCustomRepository, commentRepository);
+            userRepository, articleMapper, articleCustomRepository, commentRepository,
+            publisher);
     }
 
     @Test
