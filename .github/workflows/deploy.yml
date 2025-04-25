@@ -49,6 +49,7 @@ jobs:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ env.AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+        
 
       - name: ECR Login
         uses: aws-actions/amazon-ecr-login@v2
@@ -60,3 +61,4 @@ jobs:
           docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG -t $ECR_REPOSITORY_URI:latest . --platform linux/amd64
           docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
           docker push $ECR_REPOSITORY_URI:latest
+        working-directory: ./monew
