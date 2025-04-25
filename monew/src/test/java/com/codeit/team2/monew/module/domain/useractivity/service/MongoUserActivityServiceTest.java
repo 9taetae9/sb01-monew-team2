@@ -11,13 +11,12 @@ import static org.mockito.Mockito.when;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.user.entity.User;
-import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
-import com.codeit.team2.monew.module.domain.useractivity.repository.MongoCommentItemRepository;
 import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserActivityRepository;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,9 +35,6 @@ class MongoUserActivityServiceTest {
 
     @Mock
     private MongoUserActivityRepository userActivityRepository;
-
-    @Mock
-    private MongoCommentItemRepository commentItemRepository;
 
     @Spy
     private UserActivityMapper userActivitiesMapper = Mappers.getMapper(
@@ -125,19 +121,30 @@ class MongoUserActivityServiceTest {
     @Test
     void CommentItem_추가_성공() {
         // given
-        User user = mock(User.class);
-        Comment comment = mock(Comment.class);
-        Article article = mock(Article.class);
-        UserActivity userActivity = mock(UserActivity.class);
+        UUID userId = UUID.randomUUID();
+        String email = "email";
+        String userNickname = "nickname";
+        Instant createdAt = Instant.now();
 
         UUID commentId = UUID.randomUUID();
         UUID articleId = UUID.randomUUID();
         String articleTitle = "title";
-        UUID userId = UUID.randomUUID();
-        String userNickname = "nickname";
         String content = "content";
         Long likeCount = 0L;
-        Instant createdAt = Instant.now();
+
+        User user = mock(User.class);
+        Comment comment = mock(Comment.class);
+        Article article = mock(Article.class);
+        UserActivity userActivity = new UserActivity(
+            userId,
+            email,
+            userNickname,
+            createdAt,
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>()
+        );
 
         // comment
         when(comment.getId()).thenReturn(commentId);
@@ -159,18 +166,16 @@ class MongoUserActivityServiceTest {
         userActivityService.createCommentItem(comment, article, user);
 
         // then
-        ArgumentCaptor<CommentItem> captor = ArgumentCaptor.forClass(CommentItem.class);
-        verify(commentItemRepository).save(captor.capture());
+        ArgumentCaptor<UserActivity> userActivityArgumentCaptor = ArgumentCaptor.forClass(
+            UserActivity.class);
+        verify(userActivityRepository).save(userActivityArgumentCaptor.capture());
 
-        CommentItem saved = captor.getValue();
-        assertEquals(commentId, saved.getId());
-        assertEquals(articleId, saved.getArticleId());
-        assertEquals(articleTitle, saved.getArticleTitle());
-        assertEquals(userId, saved.getUserId());
-        assertEquals(userNickname, saved.getUserNickname());
-        assertEquals(content, saved.getContent());
-        assertEquals(likeCount, saved.getLikeCount());
-        assertEquals(createdAt, saved.getCreatedAt());
+        UserActivity userActivitySaved = userActivityArgumentCaptor.getValue();
+        assertEquals(userId, userActivitySaved.getId());
+        assertEquals(email, userActivitySaved.getEmail());
+        assertEquals(userNickname, userActivitySaved.getNickname());
+        assertEquals(createdAt, userActivitySaved.getCreatedAt());
+        assertEquals(1, userActivitySaved.getComments().size());
     }
 
 }

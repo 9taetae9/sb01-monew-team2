@@ -7,7 +7,6 @@ import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
-import com.codeit.team2.monew.module.domain.useractivity.repository.MongoCommentItemRepository;
 import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserActivityRepository;
 import java.util.Collections;
 import java.util.UUID;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MongoUserActivityService implements UserActivityService {
 
     private final MongoUserActivityRepository userActivityRepository;
-    private final MongoCommentItemRepository commentItemRepository;
     private final UserActivityMapper userActivityMapper;
 
     @Override
@@ -54,17 +52,15 @@ public class MongoUserActivityService implements UserActivityService {
 
     @Transactional
     public void createCommentItem(Comment comment, Article article, User user) {
-        CommentItem commentItem = commentItemRepository.save(
-            new CommentItem(
-                comment.getId(),
-                article.getId(),
-                article.getTitle(),
-                user.getId(),
-                user.getNickname(),
-                comment.getContent(),
-                comment.getLikeCount(),
-                comment.getCreatedAt()
-            )
+        CommentItem commentItem = new CommentItem(
+            comment.getId(),
+            article.getId(),
+            article.getTitle(),
+            user.getId(),
+            user.getNickname(),
+            comment.getContent(),
+            comment.getLikeCount(),
+            comment.getCreatedAt()
         );
 
         UserActivity userActivity = userActivityRepository.findById(user.getId())
