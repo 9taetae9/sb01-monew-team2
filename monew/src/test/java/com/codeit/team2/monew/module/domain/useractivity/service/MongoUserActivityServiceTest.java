@@ -9,12 +9,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.useractivity.document.ArticleViewItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.SubscriptionItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
@@ -43,6 +46,9 @@ class MongoUserActivityServiceTest {
 
     @Mock
     private MongoUserActivityRepository userActivityRepository;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @Spy
     private UserActivityMapper userActivitiesMapper = Mappers.getMapper(
@@ -262,7 +268,89 @@ class MongoUserActivityServiceTest {
             assertEquals(subscriberCount, savedItem.getInterestSubscriberCount());
             assertEquals(createdAt, savedItem.getCreatedAt());
         }
+    }
 
+    @Nested
+    class createArticleViewItemTest {
+
+        @Test
+        void ArticleViewItem_추가_성공() {
+            // given
+            // article
+            Article article = mock(Article.class);
+            UUID articleId = UUID.randomUUID();
+            String source = "NAVER";
+            String sourceUrl = "http://example.com";
+            String title = "title";
+            Instant publishedDate = Instant.now();
+            String summary = "summary";
+            Long viewCount = 0L;
+
+            when(article.getId()).thenReturn(articleId);
+            when(article.getSource()).thenReturn(source);
+            when(article.getSourceUrl()).thenReturn(sourceUrl);
+            when(article.getTitle()).thenReturn(title);
+            when(article.getPublishedDate()).thenReturn(publishedDate);
+            when(article.getSummary()).thenReturn(summary);
+            when(article.getViewCount()).thenReturn(viewCount);
+            when(commentRepository.countByArticle(any())).thenReturn(10L);
+
+            // articleView
+            ArticleView articleView = mock(ArticleView.class);
+            UUID articleViewId = UUID.randomUUID();
+            Instant createdAt = Instant.now();
+
+            when(articleView.getArticle()).thenReturn(article);
+            when(articleView.getId()).thenReturn(articleViewId);
+            when(articleView.getCreatedAt()).thenReturn(createdAt);
+
+            // user
+            User user = mock(User.class);
+            UUID userId = UUID.randomUUID();
+
+            when(user.getId()).thenReturn(userId);
+
+            // user activity
+            UserActivity userActivity = new UserActivity(
+                userId,
+                "email@test.com",
+                "nickname",
+                createdAt,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            for (int i = 0; i < 10; i++) {
+                userActivity.addArticleViewItem(mock(ArticleViewItem.class));
+            }
+
+            when(userActivityRepository.findById(userId)).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.createArticleViewItem(articleView, user);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+            assertEquals(10, saved.getArticleViews().size());
+
+            ArticleViewItem savedItem = saved.getArticleViews().get(0);
+            assertEquals(articleViewId, savedItem.getId());
+            assertEquals(userId, savedItem.getViewedBy());
+            assertEquals(createdAt, savedItem.getCreatedAt());
+            assertEquals(articleId, savedItem.getArticleId());
+            assertEquals(source, savedItem.getSource());
+            assertEquals(sourceUrl, savedItem.getSourceUrl());
+            assertEquals(title, savedItem.getArticleTitle());
+            assertEquals(publishedDate, savedItem.getArticlePublishedDate());
+            assertEquals(summary, savedItem.getArticleSummary());
+            assertEquals(10L, savedItem.getArticleCommentCount());
+            assertEquals(viewCount, savedItem.getArticleViewCount());
+        }
     }
 
 }
