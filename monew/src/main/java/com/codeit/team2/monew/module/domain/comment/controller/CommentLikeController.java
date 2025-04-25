@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.comment.controller;
 
+import com.codeit.team2.monew.module.domain.comment.controller.docs.CommentLikeControllerDocs;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentLikeDto;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/comments/{commentId}/comment-likes")
-public class CommentLikeController {
+public class CommentLikeController implements CommentLikeControllerDocs {
 
     private final CommentLikeService commentLikeService;
     private final CommentMapper commentMapper;
