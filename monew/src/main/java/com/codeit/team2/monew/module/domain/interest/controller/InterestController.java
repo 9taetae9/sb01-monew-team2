@@ -1,7 +1,9 @@
 package com.codeit.team2.monew.module.domain.interest.controller;
 
+import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResponseInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
@@ -13,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,7 +68,8 @@ public class InterestController {
     ) {
         log.info("Start - InterestController/subscription: interest id={}, userId={}", id, userId);
         SubscriptionDto subscriptionDto = subscriptionService.subscription(id, userId);
-        log.info("Complete - InterestController/subscription: interest id={}, userId={}", id, userId);
+        log.info("Complete - InterestController/subscription: interest id={}, userId={}", id,
+            userId);
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(subscriptionDto);
@@ -83,6 +88,17 @@ public class InterestController {
             .build();
     }
 
+    @GetMapping("")
+    public ResponseEntity<CursorPageResponseInterestDto> findAll(
+        @RequestHeader("Monew-Request-User-ID") UUID userId, @Valid @ModelAttribute
+    CursorPageRequestInterestDto cursorPageRequestInterestDto) {
+        log.info("Start - InterestController/findAll");
+        CursorPageResponseInterestDto result = interestService.findAll(userId,
+            cursorPageRequestInterestDto);
+        log.info("Complete - InterestController / findAll");
+        return ResponseEntity.ok(result);
+    }
+
     @DeleteMapping("/{interestId}/subscriptions")
     public ResponseEntity<Void> cancelSubscription(
         @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
@@ -90,10 +106,12 @@ public class InterestController {
     ) {
         log.info("Start - InterestController/subscription: interest id={}, userId={}", id, userId);
         subscriptionService.cancelSubscription(id, userId);
-        log.info("Complete - InterestController/subscription: interest id={}, userId={}", id, userId);
+        log.info("Complete - InterestController/subscription: interest id={}, userId={}", id,
+            userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
+
     }
 
 }
