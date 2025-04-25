@@ -38,8 +38,12 @@ public class WebConfig implements WebMvcConfigurer {
             .addResolver(new PathResourceResolver() {
                 @Override
                 protected Resource getResource(String resourcePath, Resource location) throws IOException {
-                    Resource requestedResource = location.createRelative(resourcePath);
+                    // API 경로는 처리하지 않음
+                    if (resourcePath.startsWith("api/")) {
+                        return null;
+                    }
 
+                    Resource requestedResource = location.createRelative(resourcePath);
                     return requestedResource.exists() && requestedResource.isReadable() ?
                         requestedResource :
                         new ClassPathResource("/static/index.html");
