@@ -15,4 +15,6 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
     Long countByArticle(Article article);
 
+    Long countByArticleId(UUID articleId);
+
 }

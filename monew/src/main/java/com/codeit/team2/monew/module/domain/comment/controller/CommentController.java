@@ -4,6 +4,8 @@ import com.codeit.team2.monew.module.domain.comment.controller.docs.CommentContr
 import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
+import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestCommentDto;
+import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.service.CommentService;
@@ -14,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +38,7 @@ public class CommentController implements CommentControllerDocs {
     @PostMapping
     public ResponseEntity<CommentDto> register(
         @Valid @RequestBody CommentRegisterRequest request,
-        @RequestHeader("Monew-Request-User-ID") UUID userId
+        @RequestHeader("Monew-Request-User-Id") UUID userId
     ) {
         log.info("Start - CommentController/register: userId={}, articleId={}",
             userId, request.articleId());
@@ -52,7 +56,7 @@ public class CommentController implements CommentControllerDocs {
     @PatchMapping("/{commentId}")
     public ResponseEntity<CommentDto> update(
         @PathVariable UUID commentId,
-        @RequestHeader("Monew-Request-User-ID") UUID userId,
+        @RequestHeader("Monew-Request-User-Id") UUID userId,
         @Valid @RequestBody CommentUpdateRequest request
     ) {
         log.info("Start - CommentController/update: commentId={}, userId={}",
@@ -70,7 +74,7 @@ public class CommentController implements CommentControllerDocs {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> delete(
         @PathVariable UUID commentId,
-        @RequestHeader("Monew-Request-User-ID") UUID userId
+        @RequestHeader("Monew-Request-User-Id") UUID userId
     ) {
         log.info("Start - CommentController/delete: commentId={}, userId={}",
             commentId, userId);
@@ -93,6 +97,17 @@ public class CommentController implements CommentControllerDocs {
         log.info("Complete - CommentController/hardDelete: commentId={}", commentId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity<CursorPageResponseCommentDto> findAll(
+        @RequestHeader("MoNew-Request-User-ID") UUID userId, @Valid @ModelAttribute
+    CursorPageRequestCommentDto cursorPageRequestCommentDto) {
+        log.info("Start - CommentController/findAll");
+        CursorPageResponseCommentDto result = commentService.findAll(userId,
+            cursorPageRequestCommentDto);
+        log.info("Complete - CommentController/findAll");
+        return ResponseEntity.ok(result);
     }
 
 }

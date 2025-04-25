@@ -35,7 +35,7 @@ public class UserController implements UserControllerDocs {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<UserDto> updateUser(
-        @RequestHeader("Monew-Request-User-ID") UUID loginId,
+        @RequestHeader("Monew-Request-User-Id") UUID loginId,
         @PathVariable(name = "userId") UUID userId,
         @Valid @RequestBody UserUpdateRequest request
     ) {
@@ -47,13 +47,13 @@ public class UserController implements UserControllerDocs {
     public ResponseEntity<UserDto> login(@Valid @RequestBody UserLoginRequest request) {
         UserDto userDto = userService.login(request);
         return ResponseEntity.status(HttpStatus.OK)
-            .header("Monew-Request-User-ID", userDto.id().toString())
+            .header("Monew-Request-User-Id", userDto.id().toString())
             .body(userDto);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> softDeleteUser(
-        @RequestHeader("Monew-Request-User-ID") UUID loginId,
+    public ResponseEntity<Void> softDeleteUser(
+        @RequestHeader("Monew-Request-User-Id") UUID loginId,
         @PathVariable(name = "userId") UUID userId
     ) {
         userService.softDeleteUser(loginId, userId);
@@ -62,8 +62,8 @@ public class UserController implements UserControllerDocs {
     }
 
     @DeleteMapping("/{userId}/hard")
-    public ResponseEntity<?> hardDeleteUser(
-        @RequestHeader("Monew-Request-User-ID") UUID loginId,
+    public ResponseEntity<Void> hardDeleteUser(
+        @RequestHeader("Monew-Request-User-Id") UUID loginId,
         @PathVariable(name = "userId") UUID userId
     ) {
         userService.hardDeleteUser(loginId, userId);

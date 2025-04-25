@@ -50,7 +50,7 @@ public interface UserControllerDocs {
             content = @Content(schema = @Schema(implementation = UserUpdateRequest.class))
         ),
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "userId", description = "수정할 사용자 ID")
         }
     )
@@ -86,7 +86,7 @@ public interface UserControllerDocs {
         summary = "사용자 논리 삭제",
         description = "사용자를 논리적으로 삭제합니다.",
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "userId", description = "사용자 ID")
         }
     )
@@ -103,7 +103,7 @@ public interface UserControllerDocs {
         summary = "사용자 물리 삭제",
         description = "사용자를 물리적으로 삭제합니다.",
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "userId", description = "사용자 ID")
         }
     )
