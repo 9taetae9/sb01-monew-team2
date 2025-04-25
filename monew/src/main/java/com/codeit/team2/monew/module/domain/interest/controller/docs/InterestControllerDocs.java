@@ -33,7 +33,7 @@ public interface InterestControllerDocs {
             content = @Content(schema = @Schema(implementation = InterestRegisterRequest.class))
         ),
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -53,7 +53,7 @@ public interface InterestControllerDocs {
             content = @Content(schema = @Schema(implementation = InterestUpdateRequest.class))
         ),
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "interestId", description = "관심사 ID")
         }
     )
@@ -71,7 +71,7 @@ public interface InterestControllerDocs {
         summary = "관심사 구독",
         description = "요청자가 특정 관심사를 구독합니다. 구독 중복 여부도 검증됩니다.",
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "interestId", description = "관심사 ID")
         }
     )
@@ -88,7 +88,7 @@ public interface InterestControllerDocs {
         summary = "관심사 물리 삭제",
         description = "요청자가 등록한 관심사를 영구적으로 삭제합니다. 복구는 불가능합니다.",
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "interestId", description = "관심사 ID")
         }
     )
@@ -104,7 +104,7 @@ public interface InterestControllerDocs {
         summary = "관심사 구독 취소",
         description = "요청자가 구독 중인 관심사를 구독 취소합니다.",
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "interestId", description = "관심사 ID")
         }
     )

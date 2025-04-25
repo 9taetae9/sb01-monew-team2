@@ -26,7 +26,7 @@ public class NotificationController implements NotificationControllerDocs {
 
     @PatchMapping("/{notificationId}")
     public ResponseEntity<Void> confirmNotification(
-        @RequestHeader("Monew-Request-User-ID") UUID userId,
+        @RequestHeader("Monew-Request-User-Id") UUID userId,
         @PathVariable UUID notificationId) {
         log.info("Start - NotificationController/confirmNotification: notificationId = {}",
             notificationId);
@@ -38,7 +38,7 @@ public class NotificationController implements NotificationControllerDocs {
 
     @PatchMapping("")
     public ResponseEntity<Void> confirmAllNotifications(
-        @RequestHeader("Monew-Request-User-ID") UUID userId) {
+        @RequestHeader("Monew-Request-User-Id") UUID userId) {
         log.info("Start - NotificationController/confirmAllNotifications: userId = {}", userId);
         notificationService.confirmAllNotifications(userId);
         log.info("Complete - NotificationController/confirmAllNotifications: userId = {}", userId);
@@ -47,7 +47,7 @@ public class NotificationController implements NotificationControllerDocs {
 
     @GetMapping("")
     public ResponseEntity<CursorPageResponseNotificationDto> findAll(
-        @RequestHeader("Monew-Request-User-ID") UUID userId,
+        @RequestHeader("Monew-Request-User-Id") UUID userId,
         @RequestParam(required = false) Instant cursor,
         @RequestParam(required = false) Instant after,
         @RequestParam(required = true) int limit) {

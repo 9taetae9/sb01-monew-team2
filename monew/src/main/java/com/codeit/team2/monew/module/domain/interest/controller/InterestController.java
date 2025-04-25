@@ -37,7 +37,7 @@ public class InterestController implements InterestControllerDocs {
 
     @PostMapping
     public ResponseEntity<InterestDto> create(
-        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @RequestHeader(name = "Monew-Request-User-Id") UUID userId,
         @Valid @RequestBody InterestRegisterRequest request
     ) {
         log.info("Start - InterestController/create: interest name={}", request.name());
@@ -50,7 +50,7 @@ public class InterestController implements InterestControllerDocs {
 
     @PatchMapping("/{interestId}")
     public ResponseEntity<InterestDto> update(
-        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @RequestHeader(name = "Monew-Request-User-Id") UUID userId,
         @PathVariable(name = "interestId") UUID id,
         @Valid @RequestBody InterestUpdateRequest request
     ) {
@@ -64,7 +64,7 @@ public class InterestController implements InterestControllerDocs {
 
     @PostMapping("/{interestId}/subscriptions")
     public ResponseEntity<SubscriptionDto> subscription(
-        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @RequestHeader(name = "Monew-Request-User-Id") UUID userId,
         @PathVariable(name = "interestId") UUID id
     ) {
         log.info("Start - InterestController/subscription: interest id={}, userId={}", id, userId);
@@ -78,7 +78,7 @@ public class InterestController implements InterestControllerDocs {
 
     @DeleteMapping("/{interestId}")
     public ResponseEntity<Void> delete(
-        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @RequestHeader(name = "Monew-Request-User-Id") UUID userId,
         @PathVariable(name = "interestId") UUID id
     ) {
         log.info("Start - InterestController/subscription: interest id={}", id);
@@ -91,7 +91,7 @@ public class InterestController implements InterestControllerDocs {
 
     @GetMapping("")
     public ResponseEntity<CursorPageResponseInterestDto> findAll(
-        @RequestHeader("Monew-Request-User-ID") UUID userId, @Valid @ModelAttribute
+        @RequestHeader("Monew-Request-User-Id") UUID userId, @Valid @ModelAttribute
     CursorPageRequestInterestDto cursorPageRequestInterestDto) {
         log.info("Start - InterestController/findAll");
         CursorPageResponseInterestDto result = interestService.findAll(userId,
@@ -102,7 +102,7 @@ public class InterestController implements InterestControllerDocs {
 
     @DeleteMapping("/{interestId}/subscriptions")
     public ResponseEntity<Void> cancelSubscription(
-        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @RequestHeader(name = "Monew-Request-User-Id") UUID userId,
         @PathVariable(name = "interestId") UUID id
     ) {
         log.info("Start - InterestController/cancelSubscription: interest id={}, userId={}", id, userId);

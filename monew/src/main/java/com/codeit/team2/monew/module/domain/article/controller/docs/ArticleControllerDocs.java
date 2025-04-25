@@ -30,7 +30,7 @@ public interface ArticleControllerDocs {
         description = "특정 뉴스 기사를 요청자가 조회했음을 기록합니다.",
         parameters = {
             @Parameter(name = "articleId", description = "기사 ID"),
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -76,7 +76,7 @@ public interface ArticleControllerDocs {
         summary = "뉴스 기사 목록 조회",
         description = "관심사 및 요청자 설정에 따라 뉴스 기사 목록을 커서 기반 페이지네이션으로 조회합니다.",
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({

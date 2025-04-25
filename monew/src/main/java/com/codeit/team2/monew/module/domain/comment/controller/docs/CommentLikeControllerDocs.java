@@ -26,7 +26,7 @@ public interface CommentLikeControllerDocs {
         description = "댓글에 좋아요를 등록합니다.",
         parameters = {
             @Parameter(name = "commentId", description = "댓글 ID"),
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -43,7 +43,7 @@ public interface CommentLikeControllerDocs {
         description = "댓글의 좋아요를 취소합니다.",
         parameters = {
             @Parameter(name = "commentId", description = "댓글 ID"),
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({

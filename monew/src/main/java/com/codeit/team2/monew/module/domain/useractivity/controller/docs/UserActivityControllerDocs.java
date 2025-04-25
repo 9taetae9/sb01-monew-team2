@@ -24,7 +24,7 @@ public interface UserActivityControllerDocs {
         summary = "사용자 활동 내역 조회",
         description = "사용자 ID로 활동 이력을 조회합니다.",
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "userId", description = "사용자 ID")
         }
     )

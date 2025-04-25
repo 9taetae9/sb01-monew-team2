@@ -31,7 +31,7 @@ public class ArticleController implements ArticleControllerDocs {
 
     @PostMapping("/{articleId}/article-views")
     public ResponseEntity<ArticleViewDto> createArticleView(@PathVariable UUID articleId,
-        @RequestHeader("Monew-Request-User-ID") UUID userId) {
+        @RequestHeader("Monew-Request-User-Id") UUID userId) {
         ArticleViewDto dto = articleService.createUserArticleView(userId, articleId);
         return ResponseEntity.ok(dto);
     }
@@ -50,7 +50,7 @@ public class ArticleController implements ArticleControllerDocs {
 
     @GetMapping("")
     public ResponseEntity<CursorPageResponseArticleDto> findAll(
-        @RequestHeader("Monew-Request-User-ID") UUID userId,
+        @RequestHeader("Monew-Request-User-Id") UUID userId,
         @Valid @ModelAttribute CursorPageRequestArticleDto cursorPageRequestArticleDto) {
         log.info("Start - ArticleController/findAll");
         CursorPageResponseArticleDto result = articleService.findAll(userId,
