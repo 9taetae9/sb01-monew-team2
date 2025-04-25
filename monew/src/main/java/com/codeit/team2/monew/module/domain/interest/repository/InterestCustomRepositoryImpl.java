@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.interest.repository;
 
+import static com.codeit.team2.monew.module.domain.interest.entity.QInterestKeyword.interestKeyword;
+
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestOrderBy;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.QInterest;
@@ -7,6 +9,7 @@ import com.codeit.team2.monew.module.domain.interest.entity.QInterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.QKeyword;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.Instant;
@@ -31,10 +34,16 @@ public class InterestCustomRepositoryImpl implements InterestCustomRepository {
         // 검색 조건: Interest.name or Keyword.name 부분일치
         BooleanBuilder where = new BooleanBuilder();
         if (keyword != null && !keyword.isBlank()) {
-            where.and(
-                interest.name.contains(keyword)
-                    .or(keywordEntity.name.containsIgnoreCase(keyword))
-            );
+            // 관심사 이름 또는 연결된 키워드 이름 중 하나라도 포함되면
+            where.and(interest.id.in(
+                JPAExpressions
+                    .select(interest.id)
+                    .from(interest)
+                    .leftJoin(interest.keywords, interestKeyword)
+                    .leftJoin(interestKeyword.keyword, keywordEntity)
+                    .where(interest.name.containsIgnoreCase(keyword)
+                        .or(keywordEntity.name.containsIgnoreCase(keyword)))
+            ));
         }
         return where;
     }
