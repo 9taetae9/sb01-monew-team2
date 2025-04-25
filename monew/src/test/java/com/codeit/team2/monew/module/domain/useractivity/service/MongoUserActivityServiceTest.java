@@ -10,8 +10,13 @@ import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
+import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
+import com.codeit.team2.monew.module.domain.useractivity.document.SubscriptionItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
@@ -19,7 +24,9 @@ import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserAct
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -183,6 +190,79 @@ class MongoUserActivityServiceTest {
         assertEquals(userNickname, userActivitySaved.getNickname());
         assertEquals(createdAt, userActivitySaved.getCreatedAt());
         assertEquals(10, userActivitySaved.getComments().size());
+    }
+
+    @Nested
+    class createSubscriptionItemTest {
+
+        @Test
+        void SubscriptionItem_추가_성공() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID subscriptionId = UUID.randomUUID();
+            UUID interestId = UUID.randomUUID();
+            String interestName = "AI";
+            List<String> keywords = List.of("chatgpt", "llm");
+            Long subscriberCount = 100L;
+            Instant createdAt = Instant.now();
+
+            // mocks
+            UserActivity userActivity = new UserActivity(
+                userId,
+                "email@test.com",
+                "nickname",
+                createdAt,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            Subscription subscription = mock(Subscription.class);
+            Interest interest = mock(Interest.class);
+            InterestKeyword keyword1 = mock(InterestKeyword.class);
+            InterestKeyword keyword2 = mock(InterestKeyword.class);
+            Keyword k1 = mock(Keyword.class);
+            Keyword k2 = mock(Keyword.class);
+
+            when(subscription.getId()).thenReturn(subscriptionId);
+            when(subscription.getCreatedAt()).thenReturn(createdAt);
+
+            when(interest.getId()).thenReturn(interestId);
+            when(interest.getName()).thenReturn(interestName);
+            when(interest.getSubscriberCount()).thenReturn(subscriberCount);
+            when(interest.getKeywords()).thenReturn(Set.of(keyword1, keyword2));
+
+            when(keyword1.getKeyword()).thenReturn(k1);
+            when(keyword2.getKeyword()).thenReturn(k2);
+            when(k1.getName()).thenReturn(keywords.get(0));
+            when(k2.getName()).thenReturn(keywords.get(1));
+
+            for (int i = 0; i < 10; i++) {
+                userActivity.addSubscriptionItem(mock(SubscriptionItem.class));
+            }
+
+            when(userActivityRepository.findById(userId)).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.createSubscriptionItem(subscription, interest, userId);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+            assertEquals(10, saved.getSubscriptions().size());
+
+            SubscriptionItem savedItem = saved.getSubscriptions().get(0);
+            assertEquals(subscriptionId, savedItem.getId());
+            assertEquals(interestId, savedItem.getInterestId());
+            assertEquals(interestName, savedItem.getInterestName());
+            assertEquals(keywords, savedItem.getInterestKeywords());
+            assertEquals(subscriberCount, savedItem.getInterestSubscriberCount());
+            assertEquals(createdAt, savedItem.getCreatedAt());
+        }
+
     }
 
 }
