@@ -101,7 +101,7 @@ public class CommentController implements CommentControllerDocs {
 
     @GetMapping("")
     public ResponseEntity<CursorPageResponseCommentDto> findAll(
-        @RequestHeader("Monew-Request-User-ID") UUID userId, @Valid @ModelAttribute
+        @RequestHeader("MoNew-Request-User-ID") UUID userId, @Valid @ModelAttribute
     CursorPageRequestCommentDto cursorPageRequestCommentDto) {
         log.info("Start - CommentController/findAll");
         CursorPageResponseCommentDto result = commentService.findAll(userId,

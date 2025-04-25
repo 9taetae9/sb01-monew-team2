@@ -2,19 +2,27 @@ package com.codeit.team2.monew.module.domain.comment.service;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentOrderBy;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestCommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
+import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
+import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +36,8 @@ public class CommentServiceImpl implements CommentService {
     private final ArticleRepository articleRepository;
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
+    private final CommentCustomRepository commentCustomRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Override
     public Comment register(CommentRegisterRequest request) {
@@ -97,6 +107,43 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CursorPageResponseCommentDto findAll(UUID userId,
         CursorPageRequestCommentDto cursorPageRequestCommentDto) {
-        return null;
+
+        Slice<Comment> slices = commentCustomRepository.findAll(
+            cursorPageRequestCommentDto.articleId(),
+            cursorPageRequestCommentDto.orderBy(),
+            cursorPageRequestCommentDto.direction(),
+            cursorPageRequestCommentDto.cursor(),
+            cursorPageRequestCommentDto.after(),
+            cursorPageRequestCommentDto.limit());
+
+        List<CommentDto> commentDtos = new ArrayList<>();
+        slices.getContent().forEach(comment -> {
+            boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(),
+                userId);
+            commentDtos.add(commentMapper.toDto(comment, likedByMe));
+        });
+
+        Long totalElements = commentRepository.countByArticleId(
+            cursorPageRequestCommentDto.articleId());
+
+        boolean hasNext = slices.hasNext();
+
+        Object nextCursor = null;
+        Instant nextAfter = null;
+
+        if (hasNext) {
+            Comment lastComment = slices.getContent().get(slices.getContent().size() - 1);
+            if (cursorPageRequestCommentDto.orderBy().equals(CommentOrderBy.createdAt)) {
+                nextAfter = lastComment.getCreatedAt();
+                nextCursor = nextAfter;
+            } else if (cursorPageRequestCommentDto.orderBy().equals(CommentOrderBy.likeCount)) {
+                nextCursor = lastComment.getLikeCount();
+                nextAfter = lastComment.getCreatedAt();
+            }
+        }
+
+        return new CursorPageResponseCommentDto(commentDtos, nextCursor, nextAfter,
+            slices.getSize(), totalElements,
+            hasNext);
     }
 }
