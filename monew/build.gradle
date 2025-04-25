@@ -3,6 +3,8 @@ plugins {
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
+    id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
+
 }
 
 group = 'com.codeit.team2'
@@ -22,6 +24,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
@@ -88,6 +91,14 @@ clean {
     delete file('src/main/generated')
 }
 
+// openApi - json 자동 추출
+openApi {
+    systemProperties = System.properties // 빌드 시 환경 변수 전달
+    apiDocsUrl.set("https://localhost:8080/")
+    outputDir.set(layout.buildDirectory.dir("openapi"))
+}
+
+// jacoco
 jacoco {
     toolVersion = '0.8.11'
 }
