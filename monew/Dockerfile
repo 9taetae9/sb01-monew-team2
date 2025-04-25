@@ -16,9 +16,6 @@ WORKDIR /app
 ENV PROJECT_NAME=monew
 ENV PROJECT_VERSION=0.0.1
 ENV JVM_OPTS=""
-
 COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.jar
-
 EXPOSE 80
-
-ENTRYPOINT ["sh", "-c", "exec java -Xmx384m -Xms256m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC -jar app.jar --server.port=80"]
+ENTRYPOINT ["sh", "-c", "exec java -Xmx384m -Xms256m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC -jar app.jar --server.port=80 --spring.profiles.active=prod"]
