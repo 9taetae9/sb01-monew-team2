@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
@@ -135,6 +136,7 @@ class MongoUserActivityServiceTest {
         User user = mock(User.class);
         Comment comment = mock(Comment.class);
         Article article = mock(Article.class);
+        CommentItem commentItem = mock(CommentItem.class);
         UserActivity userActivity = new UserActivity(
             userId,
             email,
@@ -145,6 +147,11 @@ class MongoUserActivityServiceTest {
             new ArrayList<>(),
             new ArrayList<>()
         );
+
+        // comments의 개수를 미리 10개로 채워 놓는다.
+        for (int i = 0; i < 10; i++) {
+            userActivity.addCommentItem(commentItem);
+        }
 
         // comment
         when(comment.getId()).thenReturn(commentId);
@@ -175,7 +182,7 @@ class MongoUserActivityServiceTest {
         assertEquals(email, userActivitySaved.getEmail());
         assertEquals(userNickname, userActivitySaved.getNickname());
         assertEquals(createdAt, userActivitySaved.getCreatedAt());
-        assertEquals(1, userActivitySaved.getComments().size());
+        assertEquals(10, userActivitySaved.getComments().size());
     }
 
 }
