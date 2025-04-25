@@ -1,12 +1,12 @@
 package com.codeit.team2.monew.module.domain.article.external;
 
 import com.codeit.team2.monew.module.domain.article.dto.rss.HankyungRss;
-import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.dto.rss.HankyungRss.Item;
+import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.url_provider.NewsUrlProvider;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,42 +16,29 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Slf4j
 @Component
 @Qualifier("hankyungRssNewsClient")
-public class HankyungRssNewsClient implements RssNewsClient {
+public class HankyungRssNewsClient extends AbstractRssNewsClient<HankyungRss, HankyungRss.Item> {
 
-    private final WebClient webClient;
     private final ArticleMapper articleMapper;
-    private final NewsUrlProvider provider;
 
     public HankyungRssNewsClient(@Qualifier("redirectClient") WebClient webClient,
         ArticleMapper articleMapper,
         @Qualifier("hankyung") NewsUrlProvider provider) {
-        this.webClient = webClient;
+        super(webClient, provider);
         this.articleMapper = articleMapper;
-        this.provider = provider;
     }
 
     @Override
-    public List<Article> fetchArticles() {
-        XmlMapper xmlMapper = new XmlMapper();
-        List<HankyungRss.Item> xmlResults = new ArrayList<>();
+    protected List<DummyArticle> mapToArticles(List<Item> allItems) {
+        return articleMapper.hankyungRssListToEntity(allItems);
+    }
 
-        try {
-            for (String url : provider.getUrls()) {
-                String xmlString = webClient.get()
-                    .uri(url)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+    @Override
+    HankyungRss parseXmlToDto(String xml) throws JsonProcessingException {
+        return new XmlMapper().readValue(xml, HankyungRss.class);
+    }
 
-                HankyungRss rss = xmlMapper.readValue(xmlString, HankyungRss.class);
-
-                xmlResults.addAll(rss.getItems());
-            }
-        } catch (JsonProcessingException e) {
-            log.warn("Hankyung XML Fetch Failed: reason={}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-
-        return articleMapper.hankyungRssListToEntity(xmlResults);
+    @Override
+    List<Item> extractItems(HankyungRss rss) {
+        return rss.getItems();
     }
 }

@@ -19,11 +19,13 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Qualifier("batchArticleWriter")
 public class BatchArticleWriter implements ItemWriter<List<ArticleInterestCreateCommand>> {
 
     private final ArticleRepository articleRepository;
