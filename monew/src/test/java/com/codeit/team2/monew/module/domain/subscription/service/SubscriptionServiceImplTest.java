@@ -3,19 +3,21 @@ package com.codeit.team2.monew.module.domain.subscription.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeit.team2.monew.module.domain.interest.TestInterestFactory;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
-import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
+import com.codeit.team2.monew.module.domain.subscription.TestSubscriptionFactory;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.subscription.mapper.SubscriptionMapper;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
+import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import com.sun.jdi.request.DuplicateRequestException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,7 +29,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceImplTest {
@@ -51,13 +52,11 @@ class SubscriptionServiceImplTest {
     @Test
     void subscription_success() {
         // given
-        User mockUser = new User("email@mail.com", "name", "pw", false);
-        ReflectionTestUtils.setField(mockUser, "id", UUID.randomUUID());
+        User mockUser =TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
-        Interest mockInterest = createInterest(name, inputKeywords);
-        ReflectionTestUtils.setField(mockInterest, "id", UUID.randomUUID());
+        Interest mockInterest = TestInterestFactory.create(name, inputKeywords);
 
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(mockUser));
@@ -81,17 +80,13 @@ class SubscriptionServiceImplTest {
     @Test
     void subscription_failure() {
         // given
-        User mockUser = new User("email@mail.com", "name", "pw", false);
-        ReflectionTestUtils.setField(mockUser, "id", UUID.randomUUID());
+        User mockUser =TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
-        Interest mockInterest = createInterest(name, inputKeywords);
-        ReflectionTestUtils.setField(mockInterest, "id", UUID.randomUUID());
+        Interest mockInterest = TestInterestFactory.create(name, inputKeywords);
 
-        Subscription mockSubscription = new Subscription(mockUser, mockInterest);
-        ReflectionTestUtils.setField(mockSubscription, "id", UUID.randomUUID());
-        ReflectionTestUtils.setField(mockSubscription, "createdAt", Instant.now());
+        Subscription mockSubscription = TestSubscriptionFactory.create(mockUser, mockInterest);
 
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(mockUser));
@@ -105,12 +100,48 @@ class SubscriptionServiceImplTest {
             .isInstanceOf(DuplicateRequestException.class);
     }
 
-    Interest createInterest(String name, List<String> keywords) {
-        Interest mockInterest = Interest.create(name);
-        for (String keyword : keywords) {
-            mockInterest.addKeyword(new Keyword(keyword));
-        }
-        return mockInterest;
+    @DisplayName("유저가 관심사 구독을 취소한다.")
+    @Test
+    void cancelSubscription_success() {
+        // given
+        User user = TestUserFactory.createWithName("hello");
+        Interest interest = TestInterestFactory.create("채소", List.of("당근"));
+        Subscription subscription = TestSubscriptionFactory.create(user, interest);
+
+        // 구독된 경우
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(user));
+        when(interestRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(interest));
+        when(subscriptionRepository.findByInterestAndUser(interest, user))
+            .thenReturn(Optional.of(subscription));
+
+        // when
+        subscriptionService.cancelSubscription(interest.getId(), user.getId());
+
+        // then 삭제 조회가 호출 되었는지
+        verify(subscriptionRepository).delete(any(Subscription.class));
+    }
+
+    @DisplayName("유저가 관심사 구독을 하지 않은 상태에서 취소하면 실패한다.")
+    @Test
+    void cancelSubscription_failure() {
+        // given
+        User user = TestUserFactory.createWithName("hello");
+        Interest interest = TestInterestFactory.create("채소", List.of("당근"));
+        Subscription subscription = TestSubscriptionFactory.create(user, interest);
+
+        // 구독된 경우
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(user));
+        when(interestRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(interest));
+        when(subscriptionRepository.findByInterestAndUser(interest, user))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> subscriptionService.cancelSubscription(interest.getId(), user.getId()))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
 }

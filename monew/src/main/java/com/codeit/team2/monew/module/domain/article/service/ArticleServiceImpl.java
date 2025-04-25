@@ -3,8 +3,8 @@ package com.codeit.team2.monew.module.domain.article.service;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleDto;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
 import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticleDto;
-import com.codeit.team2.monew.module.domain.article.dto.request.ArticleFindRequest;
 import com.codeit.team2.monew.module.domain.article.dto.request.ArticleOrderBy;
+import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageRequestArticleDto;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
@@ -89,38 +89,40 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public CursorPageResponseArticleDto findAll(UUID userId,
-        ArticleFindRequest articleFindRequest) {
+        CursorPageRequestArticleDto cursorPageRequestArticleDto) {
         Slice<Article> slices;
-        Pageable pageable = PageRequest.of(0, articleFindRequest.limit(), Sort.unsorted());
-        if (articleFindRequest.orderBy().equals(ArticleOrderBy.publishDate)) {
-            slices = articleCustomRepository.findByPublishDate(articleFindRequest.keyword(),
-                articleFindRequest.interestId(),
-                articleFindRequest.sourceIn(),
-                articleFindRequest.publishDateFrom(),
-                articleFindRequest.publishDateTo(),
-                articleFindRequest.direction(),
-                articleFindRequest.cursor(),
-                articleFindRequest.after(),
+        Pageable pageable = PageRequest.of(0, cursorPageRequestArticleDto.limit(), Sort.unsorted());
+        if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.publishDate)) {
+            slices = articleCustomRepository.findByPublishDate(
+                cursorPageRequestArticleDto.keyword(),
+                cursorPageRequestArticleDto.interestId(),
+                cursorPageRequestArticleDto.sourceIn(),
+                cursorPageRequestArticleDto.getPublishDateFromInstant(),
+                cursorPageRequestArticleDto.getPublishDateToInstant(),
+                cursorPageRequestArticleDto.direction(),
+                cursorPageRequestArticleDto.cursor(),
+                cursorPageRequestArticleDto.after(),
                 pageable);
-        } else if (articleFindRequest.orderBy().equals(ArticleOrderBy.viewCount)) {
-            slices = articleCustomRepository.findByViewCount(articleFindRequest.keyword(),
-                articleFindRequest.interestId(),
-                articleFindRequest.sourceIn(),
-                articleFindRequest.publishDateFrom(),
-                articleFindRequest.publishDateTo(),
-                articleFindRequest.direction(),
-                articleFindRequest.cursor(),
-                articleFindRequest.after(),
+        } else if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.viewCount)) {
+            slices = articleCustomRepository.findByViewCount(cursorPageRequestArticleDto.keyword(),
+                cursorPageRequestArticleDto.interestId(),
+                cursorPageRequestArticleDto.sourceIn(),
+                cursorPageRequestArticleDto.getPublishDateFromInstant(),
+                cursorPageRequestArticleDto.getPublishDateToInstant(),
+                cursorPageRequestArticleDto.direction(),
+                cursorPageRequestArticleDto.cursor(),
+                cursorPageRequestArticleDto.after(),
                 pageable);
-        } else if (articleFindRequest.orderBy().equals(ArticleOrderBy.commentCount)) {
-            slices = articleCustomRepository.findByCommentCount(articleFindRequest.keyword(),
-                articleFindRequest.interestId(),
-                articleFindRequest.sourceIn(),
-                articleFindRequest.publishDateFrom(),
-                articleFindRequest.publishDateTo(),
-                articleFindRequest.direction(),
-                articleFindRequest.cursor(),
-                articleFindRequest.after(),
+        } else if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.commentCount)) {
+            slices = articleCustomRepository.findByCommentCount(
+                cursorPageRequestArticleDto.keyword(),
+                cursorPageRequestArticleDto.interestId(),
+                cursorPageRequestArticleDto.sourceIn(),
+                cursorPageRequestArticleDto.getPublishDateFromInstant(),
+                cursorPageRequestArticleDto.getPublishDateToInstant(),
+                cursorPageRequestArticleDto.direction(),
+                cursorPageRequestArticleDto.cursor(),
+                cursorPageRequestArticleDto.after(),
                 pageable);
         } else {
             slices = null;
@@ -144,16 +146,17 @@ public class ArticleServiceImpl implements ArticleService {
         });
 
         long totalElements = articleCustomRepository.countFilteredTotalElements(
-            articleFindRequest.keyword(), articleFindRequest.interestId(),
-            articleFindRequest.sourceIn(), articleFindRequest.publishDateFrom(),
-            articleFindRequest.publishDateTo());
+            cursorPageRequestArticleDto.keyword(), cursorPageRequestArticleDto.interestId(),
+            cursorPageRequestArticleDto.sourceIn(),
+            cursorPageRequestArticleDto.getPublishDateFromInstant(),
+            cursorPageRequestArticleDto.getPublishDateToInstant());
 
         boolean hasNext = slices.hasNext();
 
         Object cursor = null;
         if (hasNext && !articles.isEmpty()) {
             ArticleDto last = articleDtos.get(articleDtos.size() - 1);
-            switch (articleFindRequest.orderBy()) {
+            switch (cursorPageRequestArticleDto.orderBy()) {
                 case publishDate -> cursor = last.publishDate();
                 case viewCount -> cursor = last.viewCount();
                 case commentCount -> cursor = last.commentCount();

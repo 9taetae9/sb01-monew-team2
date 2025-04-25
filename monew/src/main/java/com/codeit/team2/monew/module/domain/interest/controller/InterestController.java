@@ -62,7 +62,7 @@ public class InterestController {
         @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
         @PathVariable(name = "interestId") UUID id
     ) {
-        log.info("Start - InterestController/subscriptione: interest id={}, userId={}", id, userId);
+        log.info("Start - InterestController/subscription: interest id={}, userId={}", id, userId);
         SubscriptionDto subscriptionDto = subscriptionService.subscription(id, userId);
         log.info("Complete - InterestController/subscription: interest id={}, userId={}", id, userId);
 
@@ -75,9 +75,22 @@ public class InterestController {
         @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
         @PathVariable(name = "interestId") UUID id
     ) {
-        log.info("Start - InterestController/subscriptione: interest id={}", id);
+        log.info("Start - InterestController/subscription: interest id={}", id);
         interestService.delete(id, userId);
         log.info("Complete - InterestController/subscription: interest id={}", id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
+    }
+
+    @DeleteMapping("/{interestId}/subscriptions")
+    public ResponseEntity<Void> cancelSubscription(
+        @RequestHeader(name = "Monew-Request-User-ID") UUID userId,
+        @PathVariable(name = "interestId") UUID id
+    ) {
+        log.info("Start - InterestController/subscription: interest id={}, userId={}", id, userId);
+        subscriptionService.cancelSubscription(id, userId);
+        log.info("Complete - InterestController/subscription: interest id={}, userId={}", id, userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
