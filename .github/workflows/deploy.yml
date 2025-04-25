@@ -36,10 +36,12 @@ jobs:
           cache: gradle
 
       - name: Grant Execution Permission
-        run: chmod +x gradlew
+        run: chmod +x ./gradlew
+        working-directory: ./monew
 
       - name: Build JAR (Skip Test)
         run: ./gradlew clean build -x test
+        working-directory: ./monew
 
       - name: AWS CLI 설정
         uses: aws-actions/configure-aws-credentials@v4
