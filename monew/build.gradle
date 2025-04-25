@@ -8,6 +8,7 @@ plugins {
 group = 'com.codeit.team2'
 version = 'v1.0.0'
 
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)

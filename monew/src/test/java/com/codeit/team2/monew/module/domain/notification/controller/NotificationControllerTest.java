@@ -35,7 +35,7 @@ class NotificationControllerTest {
         // when
         mockMvc.perform(
                 patch("/api/notifications/{notificationId}", notificationId)
-                    .header("Monew-Request-User-ID", userId.toString())
+                    .header("Monew-Request-User-Id", userId.toString())
             )
             .andExpect(status().isOk());
 
@@ -53,7 +53,7 @@ class NotificationControllerTest {
         // when
         mockMvc.perform(
                 patch("/api/notifications")
-                    .header("Monew-Request-User-ID", userId.toString())
+                    .header("Monew-Request-User-Id", userId.toString())
             )
             .andExpect(status().isOk());
 
@@ -70,7 +70,7 @@ class NotificationControllerTest {
 
         // when
         mockMvc.perform(get("/api/notifications")
-                .header("Monew-Request-User-ID", userId.toString())
+                .header("Monew-Request-User-Id", userId.toString())
                 .param("limit", String.valueOf(50)))
             .andExpect(status().isOk());
 

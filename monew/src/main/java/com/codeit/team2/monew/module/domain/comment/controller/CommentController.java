@@ -34,7 +34,7 @@ public class CommentController implements CommentControllerDocs {
     @PostMapping
     public ResponseEntity<CommentDto> register(
         @Valid @RequestBody CommentRegisterRequest request,
-        @RequestHeader("Monew-Request-User-ID") UUID userId
+        @RequestHeader("Monew-Request-User-Id") UUID userId
     ) {
         log.info("Start - CommentController/register: userId={}, articleId={}",
             userId, request.articleId());
@@ -52,7 +52,7 @@ public class CommentController implements CommentControllerDocs {
     @PatchMapping("/{commentId}")
     public ResponseEntity<CommentDto> update(
         @PathVariable UUID commentId,
-        @RequestHeader("Monew-Request-User-ID") UUID userId,
+        @RequestHeader("Monew-Request-User-Id") UUID userId,
         @Valid @RequestBody CommentUpdateRequest request
     ) {
         log.info("Start - CommentController/update: commentId={}, userId={}",
@@ -70,7 +70,7 @@ public class CommentController implements CommentControllerDocs {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> delete(
         @PathVariable UUID commentId,
-        @RequestHeader("Monew-Request-User-ID") UUID userId
+        @RequestHeader("Monew-Request-User-Id") UUID userId
     ) {
         log.info("Start - CommentController/delete: commentId={}, userId={}",
             commentId, userId);

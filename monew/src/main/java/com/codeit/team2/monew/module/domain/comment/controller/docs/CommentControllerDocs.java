@@ -32,7 +32,7 @@ public interface CommentControllerDocs {
             content = @Content(schema = @Schema(implementation = CommentRegisterRequest.class))
         ),
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -52,7 +52,7 @@ public interface CommentControllerDocs {
         ),
         parameters = {
             @Parameter(name = "commentId", description = "댓글 ID"),
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -70,7 +70,7 @@ public interface CommentControllerDocs {
         description = "댓글을 논리적으로 삭제합니다.",
         parameters = {
             @Parameter(name = "commentId", description = "댓글 ID"),
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({

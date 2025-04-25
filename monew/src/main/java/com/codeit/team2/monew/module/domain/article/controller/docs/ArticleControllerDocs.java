@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public interface ArticleControllerDocs {
         description = "특정 뉴스 기사를 요청자가 조회했음을 기록합니다.",
         parameters = {
             @Parameter(name = "articleId", description = "기사 ID"),
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -54,7 +55,7 @@ public interface ArticleControllerDocs {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @DeleteMapping("/{articleId}")
-    ResponseEntity<?> softDeleteArticle(UUID articleId);
+    ResponseEntity<Void> softDeleteArticle(UUID articleId);
 
     @Operation(
         summary = "뉴스 기사 물리 삭제",
@@ -69,14 +70,13 @@ public interface ArticleControllerDocs {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @DeleteMapping("/{articleId}/hard")
-    ResponseEntity<?> hardDeleteArticle(UUID articleId);
+    ResponseEntity<Void> hardDeleteArticle(UUID articleId);
 
     @Operation(
         summary = "뉴스 기사 목록 조회",
         description = "관심사 및 요청자 설정에 따라 뉴스 기사 목록을 커서 기반 페이지네이션으로 조회합니다.",
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
-            @Parameter(name = "articleFindRequest", description = "기사 조회 조건 (정렬 기준, 커서 등)")
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -86,5 +86,8 @@ public interface ArticleControllerDocs {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("")
-    ResponseEntity<CursorPageResponseArticleDto> findAll(UUID userId, CursorPageRequestArticleDto cursorPageRequestArticleDto);
+    ResponseEntity<CursorPageResponseArticleDto> findAll(
+        UUID userId,
+        @ParameterObject CursorPageRequestArticleDto cursorPageRequestArticleDto
+    );
 }

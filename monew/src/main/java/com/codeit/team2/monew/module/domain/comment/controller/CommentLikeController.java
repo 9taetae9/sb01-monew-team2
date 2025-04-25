@@ -28,7 +28,7 @@ public class CommentLikeController implements CommentLikeControllerDocs {
     @PostMapping
     public ResponseEntity<CommentLikeDto> like(
         @PathVariable UUID commentId,
-        @RequestHeader("Monew-Request-User-ID") UUID userId
+        @RequestHeader("Monew-Request-User-Id") UUID userId
     ) {
         log.info("Start - CommentLikeController/like: commentId={}, userId={}",
             commentId, userId);
@@ -44,7 +44,7 @@ public class CommentLikeController implements CommentLikeControllerDocs {
     @DeleteMapping
     public ResponseEntity<Void> unlike(
         @PathVariable UUID commentId,
-        @RequestHeader("Monew-Request-User-ID") UUID userId
+        @RequestHeader("Monew-Request-User-Id") UUID userId
     ) {
         log.info("Start - CommentLikeController/unlike: commentId={}, userId={}",
             commentId, userId);
