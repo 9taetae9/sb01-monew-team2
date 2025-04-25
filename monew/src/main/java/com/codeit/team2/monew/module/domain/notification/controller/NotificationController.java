@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.notification.controller;
 
+import com.codeit.team2.monew.module.domain.notification.controller.docs.NotificationControllerDocs;
 import com.codeit.team2.monew.module.domain.notification.dto.CursorPageResponseNotificationDto;
 import com.codeit.team2.monew.module.domain.notification.service.NotificationService;
 import java.time.Instant;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/notifications")
-public class NotificationController {
+public class NotificationController implements NotificationControllerDocs {
 
     private final NotificationService notificationService;
 

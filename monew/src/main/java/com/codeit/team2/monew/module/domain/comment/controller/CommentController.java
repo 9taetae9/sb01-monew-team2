@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.comment.controller;
 
+import com.codeit.team2.monew.module.domain.comment.controller.docs.CommentControllerDocs;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/comments")
-public class CommentController {
+public class CommentController implements CommentControllerDocs {
 
     private final CommentService commentService;
     private final CommentMapper commentMapper;
