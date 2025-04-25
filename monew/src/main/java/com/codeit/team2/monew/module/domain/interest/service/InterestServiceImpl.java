@@ -135,7 +135,10 @@ public class InterestServiceImpl implements InterestService {
     @Override
     public CursorPageResponseInterestDto findAll(UUID userId,
         CursorPageRequestInterestDto cursorPageRequestInterestDto) {
-
+        if (!userRepository.existsById(userId)) {
+            log.debug("User Not Found: userId = {}", userId);
+            throw new IllegalArgumentException("User Not Found: userId = {}");
+        }
         Slice<Interest> slices = interestCustomRepository.findAll(
             cursorPageRequestInterestDto.keyword(), cursorPageRequestInterestDto.orderBy(),
             cursorPageRequestInterestDto.direction(), cursorPageRequestInterestDto.cursor(),
