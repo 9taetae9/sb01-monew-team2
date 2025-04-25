@@ -7,12 +7,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.interest.TestInterestFactory;
+import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
+import com.codeit.team2.monew.module.domain.interest.dto.request.InterestOrderBy;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResponseInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
+import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -31,6 +35,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort.Direction;
 
 @ExtendWith(MockitoExtension.class)
 class InterestServiceImplTest {
@@ -49,6 +57,8 @@ class InterestServiceImplTest {
 
     @Mock
     private SubscriptionRepository subscriptionRepository;
+    @Mock
+    private InterestCustomRepository interestCustomRepository;
 
     @Spy
     private InterestMapper interestMapper = Mappers.getMapper(InterestMapper.class);
@@ -138,7 +148,7 @@ class InterestServiceImplTest {
             .thenReturn(false);
 
         // when
-        InterestDto result = interestService.update(request, interest.getId() ,user.getId());
+        InterestDto result = interestService.update(request, interest.getId(), user.getId());
 
         // then
         assertThat(result.keywords()).hasSize(1)
@@ -176,5 +186,48 @@ class InterestServiceImplTest {
         // then
         verify(interestRepository).delete(any(Interest.class));
         verify(keywordRepository).deleteAllOrphanKeywords();
+    }
+
+    @DisplayName("관심사 목록을 조회한다.")
+    @Test
+    void findAll() {
+        // given
+        User user = TestUserFactory.createWithName("name");
+        UUID userId = user.getId();
+        when(userRepository.existsById(userId)).thenReturn(true);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        CursorPageRequestInterestDto cursorPageRequestInterestDto = new CursorPageRequestInterestDto(
+            null,
+            InterestOrderBy.name, Direction.DESC, null, null, 3);
+
+        Interest interest = TestInterestFactory.create("interest1", List.of("k1", "k2"));
+        Slice<Interest> slices = new SliceImpl<>(List.of(interest), PageRequest.of(0, 3), false);
+        when(interestCustomRepository.findAll(cursorPageRequestInterestDto.keyword(),
+            cursorPageRequestInterestDto.orderBy(), cursorPageRequestInterestDto.direction(),
+            cursorPageRequestInterestDto.cursor(), cursorPageRequestInterestDto.after(),
+            cursorPageRequestInterestDto.limit())).thenReturn(slices);
+
+        when(interestCustomRepository.countFilteredTotalElements(any(), any(), any())).thenReturn(
+            1L);
+
+        when(subscriptionRepository.existsByInterestAndUser(interest, user)).thenReturn(false);
+
+        //when
+        CursorPageResponseInterestDto result = interestService.findAll(userId,
+            cursorPageRequestInterestDto);
+
+        // then
+        assertThat(result.content()).hasSize(1);
+        assertThat(result.totalElements()).isEqualTo(1L);
+        assertThat(result.hasNext()).isEqualTo(false);
+        assertThat(result.nextCursor()).isNull();
+        assertThat(result.nextAfter()).isNull();
+        verify(userRepository).existsById(userId);
+        verify(interestCustomRepository).findAll(cursorPageRequestInterestDto.keyword(),
+            cursorPageRequestInterestDto.orderBy(), cursorPageRequestInterestDto.direction(),
+            cursorPageRequestInterestDto.cursor(), cursorPageRequestInterestDto.after(),
+            cursorPageRequestInterestDto.limit());
+
     }
 }

@@ -51,3 +51,18 @@ app:
 server:
   tomcat:
     relaxed-query-chars: '[,]'
+
+springdoc:
+  api-docs:
+    path: /sb/monew/api/v3/api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /index.html
+    disable-swagger-default-url: true
+    display-request-duration: true
+    tags-sorter: alpha        # tag 정렬
+    #operations-sorter: alpha  # api 정렬
+
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8

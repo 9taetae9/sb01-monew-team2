@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.user.controller;
 
+import com.codeit.team2.monew.module.domain.user.controller.docs.UserControllerDocs;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserLoginRequest;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/users")
-public class UserController {
+public class UserController implements UserControllerDocs {
 
     private final UserService userService;
 
@@ -32,10 +33,10 @@ public class UserController {
             .body(userService.registerUser(request));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{userId}")
     public ResponseEntity<UserDto> updateUser(
-        @RequestHeader("MoNew-Request-User-ID") UUID loginId,
-        @PathVariable(name = "id") UUID userId,
+        @RequestHeader("Monew-Request-User-ID") UUID loginId,
+        @PathVariable(name = "userId") UUID userId,
         @Valid @RequestBody UserUpdateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -46,24 +47,24 @@ public class UserController {
     public ResponseEntity<UserDto> login(@Valid @RequestBody UserLoginRequest request) {
         UserDto userDto = userService.login(request);
         return ResponseEntity.status(HttpStatus.OK)
-            .header("MoNew-Request-User-ID", userDto.id().toString())
+            .header("Monew-Request-User-ID", userDto.id().toString())
             .body(userDto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<?> softDeleteUser(
-        @RequestHeader("MoNew-Request-User-ID") UUID loginId,
-        @PathVariable(name = "id") UUID userId
+        @RequestHeader("Monew-Request-User-ID") UUID loginId,
+        @PathVariable(name = "userId") UUID userId
     ) {
         userService.softDeleteUser(loginId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
     }
 
-    @DeleteMapping("/{id}/hard")
+    @DeleteMapping("/{userId}/hard")
     public ResponseEntity<?> hardDeleteUser(
-        @RequestHeader("MoNew-Request-User-ID") UUID loginId,
-        @PathVariable(name = "id") UUID userId
+        @RequestHeader("Monew-Request-User-ID") UUID loginId,
+        @PathVariable(name = "userId") UUID userId
     ) {
         userService.hardDeleteUser(loginId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)

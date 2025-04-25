@@ -1,6 +1,8 @@
 package com.codeit.team2.monew.module.domain.article.backup.controller;
 
+
 import com.codeit.team2.monew.module.domain.article.backup.dto.ArticleRestoreResultDto;
+import com.codeit.team2.monew.module.domain.article.backup.controller.docs.ArticleRestoreControllerDocs;
 import com.codeit.team2.monew.module.domain.article.backup.service.ArticleRestoreService;
 import java.time.LocalDate;
 import java.util.List;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/articles")
 @RequiredArgsConstructor
-public class ArticleRestoreController {
+public class ArticleRestoreController implements ArticleRestoreControllerDocs {
 
     private final ArticleRestoreService articleRestoreService;
 
