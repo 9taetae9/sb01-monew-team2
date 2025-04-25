@@ -37,5 +37,12 @@ public class UserActivity {
         }
         this.subscriptions.add(0, subscriptionItem);
     }
+
+    public void addArticleViewItem(ArticleViewItem articleViewItem) {
+        if (this.articleViews.size() >= 10) {
+            this.articleViews.remove(this.articleViews.size() - 1);
+        }
+        this.articleViews.add(0, articleViewItem);
+    }
 }
 
