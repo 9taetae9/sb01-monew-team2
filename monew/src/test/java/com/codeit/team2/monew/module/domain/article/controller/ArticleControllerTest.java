@@ -54,7 +54,7 @@ public class ArticleControllerTest {
 
         // when && then
         mockMvc.perform(post("/api/articles/{articleId}/article-views", articleId)
-                .header("", userId.toString())
+                .header("Monew-Request-User-Id", userId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk())
             .andExpect(jsonPath("$.articleId").value(articleId.toString()))
@@ -73,7 +73,7 @@ public class ArticleControllerTest {
 
         // when & then
         mockMvc.perform(delete("/api/articles/{articleId}", id)
-                .header("", userId.toString())
+                .header("Monew-Request-User-Id", userId.toString())
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
     }
