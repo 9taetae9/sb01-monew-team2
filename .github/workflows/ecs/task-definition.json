@@ -16,6 +16,12 @@
       "memory": 512,
       "memoryReservation": 256,
       "essential": true,
+      "environmentFiles": [
+        {
+            "value": "arn:aws:s3:::monew-article-backup-dev/monew.env",
+            "type": "s3"
+        }
+      ],
       "portMappings": [
         {
           "name": "monew-app-80-tcp",
