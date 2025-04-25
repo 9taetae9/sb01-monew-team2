@@ -32,6 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // API 요청은 무시하고 정적 리소스만 처리
         registry.addResourceHandler("/**")
             .addResourceLocations("classpath:/static/")
             .resourceChain(true)
@@ -39,7 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
                 @Override
                 protected Resource getResource(String resourcePath, Resource location) throws IOException {
                     // API 경로는 처리하지 않음
-                    if (resourcePath.startsWith("api/")) {
+                    if (resourcePath.startsWith("api/") || resourcePath.startsWith("/api/")) {
                         return null;
                     }
 
