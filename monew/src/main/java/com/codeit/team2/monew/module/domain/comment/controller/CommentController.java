@@ -62,8 +62,7 @@ public class CommentController implements CommentControllerDocs {
         log.info("Start - CommentController/update: commentId={}, userId={}",
             commentId, userId);
 
-        Comment comment = commentService.edit(commentId, userId, request);
-        CommentDto result = commentMapper.toDto(comment, false);
+        CommentDto result = commentService.edit(commentId, userId, request);
 
         log.info("Complete - CommentController/update: commentId={}, content={}",
             result.id(), result.content().substring(0, Math.min(20, result.content().length())));

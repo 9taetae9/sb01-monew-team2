@@ -7,10 +7,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
   output:
@@ -26,7 +26,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   batch:
     jdbc:
-      initialize-schema: always  # 배포 안정화 전까지 always
+      initialize-schema: never # 배포 안정화 전까지 always
     job:
       name: deleteNotificationJob
       enabled: false
