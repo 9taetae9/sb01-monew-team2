@@ -36,6 +36,14 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Extract Version from build.gradle
+        id: extract_version
+        run: |
+          VERSION=$(grep "version = " ./monew/build.gradle | sed "s/version = '\(.*\)'/\1/")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Extracted version: $VERSION"
+      
+
       - name: Grant Execution Permission
         run: chmod +x ./gradlew
         working-directory: ./monew
@@ -58,9 +66,10 @@ jobs:
 
       - name: Build And Push
         run: |
-          docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG -t $ECR_REPOSITORY_URI:latest . --platform linux/amd64
+          docker build --build-arg VERSION=${{ env.VERSION }} -t $ECR_REPOSITORY_URI:$IMAGE_TAG -t $ECR_REPOSITORY_URI:latest -t $ECR_REPOSITORY_URI:${{ env.VERSION }} . --platform linux/amd64
           docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
           docker push $ECR_REPOSITORY_URI:latest
+          docker push $ECR_REPOSITORY_URI:${{ env.VERSION }}
         working-directory: ./monew
 
   deploy:
@@ -71,6 +80,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Extract Version from build.gradle
+        id: extract_version
+        run: |
+          VERSION=$(grep "version = " ./monew/build.gradle | sed "s/version = '\(.*\)'/\1/")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Extracted version: $VERSION"
+
       - name: AWS CLI 설정
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -80,19 +96,21 @@ jobs:
 
       - name: Update Task Definition with Environment Variables
         run: |
-          cat ${{ env.ECS_TASK_DEFINITION }} | jq --arg java_opts "${{ env.JAVA_OPTS }}" --arg profile "${{ env.SPRING_PROFILES_ACTIVE }}" '
+          cat ${{ env.ECS_TASK_DEFINITION }} | jq --arg java_opts "${{ env.JAVA_OPTS }}" --arg profile "${{ env.SPRING_PROFILES_ACTIVE }}" --arg version "${{ env.VERSION }}" '
           if .containerDefinitions[0].environment then 
             .containerDefinitions[0].environment += [
               {"name": "JAVA_OPTS", "value": $java_opts},
-              {"name": "SPRING_PROFILES_ACTIVE", "value": $profile}
+              {"name": "SPRING_PROFILES_ACTIVE", "value": $profile},
+              {"name": "PROJECT_VERSION", "value": $version}
             ]
           else 
             .containerDefinitions[0].environment = [
               {"name": "JAVA_OPTS", "value": $java_opts},
-              {"name": "SPRING_PROFILES_ACTIVE", "value": $profile}
+              {"name": "SPRING_PROFILES_ACTIVE", "value": $profile},
+              {"name": "PROJECT_VERSION", "value": $version}
             ]
           end' > updated-task-def.json
-          mv updated-task-def.json ${{ env.ECS_TASK_DEFINITION }}
+          mv updated-task-def.json ${{ env.ECS_TASK_DEFINITION }}  
 
       - name: ECS 테스크 정의
         id: render-task-definition
@@ -100,7 +118,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: monew-app
-          image: ${{ env.ECR_REPOSITORY_URI }}:${{ env.IMAGE_TAG }}
+          image: ${{ env.ECR_REPOSITORY_URI }}:${{ env.VERSION }}
 
       - name: ECS 서비스 중지(프리티어 환경 고려)
         run: |
