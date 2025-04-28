@@ -426,4 +426,81 @@ class MongoUserActivityServiceTest {
         }
     }
 
+    @Nested
+    class updateUserNicknameInActivityTest {
+
+        @Test
+        void 사용자_닉네임_수정_시_UserActivity_수정_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            Article article = TestEntityFactory.createArticle("article1");
+            Comment comment = TestEntityFactory.createComment(article, user, "comment1");
+            CommentLike commentLike = TestEntityFactory.createCommentLike(comment, user);
+
+            CommentItem commentItem = new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentItem(commentItem);
+
+            CommentLikeItem commentLikeItem = new CommentLikeItem(
+                commentLike.getId(),
+                commentLike.getCreatedAt(),
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentLikeItem(commentLikeItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            String newNickname = "nickname2";
+            user.updateNickname(newNickname);
+            userActivityService.updateUserNicknameInActivity(user);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+            assertEquals(newNickname, saved.getNickname());
+
+            saved.getComments().stream()
+                .filter(savedCommentItem -> savedCommentItem.getUserId().equals(user.getId()))
+                .forEach(savedCommentItem -> assertEquals(newNickname,
+                    savedCommentItem.getUserNickname()));
+
+            saved.getCommentLikes().stream()
+                .filter(savedCommentLikeItem -> savedCommentLikeItem.getCommentUserId()
+                    .equals(user.getId()))
+                .forEach(
+                    savedCommentLikeItem -> assertEquals(newNickname,
+                        savedCommentLikeItem.getCommentUserNickname()));
+        }
+    }
+
 }
