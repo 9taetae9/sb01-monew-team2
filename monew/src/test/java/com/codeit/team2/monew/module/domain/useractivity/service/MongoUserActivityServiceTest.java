@@ -8,17 +8,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeit.team2.monew.module.TestEntityFactory;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.useractivity.document.ArticleViewItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
+import com.codeit.team2.monew.module.domain.useractivity.document.CommentLikeItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.SubscriptionItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
@@ -267,6 +271,76 @@ class MongoUserActivityServiceTest {
             assertEquals(keywords, savedItem.getInterestKeywords());
             assertEquals(subscriberCount, savedItem.getInterestSubscriberCount());
             assertEquals(createdAt, savedItem.getCreatedAt());
+        }
+    }
+
+    @Nested
+    class createCommentLikeItemTest {
+
+        @Test
+        void CommentLikeItem_추가_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Article article = TestEntityFactory.createArticle("title1");
+            Comment comment = TestEntityFactory.createComment(article, user, "comment1");
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            CommentItem commentItem = new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+
+            CommentItem mockCommentItem = mock(CommentItem.class);
+            when(mockCommentItem.getId()).thenReturn(UUID.randomUUID());
+
+            for (int i = 0; i < 4; i++) {
+                userActivity.addCommentItem(mockCommentItem);
+            }
+            userActivity.addCommentItem(commentItem);
+            for (int i = 0; i < 5; i++) {
+                userActivity.addCommentItem(mockCommentItem);
+            }
+
+            CommentLike commentLike = CommentLike.create(comment, user);
+            comment.incrementLikeCount();
+
+            for (int i = 0; i < 10; i++) {
+                userActivity.addCommentLikeItem(mock(CommentLikeItem.class));
+            }
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.createCommentLikeItem(commentLike);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+            assertEquals(10, saved.getCommentLikes().size());
+
+            userActivity.getComments().stream()
+                .filter(savedCommentItem -> savedCommentItem.getId().equals(comment.getId()))
+                .findAny()
+                .ifPresent(
+                    findedCommentItem -> assertEquals(1, findedCommentItem.getLikeCount()));
         }
     }
 
