@@ -7,7 +7,6 @@ import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageReques
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
-import com.codeit.team2.monew.module.domain.article.repository.ArticleCustomRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
@@ -34,7 +33,6 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleViewRepository articleViewRepository;
     private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
-    private final ArticleCustomRepository articleCustomRepository;
     private final CommentRepository commentRepository;
 
     @Transactional
@@ -87,7 +85,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public CursorPageResponseArticleDto findAll(UUID userId,
         CursorPageRequestArticleDto cursorPageRequestArticleDto) {
-        Slice<Article> slices = articleCustomRepository.findWithCursor(cursorPageRequestArticleDto);
+        Slice<Article> slices = articleRepository.findWithCursor(cursorPageRequestArticleDto);
 
         List<Article> articles = slices.getContent();
         List<UUID> articleIds = articles.stream().map(article -> article.getId())
@@ -110,7 +108,7 @@ public class ArticleServiceImpl implements ArticleService {
             })
             .toList();
 
-        long totalElements = articleCustomRepository.countFilteredTotalElements(
+        long totalElements = articleRepository.countFilteredTotalElements(
             cursorPageRequestArticleDto.keyword(), cursorPageRequestArticleDto.interestId(),
             cursorPageRequestArticleDto.sourceIn(),
             cursorPageRequestArticleDto.getPublishDateFromInstant(),
