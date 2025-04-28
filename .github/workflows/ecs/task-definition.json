@@ -14,12 +14,18 @@
       "image": "replace-me",
       "cpu": 256,
       "memory": 512,
-      "memoryReservation": 256,
+      "memoryReservation": 384,
       "essential": true,
+      "environment": [
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "prod"
+        }
+      ],
       "environmentFiles": [
         {
-            "value": "arn:aws:s3:::monew-article-backup-dev/monew.env",
-            "type": "s3"
+          "value": "arn:aws:s3:::monew-article-backup-dev/monew.env",
+          "type": "s3"
         }
       ],
       "portMappings": [
@@ -39,7 +45,7 @@
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs",
           "mode": "non-blocking",
-          "max-buffer-size": "25m"
+          "max-buffer-size": "15m"
         }
       }
     }
