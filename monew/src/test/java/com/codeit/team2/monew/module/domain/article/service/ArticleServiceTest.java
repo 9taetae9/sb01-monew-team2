@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -44,6 +45,8 @@ public class ArticleServiceTest {
     private ArticleService articleService;
     private ArticleCustomRepository articleCustomRepository;
     private CommentRepository commentRepository;
+
+    @Spy
     private ApplicationEventPublisher publisher;
 
     @BeforeEach

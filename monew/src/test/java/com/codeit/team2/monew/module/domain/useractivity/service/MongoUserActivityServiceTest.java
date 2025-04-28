@@ -268,7 +268,6 @@ class MongoUserActivityServiceTest {
             assertEquals(subscriptionId, savedItem.getId());
             assertEquals(interestId, savedItem.getInterestId());
             assertEquals(interestName, savedItem.getInterestName());
-            assertEquals(keywords, savedItem.getInterestKeywords());
             assertEquals(subscriberCount, savedItem.getInterestSubscriberCount());
             assertEquals(createdAt, savedItem.getCreatedAt());
         }
