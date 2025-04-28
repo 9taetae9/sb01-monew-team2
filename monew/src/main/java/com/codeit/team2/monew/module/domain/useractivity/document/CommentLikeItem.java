@@ -24,4 +24,8 @@ public class CommentLikeItem {
     private String commentContent;
     private Long commentLikeCount;
     private Instant commentCreatedAt;
+
+    public void updateCommentUserNickname(String commentUserNickname) {
+        this.commentUserNickname = commentUserNickname;
+    }
 }

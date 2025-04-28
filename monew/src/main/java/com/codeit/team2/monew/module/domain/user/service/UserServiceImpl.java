@@ -6,6 +6,7 @@ import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.event.UserRegisterEvent;
+import com.codeit.team2.monew.module.domain.user.event.UserUpdateEvent;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.UUID;
@@ -52,6 +53,9 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new RuntimeException("not found user"));
 
         user.updateNickname(userUpdateRequest.nickname());
+
+        // 사용자 닉네임 수정 이벤트 발생
+        publisher.publishEvent(new UserUpdateEvent(user));
 
         return userMapper.toUserDto(user);
     }

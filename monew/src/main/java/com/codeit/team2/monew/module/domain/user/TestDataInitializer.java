@@ -16,6 +16,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.service.SubscriptionService;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
@@ -161,6 +162,44 @@ public class TestDataInitializer implements ApplicationRunner {
             "password"
         );
         userService.registerUser(userRegisterRequest);
+    }
+
+    void initUserNicknameUpdateEventData() {
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest(
+            "email",
+            "nickname",
+            "password"
+        );
+        UserDto userDto = userService.registerUser(userRegisterRequest);
+
+        Article article = articleRepository.save(
+            new Article(
+                "title",
+                "NAVER",
+                "sourceUrl",
+                "summary",
+                Set.of(),
+                0L,
+                Instant.now(),
+                false
+            ));
+
+        CommentRegisterRequest commentRegisterRequest = new CommentRegisterRequest(
+            article.getId(),
+            userDto.id(),
+            "comment1"
+        );
+
+        Comment comment = commentService.register(commentRegisterRequest);
+        CommentLike commentLike = commentLikeService.like(comment.getId(), userDto.id());
+
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname1");
+        userService.updateUser(
+            userDto.id(),
+            userDto.id(),
+            userUpdateRequest
+        );
+
     }
 
     @Override

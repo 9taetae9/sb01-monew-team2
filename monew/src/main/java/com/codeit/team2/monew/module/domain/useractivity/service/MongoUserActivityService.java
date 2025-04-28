@@ -153,6 +153,26 @@ public class MongoUserActivityService implements UserActivityService {
         userActivityRepository.save(userActivity);
     }
 
+    public void updateUserNicknameInActivity(User user) {
+        UserActivity userActivity = userActivityRepository.findById(user.getId())
+            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+
+        userActivity.updateNickname(user.getNickname());
+
+        // CommentItem의 userNickname도 함께 갱신
+        userActivity.getComments().stream()
+            .filter(commentItem -> commentItem.getUserId().equals(user.getId()))
+            .forEach(commentItem -> commentItem.updateUserNickname(user.getNickname()));
+
+        // CommentLikeItem의 commentUserNickname도 함께 갱신
+        userActivity.getCommentLikes().stream()
+            .filter(commentLikeItem -> commentLikeItem.getCommentUserId().equals(user.getId()))
+            .forEach(
+                commentLikeItem -> commentLikeItem.updateCommentUserNickname(user.getNickname()));
+
+        userActivityRepository.save(userActivity);
+    }
+
     private UserActivity findUserActivityOrThrow(UUID userId) {
         return userActivityRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
