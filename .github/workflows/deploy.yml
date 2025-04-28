@@ -1,7 +1,7 @@
 name: CD - Deploy To ECS
 
 on:
-  pull_request:
+  push:
     branches:
       - release*
       - release
@@ -18,6 +18,9 @@ env:
   ECS_TASK_DEFINITION: .github/workflows/ecs/task-definition.json
   ECS_SERVICE: monew-service
   ECS_CLUSTER: monew-cluster
+  JAVA_OPTS: "-Xmx350m -Xms256m -XX:MaxMetaspaceSize=128m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof"
+  SPRING_PROFILES_ACTIVE: "prod"
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -47,7 +50,6 @@ jobs:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ env.AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-        
 
       - name: ECR Login
         uses: aws-actions/amazon-ecr-login@v2
@@ -66,17 +68,31 @@ jobs:
     needs: build-and-push
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      
       - name: AWS CLI 설정
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ env.AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update Task Definition with Environment Variables
+        run: |
+          cat ${{ env.ECS_TASK_DEFINITION }} | jq --arg java_opts "${{ env.JAVA_OPTS }}" --arg profile "${{ env.SPRING_PROFILES_ACTIVE }}" '
+          if .containerDefinitions[0].environment then 
+            .containerDefinitions[0].environment += [
+              {"name": "JAVA_OPTS", "value": $java_opts},
+              {"name": "SPRING_PROFILES_ACTIVE", "value": $profile}
+            ]
+          else 
+            .containerDefinitions[0].environment = [
+              {"name": "JAVA_OPTS", "value": $java_opts},
+              {"name": "SPRING_PROFILES_ACTIVE", "value": $profile}
+            ]
+          end' > updated-task-def.json
+          mv updated-task-def.json ${{ env.ECS_TASK_DEFINITION }}
 
       - name: ECS 테스크 정의
         id: render-task-definition
@@ -92,7 +108,7 @@ jobs:
             --cluster ${{ env.ECS_CLUSTER }} \
             --service ${{ env.ECS_SERVICE }} \
             --desired-count 0
-        
+
       - name: ECS 배포
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
