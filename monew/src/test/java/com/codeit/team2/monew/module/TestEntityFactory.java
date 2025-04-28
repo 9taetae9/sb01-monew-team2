@@ -2,6 +2,8 @@ package com.codeit.team2.monew.module;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
+import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +38,17 @@ public class TestEntityFactory {
 
         ReflectionTestUtils.setField(article, "id", UUID.randomUUID());
         return article;
+    }
+
+    public static Comment createComment(Article article, User user, String content) {
+        Comment comment = Comment.create(
+            article,
+            user,
+            content
+        );
+
+        ReflectionTestUtils.setField(comment, "id", UUID.randomUUID());
+        return comment;
     }
 
 }

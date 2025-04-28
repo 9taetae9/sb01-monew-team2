@@ -4,6 +4,7 @@ import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.subscription.event.SubscriptionRegisterEvent;
 import com.codeit.team2.monew.module.domain.subscription.mapper.SubscriptionMapper;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
@@ -15,17 +16,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SubscriptionServiceImpl implements SubscriptionService{
+public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final InterestRepository interestRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final SubscriptionMapper subscriptionMapper;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     @Transactional
@@ -44,6 +47,12 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         List<String> keywords = interest.getKeywords().stream()
             .map(keyword -> keyword.getKeyword().getName())
             .collect(Collectors.toList());
+
+        publisher.publishEvent(new SubscriptionRegisterEvent(
+            subscription,
+            interest,
+            userId
+        ));
 
         return subscriptionMapper.toDto(subscription, interest, keywords);
     }

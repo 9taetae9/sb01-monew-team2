@@ -9,6 +9,7 @@ import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestCommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentCustomRepository commentCustomRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public Comment register(CommentRegisterRequest request) {
@@ -54,6 +57,9 @@ public class CommentServiceImpl implements CommentService {
             });
 
         Comment comment = commentMapper.toEntity(request, article, user);
+
+        // comment 생성 이벤트 발생
+        publisher.publishEvent(new CommentRegisterEvent(comment, article, user));
 
         return commentRepository.save(comment);
     }
@@ -74,7 +80,8 @@ public class CommentServiceImpl implements CommentService {
 
         comment.update(request.content());
 
-        boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(), userId);
+        boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(),
+            userId);
         return commentMapper.toDto(comment, likedByMe);
     }
 

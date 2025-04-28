@@ -1,20 +1,17 @@
 package com.codeit.team2.monew.module.domain.article.backup.batch;
 
+import com.codeit.team2.monew.module.domain.article.entity.Article;
+import jakarta.persistence.EntityManagerFactory;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Map;
-
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.codeit.team2.monew.module.domain.article.entity.Article;
-
-import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
 public class ArticleBackupReaderConfig {

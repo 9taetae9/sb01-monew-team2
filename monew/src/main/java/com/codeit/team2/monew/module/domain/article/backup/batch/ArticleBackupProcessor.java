@@ -1,19 +1,16 @@
 package com.codeit.team2.monew.module.domain.article.backup.batch;
 
-import java.time.Instant;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.stereotype.Component;
-
 import com.codeit.team2.monew.module.domain.article.backup.dto.ArticleBackupDto;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
-
+import java.time.Instant;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
