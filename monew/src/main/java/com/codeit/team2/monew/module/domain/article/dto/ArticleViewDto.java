@@ -1,7 +1,6 @@
 package com.codeit.team2.monew.module.domain.article.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.time.Instant;
 import java.util.UUID;
 

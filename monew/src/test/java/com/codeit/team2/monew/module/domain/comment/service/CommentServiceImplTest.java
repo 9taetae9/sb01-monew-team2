@@ -32,7 +32,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -56,6 +58,9 @@ class CommentServiceImplTest {
     private CommentCustomRepository commentCustomRepository;
     @Mock
     private CommentLikeRepository commentLikeRepository;
+
+    @Spy
+    private ApplicationEventPublisher publisher;
 
     @InjectMocks
     private CommentServiceImpl commentService;
