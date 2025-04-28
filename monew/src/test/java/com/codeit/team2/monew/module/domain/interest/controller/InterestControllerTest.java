@@ -6,15 +6,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.codeit.team2.monew.module.domain.interest.code.InterestErrorCode;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
+import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import com.codeit.team2.monew.module.domain.subscription.service.SubscriptionService;
+import com.codeit.team2.monew.module.domain.user.TestUserFactory;
+import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +45,6 @@ class InterestControllerTest {
 
     @MockitoBean
     private SubscriptionService subscriptionService;
-
 
     @DisplayName("관심사 생성에 성공합니다.")
     @Test
@@ -68,14 +72,53 @@ class InterestControllerTest {
 
         //when & then
         mockMvc.perform(post("/api/interests")
-            .header("Monew-Request-User-Id", userId.toString())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(requestDto))
-        ).andExpect(status().isCreated())
+                .header("Monew-Request-User-Id", userId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto))
+            ).andExpect(status().isCreated())
             .andExpect(jsonPath("$.name").value(name))
             .andExpect(jsonPath("$.keywords[0]").value(keywords.get(0)))
             .andExpect(jsonPath("$.subscriberCount").value(interestDto.subscriberCount()))
             .andExpect(jsonPath("$.subscribedByMe").value(interestDto.subscribedByMe()));
+
+    }
+
+    @DisplayName("관심사명이 없어 예외를 응답합니다.")
+    @Test
+    void create_failure() throws Exception {
+        //given
+        UUID userId = UUID.randomUUID();
+        String name = "";
+        List<String> keywords = List.of("당근");
+
+        InterestRegisterRequest requestDto = new InterestRegisterRequest(
+            name,
+            keywords
+        );
+
+        InterestDto interestDto = new InterestDto(
+            UUID.randomUUID(),
+            name,
+            keywords,
+            0,
+            false
+        );
+
+        when(interestService.create(requestDto, userId))
+            .thenReturn(interestDto);
+
+        //when & then
+        mockMvc.perform(post("/api/interests")
+                .header("Monew-Request-User-Id", userId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto))
+            ).andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").exists())
+            .andExpect(jsonPath("$.code").value(400))
+            .andExpect(jsonPath("$.exceptionType").value("MethodArgumentNotValidException"))
+            .andExpect(jsonPath("$.message").value("관심사명을 비워둘 수 없습니다.")) // CommonErrorCode 메시지
+            .andExpect(jsonPath("$.details").exists())
+            .andExpect(jsonPath("$.details.name").value(""));
 
     }
 
@@ -115,6 +158,37 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.subscribedByMe").value(interestDto.subscribedByMe()));
     }
 
+    @DisplayName("관심사를 찾을 수 없어 예외를 응답합니다.")
+    @Test
+    void update_failure() throws Exception {
+        //given
+        UUID interestId = UUID.randomUUID();
+        List<String> keywords = List.of("시금치");
+        User user = TestUserFactory.createWithName("이름");
+
+        InterestUpdateRequest requestDto = new InterestUpdateRequest(
+            keywords
+        );
+
+        when(interestService.update(requestDto, interestId, user.getId()))
+            .thenThrow(new InterestNotFoundException(InterestErrorCode.INTEREST_NOT_FOUND,
+                Map.of("id", interestId)));
+
+        //when & then
+        mockMvc.perform(patch("/api/interests/{interestId}", interestId)
+                .header("Monew-Request-User-Id", user.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto))
+            ).andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.timestamp").exists())
+            .andExpect(jsonPath("$.status").value(404))
+            .andExpect(jsonPath("$.code").value("INTEREST_NOT_FOUND"))
+            .andExpect(jsonPath("$.exceptionType").value("InterestNotFoundException"))
+            .andExpect(jsonPath("$.message").value("해당 관심사가 존재하지 않습니다."))
+            .andExpect(jsonPath("$.details").exists())
+            .andExpect(jsonPath("$.details.id").value(interestId.toString()));
+    }
+
     @Test
     void subscription() throws Exception {
         // given
@@ -146,8 +220,5 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.subscriberCount").value(subscriptionDto.subscriberCount()));
 
     }
-
-    @Test
-    void delete() {
-    }
+    
 }
