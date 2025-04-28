@@ -3,12 +3,14 @@ package com.codeit.team2.monew.module.domain.useractivity.service;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.useractivity.document.ArticleViewItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
+import com.codeit.team2.monew.module.domain.useractivity.document.CommentLikeItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.SubscriptionItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
@@ -95,6 +97,38 @@ public class MongoUserActivityService implements UserActivityService {
         UserActivity userActivity = findUserActivityOrThrow(user.getId());
 
         userActivity.addCommentItem(commentItem);
+        userActivityRepository.save(userActivity);
+    }
+
+    @Transactional
+    public void createCommentLikeItem(CommentLike commentLike) {
+        User user = commentLike.getUser();
+        Comment comment = commentLike.getComment();
+        Article article = comment.getArticle();
+
+        UserActivity userActivity = findUserActivityOrThrow(user.getId());
+
+        CommentLikeItem commentLikeItem = new CommentLikeItem(
+            commentLike.getId(),
+            commentLike.getCreatedAt(),
+            comment.getId(),
+            article.getId(),
+            article.getTitle(),
+            user.getId(),
+            user.getNickname(),
+            comment.getContent(),
+            comment.getLikeCount(),
+            comment.getCreatedAt()
+        );
+
+        // CommentItem의 likeCount도 함께 갱신
+        userActivity.getComments().stream()
+            .filter(commentItem -> commentItem.getId().equals(comment.getId()))
+            .findAny()
+            .ifPresent(
+                findedCommentItem -> findedCommentItem.updateLikeCount(comment.getLikeCount()));
+
+        userActivity.addCommentLikeItem(commentLikeItem);
         userActivityRepository.save(userActivity);
     }
 

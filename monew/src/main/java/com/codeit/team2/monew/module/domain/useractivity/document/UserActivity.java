@@ -24,6 +24,13 @@ public class UserActivity {
     private List<CommentLikeItem> commentLikes;
     private List<ArticleViewItem> articleViews;
 
+    public void addSubscriptionItem(SubscriptionItem subscriptionItem) {
+        if (this.subscriptions.size() >= 10) {
+            this.subscriptions.remove(this.subscriptions.size() - 1);
+        }
+        this.subscriptions.add(0, subscriptionItem);
+    }
+
     public void addCommentItem(CommentItem commentItem) {
         if (this.comments.size() >= 10) {
             this.comments.remove(this.comments.size() - 1);
@@ -31,11 +38,11 @@ public class UserActivity {
         this.comments.add(0, commentItem);
     }
 
-    public void addSubscriptionItem(SubscriptionItem subscriptionItem) {
-        if (this.subscriptions.size() >= 10) {
-            this.subscriptions.remove(this.subscriptions.size() - 1);
+    public void addCommentLikeItem(CommentLikeItem commentLikeItem) {
+        if (this.commentLikes.size() >= 10) {
+            this.commentLikes.remove(this.commentLikes.size() - 1);
         }
-        this.subscriptions.add(0, subscriptionItem);
+        this.commentLikes.add(0, commentLikeItem);
     }
 
     public void addArticleViewItem(ArticleViewItem articleViewItem) {

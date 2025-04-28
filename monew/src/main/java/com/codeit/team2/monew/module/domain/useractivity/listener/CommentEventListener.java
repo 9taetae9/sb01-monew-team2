@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.useractivity.listener;
 
+import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,18 @@ public class CommentEventListener {
     private final MongoUserActivityService userActivityService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void create(CommentRegisterEvent event) {
+    public void createCommentItem(CommentRegisterEvent event) {
         userActivityService.createCommentItem(
             event.comment(),
             event.article(),
             event.user()
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void createCommentLikeItem(CommentLikeRegisterEvent event) {
+        userActivityService.createCommentLikeItem(
+            event.commentLike()
         );
     }
 

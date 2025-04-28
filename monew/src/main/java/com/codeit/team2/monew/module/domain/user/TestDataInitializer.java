@@ -4,10 +4,13 @@ import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
+import com.codeit.team2.monew.module.domain.comment.service.CommentLikeService;
+import com.codeit.team2.monew.module.domain.comment.service.CommentService;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
@@ -37,6 +40,8 @@ public class TestDataInitializer implements ApplicationRunner {
     private final UserService userService;
     private final InterestService interestService;
     private final SubscriptionService subscriptionService;
+    private final CommentService commentService;
+    private final CommentLikeService commentLikeService;
 
     void init() {
         User user = userRepository.save(
@@ -101,6 +106,36 @@ public class TestDataInitializer implements ApplicationRunner {
         articleRepository.save(article);
     }
 
+    void initCommentLikeRegisterEventData() {
+        UserDto userDto = userService.registerUser(
+            new UserRegisterRequest(
+                "email@a.com",
+                "nickname",
+                "passowrd"
+            )
+        );
+        Article article = articleRepository.save(
+            new Article(
+                "title",
+                "NAVER",
+                "sourceUrl",
+                "summary",
+                Set.of(),
+                0L,
+                Instant.now(),
+                false
+            ));
+
+        CommentRegisterRequest commentRegisterRequest = new CommentRegisterRequest(
+            article.getId(),
+            userDto.id(),
+            "comment1"
+        );
+
+        Comment comment = commentService.register(commentRegisterRequest);
+        commentLikeService.like(comment.getId(), userDto.id());
+    }
+
     void intiSubscriptionRegisterEventData() {
         UserDto userDto = userService.registerUser(new UserRegisterRequest(
                 "email@a.com",
@@ -121,6 +156,5 @@ public class TestDataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-
     }
 }
