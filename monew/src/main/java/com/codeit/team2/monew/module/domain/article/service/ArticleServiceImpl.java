@@ -14,9 +14,10 @@ import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
@@ -89,21 +90,25 @@ public class ArticleServiceImpl implements ArticleService {
         Slice<Article> slices = articleCustomRepository.findWithCursor(cursorPageRequestArticleDto);
 
         List<Article> articles = slices.getContent();
-        List<ArticleDto> articleDtos = new ArrayList<>();
-        articles.stream().forEach(article -> {
-            Long commentCount = commentRepository.countByArticle(article);
-            boolean viewedByMe = articleViewRepository.existsByUserIdAndArticleId(userId,
-                article.getId());
-            articleDtos.add(new ArticleDto(article.getId(),
-                article.getSource(),
-                article.getSourceUrl(),
-                article.getTitle(),
-                article.getPublishedDate(),
-                article.getSummary(),
-                commentCount,
-                article.getViewCount(),
-                viewedByMe));
-        });
+        List<UUID> articleIds = articles.stream().map(article -> article.getId())
+            .collect(Collectors.toList());
+        // DTO 매핑을 위해 필요한 값 bulk로 가져오기
+        Map<UUID, Long> commentCountMap = commentRepository.countByArticleIds(articleIds).stream()
+            .collect(Collectors.toMap(
+                row -> (UUID) row[0],  // 첫 번째 컬럼: articleId
+                row -> (Long) row[1]   // 두 번째 컬럼: count
+            ));
+        List<UUID> viewedArticleIds = articleViewRepository.findViewedArticleIds(userId,
+            articleIds);
+
+        // Article -> ArticleDto 매핑
+        List<ArticleDto> articleDtos = articles.stream()
+            .map(article -> {
+                Long commentCount = commentCountMap.getOrDefault(article.getId(), 0L);
+                boolean viewedByMe = viewedArticleIds.contains(article.getId());
+                return articleMapper.toDto(article, commentCount, viewedByMe);
+            })
+            .toList();
 
         long totalElements = articleCustomRepository.countFilteredTotalElements(
             cursorPageRequestArticleDto.keyword(), cursorPageRequestArticleDto.interestId(),
