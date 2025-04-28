@@ -22,7 +22,7 @@ public class UserActivityController implements UserActivityControllerDocs {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserActivityDto> findUserActivities(
-        @RequestHeader("Monew-Request-User-ID") UUID loginId,
+        @RequestHeader("Monew-Request-User-Id") UUID loginId,
         @PathVariable UUID userId
     ) {
         return ResponseEntity.status(HttpStatus.OK)

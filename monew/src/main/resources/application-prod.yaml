@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: monew
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/monew
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+  output:
+    ansi:
+      enabled: always
+  sql:
+    init:
+      mode: never
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  batch:
+    jdbc:
+      initialize-schema: never # 배포 안정화 전까지 always
+    job:
+      name: deleteNotificationJob
+      enabled: false
+logging:
+  level:
+    root: info
+    org.hibernate.SQL: warn
+    org.hibernate.orm.jdbc.bind: warn
+
+

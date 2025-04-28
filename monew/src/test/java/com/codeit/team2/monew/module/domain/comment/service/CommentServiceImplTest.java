@@ -9,13 +9,21 @@ import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentOrderBy;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
+import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestCommentDto;
+import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
+import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
+import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +35,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort.Direction;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
@@ -42,6 +54,10 @@ class CommentServiceImplTest {
 
     @Mock
     private CommentMapper commentMapper;
+    @Mock
+    private CommentCustomRepository commentCustomRepository;
+    @Mock
+    private CommentLikeRepository commentLikeRepository;
 
     @Spy
     private ApplicationEventPublisher publisher;
@@ -124,18 +140,36 @@ class CommentServiceImplTest {
     @Test
     @DisplayName("댓글 수정 - 성공")
     void edit_Success() {
-        //given
+        // given
         CommentUpdateRequest request = new CommentUpdateRequest("edited comment");
+        CommentDto expectedDto = new CommentDto(
+            commentId,
+            articleId,
+            userId,
+            "testUser",
+            "edited comment",
+            0L,
+            false,
+            Instant.now()
+        );
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
         when(comment.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
+        when(comment.getId()).thenReturn(commentId);
 
-        Comment edited = commentService.edit(commentId, userId, request);
+        when(commentLikeRepository.existsByCommentIdAndUserId(commentId, userId)).thenReturn(false);
 
-        assertThat(edited).isEqualTo(comment);
+        when(commentMapper.toDto(comment, false)).thenReturn(expectedDto);
+
+        // when
+        CommentDto result = commentService.edit(commentId, userId, request);
+
+        // then
+        assertThat(result).isEqualTo(expectedDto);
         verify(commentRepository).findById(commentId);
         verify(comment).update(request.content());
+        verify(commentMapper).toDto(comment, false);
     }
 
     @Test
@@ -183,4 +217,29 @@ class CommentServiceImplTest {
             .isInstanceOf(RuntimeException.class);
     }
 
+    @Test
+    @DisplayName("댓글 목록 조회 - 성공")
+    void findAll() {
+        // given
+        CursorPageRequestCommentDto cursorPageRequestCommentDto = new CursorPageRequestCommentDto(
+            articleId, CommentOrderBy.createdAt, Direction.ASC, null, null, 10);
+
+        Slice<Comment> slices = new SliceImpl<>(List.of(comment), PageRequest.of(0, 10), false);
+        when(commentCustomRepository.findAll(cursorPageRequestCommentDto.articleId(),
+            cursorPageRequestCommentDto.orderBy(), cursorPageRequestCommentDto.direction(),
+            cursorPageRequestCommentDto.cursor(), cursorPageRequestCommentDto.after(),
+            cursorPageRequestCommentDto.limit())).thenReturn(slices);
+        when(commentRepository.countByArticleId(articleId)).thenReturn(1L);
+
+        // when
+        CursorPageResponseCommentDto result = commentService.findAll(userId,
+            cursorPageRequestCommentDto);
+
+        // then
+        assertThat(result.content()).hasSize(1);
+        assertThat(result.totalElements()).isEqualTo(1L);
+        assertThat(result.hasNext()).isEqualTo(false);
+        assertThat(result.nextCursor()).isNull();
+        assertThat(result.nextAfter()).isNull();
+    }
 }

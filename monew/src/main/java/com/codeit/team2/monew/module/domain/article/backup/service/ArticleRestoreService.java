@@ -20,12 +20,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -42,11 +41,10 @@ public class ArticleRestoreService {
     private final S3Client s3Client;
     private final ObjectMapper objectMapper;
     private final JdbcTemplate jdbcTemplate;
+    private final ArticleRestoreTransactionService transactionService;
 
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
-
-    private static final int BATCH_SIZE = 200;
 
     /**
      * 시작 날짜부터 종료 날짜까지 기사 복원
@@ -60,8 +58,9 @@ public class ArticleRestoreService {
         while (!current.isAfter(to)) {
             LocalDate dateToProcess = current;
             try {
-                // 각 날짜를 별도 트랜잭션으로 처리
-                ArticleRestoreResultDto result = processDateWithNewTransaction(dateToProcess);
+                ArticleRestoreResultDto result = transactionService.processDateWithNewTransaction(
+                    this, dateToProcess);
+
                 results.add(result);
                 log.info("Restored {} articles for date {}", result.restoredArticleCount(), dateToProcess);
             } catch (Exception e) {
@@ -80,17 +79,9 @@ public class ArticleRestoreService {
     }
 
     /**
-     * 날짜별 복원 처리
+     * 특정 날짜 기사 복원 - transactionService에서 호출
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ArticleRestoreResultDto processDateWithNewTransaction(LocalDate date) {
-        return restoreArticlesByDate(date);
-    }
-
-    /**
-     * 특정 날짜 기사 복원
-     */
-    private ArticleRestoreResultDto restoreArticlesByDate(LocalDate date) {
+    ArticleRestoreResultDto restoreArticlesByDate(LocalDate date) {
         String formattedDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         String prefix = "articles/" + formattedDate + "/";
 
@@ -119,8 +110,8 @@ public class ArticleRestoreService {
         for (S3Object s3Object : allObjects) {
             try {
                 log.info("Processing backup file: {}", s3Object.key());
-                // 각 파일 새 트랜잭션으로 처리
-                ProcessFileResult result = processFileWithNewTransaction(s3Object, existingUrls);
+                ProcessFileResult result = transactionService.processFileWithNewTransaction(
+                    this, s3Object, existingUrls);
 
                 if (result.success) {
                     restoredIds.addAll(result.savedIds);
@@ -158,10 +149,9 @@ public class ArticleRestoreService {
     }
 
     /**
-     * 파일 처리
+     * 백업파일 처리 - 트랜잭션 서비스에서 호출
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ProcessFileResult processFileWithNewTransaction(S3Object s3Object, Set<String> existingUrls) {
+    ProcessFileResult processBackupFileWithTransaction(S3Object s3Object, Set<String> existingUrls) {
         try {
             List<Article> articles = processBackupFile(s3Object, existingUrls);
             if (!articles.isEmpty()) {
@@ -181,7 +171,7 @@ public class ArticleRestoreService {
     }
 
     /**
-     * 기사 일괄 삽입: BatchPreparedStatementSetter 사용
+     * 기사 일괄 삽입 - BatchPreparedStatementSetter 사용
      */
     private List<UUID> batchInsertArticles(List<Article> articles) {
         final List<UUID> savedIds = new ArrayList<>();
@@ -223,7 +213,7 @@ public class ArticleRestoreService {
     /**
      * 파일 처리 결과
      */
-    private static class ProcessFileResult {
+    public static class ProcessFileResult {
         final boolean success;
         final List<UUID> savedIds;
         final Set<String> processedUrls;
@@ -278,19 +268,7 @@ public class ArticleRestoreService {
                         continue;
                     }
 
-                    Article article = new Article(
-                        dto.title(),
-                        dto.source(),
-                        dto.sourceUrl(),
-                        dto.summary(),
-                        new HashSet<>(), // 관심사 관계 추후 고려
-                        dto.viewCount(),
-                        dto.publishedDate(),
-                        dto.deleted()
-                    );
-
-                    // 기본 키 설정 - 백업 데이터의 id를 그대로 사용
-                    article.setId(dto.id()); // BaseEntity에 setter 사용(추후 변경 고려)
+                    Article article = recreateArticle(dto);
 
                     articlesToRestore.add(article);
                 } catch (Exception e) {
@@ -315,7 +293,6 @@ public class ArticleRestoreService {
      * @return
      */
     private List<S3Object> getAllS3Objects(String prefix) {
-
         List<S3Object> allObjects = new ArrayList<>();
         String continuationToken = null;
 
@@ -334,5 +311,22 @@ public class ArticleRestoreService {
         } while (continuationToken != null);
 
         return allObjects;
+    }
+
+    @NotNull
+    private static Article recreateArticle(ArticleBackupDto dto) {
+        Article article = new Article(
+            dto.title(),
+            dto.source(),
+            dto.sourceUrl(),
+            dto.summary(),
+            new HashSet<>(),
+            dto.viewCount(),
+            dto.publishedDate(),
+            dto.deleted()
+        );
+
+        article.setId(dto.id());
+        return article;
     }
 }

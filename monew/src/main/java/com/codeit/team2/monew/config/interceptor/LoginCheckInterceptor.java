@@ -15,7 +15,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
         Object handler) throws Exception {
-        String userId = request.getHeader("MoNew-Request-User-ID");
+        String userId = request.getHeader("Monew-Request-User-Id");
 
         if (userId == null || userId.isEmpty()) {
             // JSON 형태의 에러 응답 구성, 추후 수정

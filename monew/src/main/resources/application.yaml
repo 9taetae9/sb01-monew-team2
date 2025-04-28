@@ -1,7 +1,6 @@
 spring:
   application:
     name: monew
-
   jpa:
     hibernate:
       ddl-auto: none
@@ -41,7 +40,7 @@ news:
 
 aws:
   profile-name: monew-acc
-  region: ${AWS_REGION}
+  region: ${AWS_REGION:ap-northeast-2}
   s3:
     bucket-name: ${AWS_S3_BUCKET_NAME}
 
@@ -58,11 +57,11 @@ springdoc:
     groups:
       enabled: true
   swagger-ui:
-    path: /index.html
+    path: /swagger-ui.html
     disable-swagger-default-url: true
     display-request-duration: true
     tags-sorter: alpha        # tag 정렬
-    #operations-sorter: alpha  # api 정렬
+    groups-order: desc
 
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8

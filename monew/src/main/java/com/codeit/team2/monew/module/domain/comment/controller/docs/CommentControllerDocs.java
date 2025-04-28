@@ -5,6 +5,8 @@ import com.codeit.team2.monew.config.SwaggerTags.Tags;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
+import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestCommentDto;
+import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +35,7 @@ public interface CommentControllerDocs {
             content = @Content(schema = @Schema(implementation = CommentRegisterRequest.class))
         ),
         parameters = {
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -52,7 +55,7 @@ public interface CommentControllerDocs {
         ),
         parameters = {
             @Parameter(name = "commentId", description = "댓글 ID"),
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -70,7 +73,7 @@ public interface CommentControllerDocs {
         description = "댓글을 논리적으로 삭제합니다.",
         parameters = {
             @Parameter(name = "commentId", description = "댓글 ID"),
-            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER)
+            @Parameter(name = "Monew-Request-User-Id", description = "요청자 ID", in = ParameterIn.HEADER)
         }
     )
     @ApiResponses({
@@ -95,4 +98,26 @@ public interface CommentControllerDocs {
     })
     @DeleteMapping("/{commentId}/hard")
     ResponseEntity<Void> hardDelete(UUID commentId);
+
+    @Operation(
+        summary = "댓글 물리 삭제",
+        description = "댓글을 영구적으로 삭제합니다.",
+        parameters = {
+            @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
+            @Parameter(name = "articleId", description = "기사 ID", in = ParameterIn.QUERY),
+            @Parameter(name = "orderBy", description = "정렬 속성 이름", in = ParameterIn.QUERY),
+            @Parameter(name = "direction", description = "정렬 방향 (ASC, DESC)", in = ParameterIn.QUERY),
+            @Parameter(name = "cursor", description = "커서 값", in = ParameterIn.QUERY),
+            @Parameter(name = "after", description = "보조 커서(createdAt) 값", in = ParameterIn.QUERY),
+            @Parameter(name = "limit", description = "커서 페이지 크기", in = ParameterIn.QUERY)
+        }
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "조회 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청(정렬 기준 오류, 페이지네이션 파라미터 오류 등"),
+        @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    })
+    @GetMapping("")
+    ResponseEntity<CursorPageResponseCommentDto> findAll(UUID userId,
+        CursorPageRequestCommentDto cursorPageRequestCommentDto);
 }

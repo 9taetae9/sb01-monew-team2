@@ -6,7 +6,8 @@ plugins {
 }
 
 group = 'com.codeit.team2'
-version = '0.0.1-SNAPSHOT'
+version = 'v1.0.0'
+
 
 java {
     toolchain {
