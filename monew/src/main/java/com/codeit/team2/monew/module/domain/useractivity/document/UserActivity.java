@@ -25,7 +25,6 @@ public class UserActivity {
     private List<ArticleViewItem> articleViews;
 
     public void addSubscriptionItem(SubscriptionItem subscriptionItem) {
-        this.subscriptions.remove(this.subscriptions.size() - 1);
         this.subscriptions.add(0, subscriptionItem);
     }
 

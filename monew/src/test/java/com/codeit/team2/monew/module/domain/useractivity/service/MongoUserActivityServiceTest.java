@@ -262,7 +262,7 @@ class MongoUserActivityServiceTest {
             verify(userActivityRepository).save(captor.capture());
 
             UserActivity saved = captor.getValue();
-            assertEquals(10, saved.getSubscriptions().size());
+            assertEquals(11, saved.getSubscriptions().size());
 
             SubscriptionItem savedItem = saved.getSubscriptions().get(0);
             assertEquals(subscriptionId, savedItem.getId());
