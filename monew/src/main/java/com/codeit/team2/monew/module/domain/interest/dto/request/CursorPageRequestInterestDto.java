@@ -11,7 +11,8 @@ public record CursorPageRequestInterestDto(
     @Schema(description = "검색어 (관심사 이름, 키워드)", example = "스포츠")
     String keyword,
 
-    @Schema(description = "정렬 속성 이름", example = "name", allowableValues = {"name", "subscriberCount"})
+    @Schema(description = "정렬 속성 이름", example = "name", allowableValues = {"name",
+        "subscriberCount"})
     @NotNull
     InterestOrderBy orderBy,
 

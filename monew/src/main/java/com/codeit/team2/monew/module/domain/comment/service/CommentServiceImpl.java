@@ -80,7 +80,8 @@ public class CommentServiceImpl implements CommentService {
 
         comment.update(request.content());
 
-        boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(), userId);
+        boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(),
+            userId);
         return commentMapper.toDto(comment, likedByMe);
     }
 
