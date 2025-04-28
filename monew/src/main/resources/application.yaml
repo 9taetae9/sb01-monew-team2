@@ -45,7 +45,7 @@ aws:
     bucket-name: ${AWS_S3_BUCKET_NAME}
 
 app:
-  db-type: postgresql  # postgresql || mongodb
+  db-type: mongodb  # postgresql || mongodb
 
 server:
   tomcat:

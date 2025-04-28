@@ -154,6 +154,15 @@ public class TestDataInitializer implements ApplicationRunner {
         subscriptionService.subscription(interestDto.id(), userDto.id());
     }
 
+    void initUserRegisterEventData() {
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest(
+            "email",
+            "nickname",
+            "password"
+        );
+        userService.registerUser(userRegisterRequest);
+    }
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
     }
