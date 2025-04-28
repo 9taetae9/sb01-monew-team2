@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.codeit.team2'
-version = 'v1.0.0'
+version = 'v1.0.1'
 
 
 java {
@@ -134,13 +134,13 @@ jacocoTestReport {
 // 테스트 태스크 분리
 tasks.register('unitTest', Test) {
     useJUnitPlatform {
-        excludeTags 'integration'  // 'integration' 태그가 없는 테스트만 실행
+        excludeTags 'integration'
     }
 }
 
 tasks.register('integrationTest', Test) {
     useJUnitPlatform {
-        includeTags 'integration'  // 'integration' 태그가 있는 테스트만 실행
+        includeTags 'integration'
     }
 }
 
