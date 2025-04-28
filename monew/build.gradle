@@ -3,8 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
-    id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
-
+    id("org.springdoc.openapi-gradle-plugin") version "1.7.0"
 }
 
 group = 'com.codeit.team2'
@@ -94,9 +93,14 @@ clean {
 
 // openApi - json 자동 추출
 openApi {
-    systemProperties = System.properties // 빌드 시 환경 변수 전달
-    apiDocsUrl.set("https://localhost:8080/")
-    outputDir.set(layout.buildDirectory.dir("openapi"))
+    apiDocsUrl.set("http://localhost:8080/sb/monew/api/v3/api-docs/customer")
+    outputDir.set(layout.projectDirectory.dir("docs/api"))
+    outputFileName.set("swagger-${project.version}.json")
+    waitTimeInSeconds.set(100) // 호출 전 어플리케이션 시작을 기다리는 시간
+}
+
+tasks.named('forkedSpringBootRun') {
+    doNotTrackState("Gradle 8.13 compatibility workaround")
 }
 
 // jacoco
