@@ -17,4 +17,6 @@ public interface ArticleViewRepository extends JpaRepository<ArticleView, UUID> 
     List<ArticleView> findTop10ByUserOrderByViewedAtDesc(User user);
 
     boolean existsByUserIdAndArticleId(UUID userId, UUID articleId);
+
+
 }

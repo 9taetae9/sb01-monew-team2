@@ -3,7 +3,6 @@ package com.codeit.team2.monew.module.domain.article.service;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleDto;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
 import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticleDto;
-import com.codeit.team2.monew.module.domain.article.dto.request.ArticleOrderBy;
 import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageRequestArticleDto;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
@@ -20,10 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,43 +86,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public CursorPageResponseArticleDto findAll(UUID userId,
         CursorPageRequestArticleDto cursorPageRequestArticleDto) {
-        Slice<Article> slices;
-        Pageable pageable = PageRequest.of(0, cursorPageRequestArticleDto.limit(), Sort.unsorted());
-        if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.publishDate)) {
-            slices = articleCustomRepository.findByPublishDate(
-                cursorPageRequestArticleDto.keyword(),
-                cursorPageRequestArticleDto.interestId(),
-                cursorPageRequestArticleDto.sourceIn(),
-                cursorPageRequestArticleDto.getPublishDateFromInstant(),
-                cursorPageRequestArticleDto.getPublishDateToInstant(),
-                cursorPageRequestArticleDto.direction(),
-                cursorPageRequestArticleDto.cursor(),
-                cursorPageRequestArticleDto.after(),
-                pageable);
-        } else if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.viewCount)) {
-            slices = articleCustomRepository.findByViewCount(cursorPageRequestArticleDto.keyword(),
-                cursorPageRequestArticleDto.interestId(),
-                cursorPageRequestArticleDto.sourceIn(),
-                cursorPageRequestArticleDto.getPublishDateFromInstant(),
-                cursorPageRequestArticleDto.getPublishDateToInstant(),
-                cursorPageRequestArticleDto.direction(),
-                cursorPageRequestArticleDto.cursor(),
-                cursorPageRequestArticleDto.after(),
-                pageable);
-        } else if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.commentCount)) {
-            slices = articleCustomRepository.findByCommentCount(
-                cursorPageRequestArticleDto.keyword(),
-                cursorPageRequestArticleDto.interestId(),
-                cursorPageRequestArticleDto.sourceIn(),
-                cursorPageRequestArticleDto.getPublishDateFromInstant(),
-                cursorPageRequestArticleDto.getPublishDateToInstant(),
-                cursorPageRequestArticleDto.direction(),
-                cursorPageRequestArticleDto.cursor(),
-                cursorPageRequestArticleDto.after(),
-                pageable);
-        } else {
-            slices = null;
-        }
+        Slice<Article> slices = articleCustomRepository.findWithCursor(cursorPageRequestArticleDto);
 
         List<Article> articles = slices.getContent();
         List<ArticleDto> articleDtos = new ArrayList<>();
