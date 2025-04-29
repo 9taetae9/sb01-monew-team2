@@ -36,6 +36,7 @@ import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort.Direction;
@@ -63,7 +64,7 @@ public class ArticleServiceTest {
     void setup() {
         articleMapper = new ArticleMapperImpl();
         articleService = new ArticleServiceImpl(articleRepository, articleViewRepository,
-            userRepository, articleMapper, commentRepository);
+            userRepository, articleMapper, commentRepository, publisher);
     }
 
     @Test
