@@ -18,6 +18,6 @@ public interface InterestRepository extends JpaRepository<Interest, UUID> {
     @Query(value = "SELECT similarity(:a, :b)", nativeQuery = true)
     Double getSimilarity(@Param("a") String a, @Param("b") String b);
 
-    @Query("SELECT i.name FROM Interest I")
+    @Query("SELECT i.name FROM Interest i")
     List<String> findAllNames();
 }

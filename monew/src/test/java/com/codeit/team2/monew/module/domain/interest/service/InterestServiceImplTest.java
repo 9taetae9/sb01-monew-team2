@@ -59,8 +59,12 @@ class InterestServiceImplTest {
 
     @Mock
     private SubscriptionRepository subscriptionRepository;
+
     @Mock
     private InterestCustomRepository interestCustomRepository;
+
+    @Mock
+    private InterestNameSimilarityService interestNameSimilarityService;
 
     @Spy
     private InterestMapper interestMapper = Mappers.getMapper(InterestMapper.class);
@@ -112,13 +116,16 @@ class InterestServiceImplTest {
         // given
         User user = TestUserFactory.createWithName("name");
 
-        String name = "채소";
+        String name = "채소식단";
         List<String> inputKeywords = List.of("당근", "시금치");
         InterestRegisterRequest request = new InterestRegisterRequest(name, inputKeywords);
 
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(user));
-        when(interestRepository.existsByNameSimilarTo(any(String.class)))
+        when(interestRepository.findAllNames())
+            .thenReturn(List.of("채소식단용"));
+        when(interestNameSimilarityService.isSimilar(any(String.class), any(String.class),
+            any(Double.class)))
             .thenReturn(true);
 
         // when & then

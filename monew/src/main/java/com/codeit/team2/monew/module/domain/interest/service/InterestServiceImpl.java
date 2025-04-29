@@ -56,7 +56,6 @@ public class InterestServiceImpl implements InterestService {
         User user = getUserOrThrow(userId);
         boolean subscribedByMe = false;
 
-        // 모든 관심사명 가져오기
         List<String> savedNames = interestRepository.findAllNames();
         String interestName = request.name();
 
