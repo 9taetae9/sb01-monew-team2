@@ -58,8 +58,13 @@ public class BatchArticleWriter implements ItemWriter<List<ArticleInterestCreate
             }
         }
         // 기사 저장 및 mapping
-        articleRepository.saveAll(toSave).forEach(a -> existing.put(a.getSourceUrl(), a));
+        articleRepository.saveAll(toSave);
+        // .forEach(a -> existing.put(a.getSourceUrl(), a));
         articleRepository.flush();
+
+        for (Article a : toSave) {
+            existing.put(a.getSourceUrl(), a);
+        }
         // UPDATE & INSERT
         List<ArticleInterest> articleInterests = new ArrayList<>();
 

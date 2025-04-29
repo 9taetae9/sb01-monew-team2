@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
 
+import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -31,14 +32,14 @@ public class ArticleBatchScheduler {
 
     @Scheduled(cron = "0 0 * * * *")
     public void runArticleBatch() {
+        log.info("Starting - ARTICLE BATCH, time={}", Instant.now());
         try {
             JobParameters params = new JobParametersBuilder().addLong("timestamp",
                 System.currentTimeMillis()).toJobParameters();
             JobExecution execution = jobLauncher.run(articleBatchJob, params);
 
             if (execution.getStatus() == BatchStatus.COMPLETED) {
-                log.info("BATCH SUCCESSFUL, Continuing to rssArticleBatchJob");
-                runRssBatch();
+                log.info("NAVER BATCH SEUCCSSFUL");
             }
 
         } catch (Exception e) {
@@ -48,14 +49,16 @@ public class ArticleBatchScheduler {
         }
     }
 
-    private void runRssBatch() {
+    @Scheduled(cron = "0 10 * * * *")
+    public void runRssBatch() {
+        log.info("Starting - RSS ARTICLE BATCH, time={}", Instant.now());
         try {
             JobParameters params = new JobParametersBuilder().addLong("timestamp",
                 System.currentTimeMillis()).toJobParameters();
             JobExecution execution = jobLauncher.run(rssArticleBatchJob, params);
 
             if (execution.getStatus() == BatchStatus.COMPLETED) {
-                log.info("BATCH SUCCESSFUL");
+                log.info("RSS BATCH SUCCESSFUL");
             }
 
         } catch (Exception e) {
