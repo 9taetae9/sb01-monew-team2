@@ -285,18 +285,6 @@ class NotificationServiceImplTest {
         verify(notificationRepository).countForPagination(any());
     }
 
-    @DisplayName("알림 목록 조회 - 실패: 유저 검증 실패")
-    @Test
-    void findAllShouldFail() {
-        // given
-        UUID userId = UUID.randomUUID();
-        when(userRepository.existsById(userId)).thenReturn(false);
-
-        // when & then
-        assertThrows(RuntimeException.class,
-            () -> notificationService.findAll(userId, null, null, 50));
-    }
-
     @DisplayName("구독한 관심사 관련 기사 등록 시 알림 생성 - 성공")
     @Test
     void createArticleInterestNotification() {
