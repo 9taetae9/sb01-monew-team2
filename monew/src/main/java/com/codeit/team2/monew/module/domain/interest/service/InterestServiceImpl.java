@@ -35,6 +35,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InterestServiceImpl implements InterestService {
 
+    private final double SIMILARITY_THRESHOLD = 0.8;
+
     private final InterestMapper interestMapper;
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
@@ -42,6 +44,7 @@ public class InterestServiceImpl implements InterestService {
     private final InterestKeywordRepository interestKeywordRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final InterestCustomRepository interestCustomRepository;
+    private final InterestNameSimilarityService interestNameSimilarityService;
 
     @Override
     @Transactional
@@ -50,13 +53,18 @@ public class InterestServiceImpl implements InterestService {
         User user = getUserOrThrow(userId);
         boolean subscribedByMe = false;
 
-        // TODO: 추후에 index 추가 예정
-        // 참고: pg_trgm 특성상 유사도 계산 알고리즘이 달라 사람이 판단하는 것과 다름. 보완 필요
-        if (interestRepository.existsByNameSimilarTo(request.name())) {
-            throw new SimilarInterestAlreadyExistsException(request.name());
+        // 모든 관심사명 가져오기
+        List<String> savedNames = interestRepository.findAllNames();
+        String interestName = request.name();
+
+        for (String savedName : savedNames) {
+            if (interestNameSimilarityService.isSimilar(interestName, savedName,
+                SIMILARITY_THRESHOLD)) {
+                throw new SimilarInterestAlreadyExistsException(interestName);
+            }
         }
 
-        Interest interest = Interest.create(request.name());
+        Interest interest = Interest.create(interestName);
 
         for (String keyword : request.keywords()) {
             Keyword getKeyword = keywordRepository.findByName(keyword)

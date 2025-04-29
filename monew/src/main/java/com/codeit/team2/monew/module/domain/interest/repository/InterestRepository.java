@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.interest.repository;
 
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,9 +12,12 @@ import org.springframework.stereotype.Repository;
 public interface InterestRepository extends JpaRepository<Interest, UUID> {
 
     @Query(value = "SELECT EXISTS (SELECT 1 From interests WHERE word_similarity(name, :searchName) >= 0.6)",
-    nativeQuery = true)
+        nativeQuery = true)
     boolean existsByNameSimilarTo(@Param("searchName") String searchName);
 
     @Query(value = "SELECT similarity(:a, :b)", nativeQuery = true)
     Double getSimilarity(@Param("a") String a, @Param("b") String b);
+
+    @Query("SELECT i.name FROM Interest I")
+    List<String> findAllNames();
 }
