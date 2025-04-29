@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.comment.service;
 
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
+import com.codeit.team2.monew.module.domain.comment.event.CommentLikeDeleteEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
@@ -71,6 +72,9 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
         Comment comment = commentLike.getComment();
         comment.decrementLikeCount();
+
+        // 댓글 좋아요 취소 이벤트 발생
+        publisher.publishEvent(new CommentLikeDeleteEvent(commentLike));
 
         commentLikeRepository.delete(commentLike);
     }

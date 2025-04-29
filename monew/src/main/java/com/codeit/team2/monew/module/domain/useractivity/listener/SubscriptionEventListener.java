@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.useractivity.listener;
 
+import com.codeit.team2.monew.module.domain.subscription.event.SubscriptionDeleteEvent;
 import com.codeit.team2.monew.module.domain.subscription.event.SubscriptionRegisterEvent;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,14 @@ public class SubscriptionEventListener {
         userActivityService.createSubscriptionItem(
             event.subscription(),
             event.interest(),
+            event.userId()
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void deleteSubscriptionItem(SubscriptionDeleteEvent event) {
+        userActivityService.deleteSubscriptionItem(
+            event.subscription(),
             event.userId()
         );
     }

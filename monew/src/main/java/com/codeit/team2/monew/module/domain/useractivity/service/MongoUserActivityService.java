@@ -153,6 +153,85 @@ public class MongoUserActivityService implements UserActivityService {
         userActivityRepository.save(userActivity);
     }
 
+    public void updateUserNicknameInActivity(User user) {
+        UserActivity userActivity = userActivityRepository.findById(user.getId())
+            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+
+        userActivity.updateNickname(user.getNickname());
+
+        // CommentItem의 userNickname도 함께 갱신
+        userActivity.getComments().stream()
+            .filter(commentItem -> commentItem.getUserId().equals(user.getId()))
+            .forEach(commentItem -> commentItem.updateUserNickname(user.getNickname()));
+
+        // CommentLikeItem의 commentUserNickname도 함께 갱신
+        userActivity.getCommentLikes().stream()
+            .filter(commentLikeItem -> commentLikeItem.getCommentUserId().equals(user.getId()))
+            .forEach(
+                commentLikeItem -> commentLikeItem.updateCommentUserNickname(user.getNickname()));
+
+        userActivityRepository.save(userActivity);
+    }
+
+    public void updateCommentContentInActivity(Comment comment, UUID userId) {
+        UserActivity userActivity = findUserActivityOrThrow(userId);
+
+        // CommentItem의 content도 함께 갱신
+        userActivity.getComments().stream()
+            .filter(commentItem -> commentItem.getId().equals(comment.getId()))
+            .forEach(commentItem -> commentItem.updateContent(comment.getContent()));
+
+        // CommentLikeItem의 commentContent도 함께 갱신
+        userActivity.getCommentLikes().stream()
+            .filter(commentLikeItem -> commentLikeItem.getCommentId().equals(comment.getId()))
+            .forEach(
+                commentLikeItem -> commentLikeItem.updateCommentContent(comment.getContent()));
+
+        userActivityRepository.save(userActivity);
+    }
+
+    @Transactional
+    public void deleteSubscriptionItem(Subscription subscription, UUID userId) {
+        UserActivity userActivity = findUserActivityOrThrow(userId);
+
+        userActivity.getSubscriptions()
+            .removeIf(
+                subscriptionItem -> subscriptionItem.getId().equals(subscription.getId()));
+
+        userActivityRepository.save(userActivity);
+    }
+
+    @Transactional
+    public void deleteSubscriptionItem(Interest interest, UUID userId) {
+        UserActivity userActivity = findUserActivityOrThrow(userId);
+
+        userActivity.getSubscriptions()
+            .removeIf(
+                subscriptionItem -> subscriptionItem.getInterestId().equals(interest.getId()));
+
+        userActivityRepository.save(userActivity);
+    }
+
+    public void deleteCommentLikeItem(CommentLike commentLike) {
+        User user = commentLike.getUser();
+        Comment comment = commentLike.getComment();
+
+        UserActivity userActivity = findUserActivityOrThrow(user.getId());
+
+        // commentLikes에서 삭제
+        userActivity.getCommentLikes()
+            .removeIf(commentLikeItem -> commentLikeItem.getId().equals(commentLike.getId()));
+
+        // CommentItem의 likeCount도 함께 갱신
+        userActivity.getComments().stream()
+            .filter(commentItem -> commentItem.getId().equals(comment.getId()))
+            .findAny()
+            .ifPresent(
+                findedCommentItem -> findedCommentItem.updateLikeCount(comment.getLikeCount()));
+
+        userActivityRepository.save(userActivity);
+    }
+
     private UserActivity findUserActivityOrThrow(UUID userId) {
         return userActivityRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));

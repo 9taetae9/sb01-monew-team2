@@ -48,5 +48,9 @@ public class UserActivity {
         }
         this.articleViews.add(0, articleViewItem);
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
 

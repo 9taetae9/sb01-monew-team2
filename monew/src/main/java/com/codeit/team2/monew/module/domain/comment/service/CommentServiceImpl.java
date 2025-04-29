@@ -10,6 +10,7 @@ import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestComment
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
+import com.codeit.team2.monew.module.domain.comment.event.CommentUpdateEvent;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
@@ -82,6 +83,13 @@ public class CommentServiceImpl implements CommentService {
 
         boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(),
             userId);
+
+        // comment 수정 이벤트 발생
+        publisher.publishEvent(new CommentUpdateEvent(
+            comment,
+            userId
+        ));
+
         return commentMapper.toDto(comment, likedByMe);
     }
 
