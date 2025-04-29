@@ -7,5 +7,5 @@ import org.springframework.data.domain.Slice;
 
 public interface NotificationCustomRepository {
 
-    Slice<Notification> findWithCursor(UUID userId, Instant cursor, UUID after, int limit);
+    Slice<Notification> findWithCursor(UUID userId, Instant cursor, Instant after, int limit);
 }

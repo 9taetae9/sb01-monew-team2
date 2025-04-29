@@ -9,6 +9,7 @@ import com.codeit.team2.monew.module.domain.notification.dto.NotificationDto;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.mapper.NotificationMapper;
+import com.codeit.team2.monew.module.domain.notification.repository.NotificationCustomRepository;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
@@ -24,11 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final CommentRepository commentRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final NotificationMapper notificationMapper;
+    private final NotificationCustomRepository notificationCustomRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
@@ -143,21 +141,16 @@ public class NotificationServiceImpl implements NotificationService {
     public CursorPageResponseNotificationDto findAll(UUID userId, Instant cursor, Instant after,
         int limit) {
         // 정렬 조건은 시간 순으로 고정
-        Pageable pageable = PageRequest.of(0, limit, Sort.by(Direction.ASC, "createdAt"));
-        Page<Notification> pages;
-        if (cursor != null) {
-            pages = notificationRepository.findPageWithCursor(userId, cursor, pageable);
-        } else {
-            pages = notificationRepository.findFirstPage(userId, pageable);
-        }
+        Slice<Notification> slices = notificationCustomRepository.findWithCursor(userId, cursor,
+            after, limit);
         // dto로 변환
-        List<Notification> notifications = pages.getContent();
+        List<Notification> notifications = slices.getContent();
         List<NotificationDto> notificationDtos = notifications.stream()
             .map(notification -> notificationMapper.toDto(notification))
             .collect(Collectors.toList());
 
-        int size = pages.getSize();
-        boolean hasNext = pages.hasNext();
+        int size = slices.getSize();
+        boolean hasNext = slices.hasNext();
         Instant nextCursor = null;
         Instant nextAfter = null;
         if (hasNext) {

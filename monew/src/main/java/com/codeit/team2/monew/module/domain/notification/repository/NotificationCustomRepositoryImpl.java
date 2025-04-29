@@ -20,7 +20,8 @@ public class NotificationCustomRepositoryImpl implements NotificationCustomRepos
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Slice<Notification> findWithCursor(UUID userId, Instant cursor, UUID after, int limit) {
+    public Slice<Notification> findWithCursor(UUID userId, Instant cursor, Instant after,
+        int limit) {
         QNotification notification = QNotification.notification;
 
         // 확인하지 않은 알림 & 특정 유저의 알림
@@ -29,11 +30,10 @@ public class NotificationCustomRepositoryImpl implements NotificationCustomRepos
             .and(notification.confirmed.isFalse());
         // 커서 조건
         if (cursor != null && after != null) {
-            where.and(notification.createdAt.gt(cursor)
-                .or((notification.createdAt.eq(cursor)).and(notification.id.gt(after))));
+            where.and(notification.createdAt.gt(cursor));
         }
 
-        List<Notification> result = queryFactory.select(notification)
+        List<Notification> result = queryFactory.selectFrom(notification)
             .where(where)
             .orderBy(notification.createdAt.asc(), notification.id.asc())
             .limit(limit + 1)
