@@ -10,7 +10,7 @@ spring:
     defer-datasource-initialization: true
   sql:
     init:
-      mode: always
+      mode: never
   data:
     mongodb:
       uri: mongodb://localhost:27017/monew
