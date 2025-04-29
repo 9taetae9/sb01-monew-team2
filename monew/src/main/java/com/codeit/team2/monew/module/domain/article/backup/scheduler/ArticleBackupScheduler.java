@@ -26,7 +26,7 @@ public class ArticleBackupScheduler {
         this.articleBackupJob = articleBackupJob;
     }
 
-    @Scheduled(cron = "0 0 2 * * *")
+    @Scheduled(cron = "0 45 1 * * *")
     public void runArticleBackup() {
         try {
             LocalDate yesterday = LocalDate.now().minusDays(1);
