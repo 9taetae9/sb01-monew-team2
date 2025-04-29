@@ -8,6 +8,9 @@ spring:
       initialize-schema: always
 
 aws:
+  credentials:
+    accessKey: tmp
+    secretKey: tmp
   profile-name: monew-acc
   region: tmp
   s3:
