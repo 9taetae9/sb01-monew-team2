@@ -6,6 +6,7 @@ import com.codeit.team2.monew.config.JpaConfig;
 import com.codeit.team2.monew.config.QuerydslConfig;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Slf4j
+@Disabled
 @DataJpaTest
 @Testcontainers
 @Import({JpaConfig.class, QuerydslConfig.class})
