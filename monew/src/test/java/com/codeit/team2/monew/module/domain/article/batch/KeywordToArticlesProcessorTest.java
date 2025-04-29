@@ -5,9 +5,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
+import com.codeit.team2.monew.module.domain.article.batch.rss.KeywordCache;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.external.NaverApiNewsClient;
+import com.codeit.team2.monew.module.domain.article.repository.ArticleInterestRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
@@ -15,6 +17,7 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordR
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,11 +34,17 @@ public class KeywordToArticlesProcessorTest {
     @Mock
     private InterestKeywordRepository interestKeywordRepository;
 
+    @Mock
+    private ArticleInterestRepository articleInterestRepository;
+    @Mock
+    private KeywordCache keywordCache;
+
     private KeywordToArticlesProcessor processor;
 
     @BeforeEach
     void setup() {
-        //processor = new KeywordToArticlesProcessor(naverNewsClient, interestKeywordRepository);
+        processor = new KeywordToArticlesProcessor(naverNewsClient, interestKeywordRepository,
+            articleInterestRepository, keywordCache);
     }
 
     @Test
@@ -52,8 +61,12 @@ public class KeywordToArticlesProcessorTest {
         InterestKeyword ik = new InterestKeyword(interest, keyword);
         given(naverNewsClient.fetchArticles(any()))
             .willReturn(articles);
-        given(interestKeywordRepository.findAllByKeyword(any()))
-            .willReturn(List.of(ik));
+//        given(interestKeywordRepository.findAllByKeyword(any()))
+//            .willReturn(List.of(ik));
+        given(keywordCache.getCache())
+            .willReturn(Map.of(keyword.getName(), List.of(interest)));
+        given(articleInterestRepository.fetchLeastRecentCreatedAtInInterests(any()))
+            .willReturn(List.of());
 
         // when
 
