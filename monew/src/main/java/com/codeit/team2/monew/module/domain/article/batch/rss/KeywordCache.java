@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -34,12 +35,22 @@ public class KeywordCache {
         cache = new HashMap<>();
 
         List<Keyword> keywords = keywordRepository.findAll();
+        List<InterestKeyword> allInterestKeywords = interestKeywordRepository.findAllWithInterests();
 
-        // TODO: IN (keywords) 로 한번에 조회 고민
+        Map<String, List<Interest>> keywordToInterests = allInterestKeywords.stream()
+            .filter(ik -> ik.getKeyword() != null && ik.getInterest() != null)
+            .collect(
+                Collectors.groupingBy(
+                    ik -> ik.getKeyword().getName(),
+                    Collectors.mapping(InterestKeyword::getInterest, Collectors.toList())
+                )
+            );
+        
         for (Keyword keyword : keywords) {
-            List<Interest> interests = interestKeywordRepository.findAllByKeyword(keyword).stream()
-                .map(InterestKeyword::getInterest).toList();
-            cache.put(keyword.getName(), interests);
+//            List<Interest> interests = interestKeywordRepository.findAllByKeyword(keyword).stream()
+//                .map(InterestKeyword::getInterest).toList();
+            cache.put(keyword.getName(),
+                keywordToInterests.getOrDefault(keyword.getName(), Collections.emptyList()));
         }
     }
 

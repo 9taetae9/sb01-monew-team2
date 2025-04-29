@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
+import com.codeit.team2.monew.module.domain.interest.code.InterestErrorCode;
 import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestOrderBy;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
@@ -9,6 +10,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
@@ -118,7 +120,6 @@ public class InterestServiceImpl implements InterestService {
 
         interestRepository.delete(interest);
 
-        // TODO: 배치 작업 추가 필요 or 비동기로 처리
         keywordRepository.deleteAllOrphanKeywords();
     }
 
@@ -129,7 +130,8 @@ public class InterestServiceImpl implements InterestService {
 
     private Interest getByIdOrThrow(UUID id) {
         return interestRepository.findById(id).orElseThrow(
-            () -> new RuntimeException("interest not found"));
+            () -> new InterestNotFoundException(InterestErrorCode.INTEREST_NOT_FOUND,
+                Map.of("id", id)));
     }
 
     @Override

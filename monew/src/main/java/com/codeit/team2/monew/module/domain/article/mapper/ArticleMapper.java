@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.mapper;
 
 
+import com.codeit.team2.monew.module.domain.article.dto.ArticleDto;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
 import com.codeit.team2.monew.module.domain.article.dto.NaverArticleItemDto;
 import com.codeit.team2.monew.module.domain.article.dto.rss.ChosunRss;
@@ -86,5 +87,8 @@ public interface ArticleMapper {
     ArticleViewDto toResponseDto(Article article, ArticleView articleView, UUID userId,
         int commentCount);
 
-
+    @Mapping(target = "commentCount", source = "commentCount")
+    @Mapping(target = "viewedByMe", source = "viewedByMe")
+    @Mapping(target = "publishDate", source = "article.publishedDate")
+    ArticleDto toDto(Article article, Long commentCount, boolean viewedByMe);
 }
