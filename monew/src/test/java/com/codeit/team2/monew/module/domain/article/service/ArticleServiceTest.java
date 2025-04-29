@@ -49,14 +49,12 @@ public class ArticleServiceTest {
     private ArticleRepository articleRepository;
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private ArticleViewRepository articleViewRepository;
     private ArticleMapper articleMapper;
     private ArticleService articleService;
     @Mock
     private CommentRepository commentRepository;
-
     @Spy
     private ApplicationEventPublisher publisher;
 
