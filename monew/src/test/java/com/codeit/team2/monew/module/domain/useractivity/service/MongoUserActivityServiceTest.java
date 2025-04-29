@@ -580,6 +580,52 @@ class MongoUserActivityServiceTest {
     }
 
     @Nested
+    class deleteSubscriptionItem {
+
+        @Test
+        void 구독_취소_시_SubscriptionItem_제거_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Interest interest = Interest.create("AI");
+            Subscription subscription = TestEntityFactory.createSubscription(user, interest);
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            SubscriptionItem subscriptionItem = new SubscriptionItem(
+                subscription.getId(),
+                interest.getId(),
+                interest.getName(),
+                List.of("GPT", "deepsick"),
+                interest.getSubscriberCount(),
+                subscription.getCreatedAt()
+            );
+            userActivity.addSubscriptionItem(subscriptionItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.deleteSubscriptionItem(subscription, user.getId());
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            assertEquals(0, saved.getSubscriptions().size());
+        }
+    }
+
+    @Nested
     class deleteCommentLikeItemTest {
 
         @Test
