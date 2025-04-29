@@ -586,7 +586,7 @@ class MongoUserActivityServiceTest {
         void 구독_취소_시_SubscriptionItem_제거_성공() {
             // given
             User user = TestUserFactory.createWithName("user1");
-            Interest interest = Interest.create("AI");
+            Interest interest = TestEntityFactory.createInterest("AI");
             Subscription subscription = TestEntityFactory.createSubscription(user, interest);
 
             UserActivity userActivity = new UserActivity(

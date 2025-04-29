@@ -67,4 +67,11 @@ public class TestEntityFactory {
         ReflectionTestUtils.setField(subscription, "id", UUID.randomUUID());
         return subscription;
     }
+
+    public static Interest createInterest(String name) {
+        Interest interest = Interest.create(name);
+
+        ReflectionTestUtils.setField(interest, "id", UUID.randomUUID());
+        return interest;
+    }
 }
