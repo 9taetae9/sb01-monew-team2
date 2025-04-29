@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 public enum InterestErrorCode implements ErrorCode {
 
-    INTEREST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 관심사가 존재하지 않습니다.");
+    INTEREST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 관심사가 존재하지 않습니다."),
+    SIMILAR_INTEREST_ALREADY_EXISTS(HttpStatus.CONFLICT, "비슷한 관심사가 존재합니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -1,6 +1,5 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
-import com.codeit.team2.monew.module.domain.interest.code.InterestErrorCode;
 import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestOrderBy;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
@@ -11,6 +10,7 @@ import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
+import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
@@ -53,7 +53,7 @@ public class InterestServiceImpl implements InterestService {
         // TODO: 추후에 index 추가 예정
         // 참고: pg_trgm 특성상 유사도 계산 알고리즘이 달라 사람이 판단하는 것과 다름. 보완 필요
         if (interestRepository.existsByNameSimilarTo(request.name())) {
-            throw new IllegalArgumentException("비슷한 관심사가 이미 존재합니다.");
+            throw new SimilarInterestAlreadyExistsException(request.name());
         }
 
         Interest interest = Interest.create(request.name());
@@ -130,8 +130,7 @@ public class InterestServiceImpl implements InterestService {
 
     private Interest getByIdOrThrow(UUID id) {
         return interestRepository.findById(id).orElseThrow(
-            () -> new InterestNotFoundException(InterestErrorCode.INTEREST_NOT_FOUND,
-                Map.of("id", id)));
+            () -> new InterestNotFoundException(id));
     }
 
     @Override
