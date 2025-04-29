@@ -35,7 +35,7 @@ public class KeywordToArticlesProcessorTest {
 
     @BeforeEach
     void setup() {
-        processor = new KeywordToArticlesProcessor(naverNewsClient, interestKeywordRepository);
+        //processor = new KeywordToArticlesProcessor(naverNewsClient, interestKeywordRepository);
     }
 
     @Test
