@@ -3,6 +3,7 @@ package com.codeit.team2.monew.module.domain.interest.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.codeit.team2.monew.config.JpaConfig;
+import com.codeit.team2.monew.config.QuerydslConfig;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleInterestRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
@@ -23,8 +24,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test-temp")
-@Import(JpaConfig.class)
+@Import({JpaConfig.class, QuerydslConfig.class})
 public class InterestRepositoryTest {
+
     @Autowired
     private KeywordRepository keywordRepository;
 
