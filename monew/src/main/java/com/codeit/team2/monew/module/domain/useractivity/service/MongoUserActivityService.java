@@ -190,6 +190,26 @@ public class MongoUserActivityService implements UserActivityService {
         userActivityRepository.save(userActivity);
     }
 
+    public void deleteCommentLikeItem(CommentLike commentLike) {
+        User user = commentLike.getUser();
+        Comment comment = commentLike.getComment();
+
+        UserActivity userActivity = findUserActivityOrThrow(user.getId());
+
+        // commentLikes에서 삭제
+        userActivity.getCommentLikes()
+            .removeIf(commentLikeItem -> commentLikeItem.getId().equals(commentLike.getId()));
+
+        // CommentItem의 likeCount도 함께 갱신
+        userActivity.getComments().stream()
+            .filter(commentItem -> commentItem.getId().equals(comment.getId()))
+            .findAny()
+            .ifPresent(
+                findedCommentItem -> findedCommentItem.updateLikeCount(comment.getLikeCount()));
+
+        userActivityRepository.save(userActivity);
+    }
+
     private UserActivity findUserActivityOrThrow(UUID userId) {
         return userActivityRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));

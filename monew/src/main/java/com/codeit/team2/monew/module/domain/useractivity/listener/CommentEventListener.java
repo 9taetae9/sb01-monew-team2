@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.useractivity.listener;
 
+import com.codeit.team2.monew.module.domain.comment.event.CommentLikeDeleteEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentUpdateEvent;
@@ -38,6 +39,13 @@ public class CommentEventListener {
         userActivityService.updateCommentContentInActivity(
             event.comment(),
             event.userId()
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void deleteCommentLikeItem(CommentLikeDeleteEvent event) {
+        userActivityService.deleteCommentLikeItem(
+            event.commentLike()
         );
     }
 }
