@@ -21,6 +21,14 @@ public interface InterestKeywordRepository extends JpaRepository<InterestKeyword
         """)
     List<InterestKeyword> findAllByKeyword(Keyword keyword);
 
+
+    @Query("""
+        SELECT ik
+        FROM InterestKeyword ik
+        JOIN FETCH ik.interest
+        """)
+    List<InterestKeyword> findAllWithInterests();
+
     boolean existsByKeyword(Keyword keyword);
 
     Optional<InterestKeyword> findTopByKeywordOrderByCreatedAtDesc(Keyword keyword);
