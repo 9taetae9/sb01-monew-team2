@@ -81,6 +81,9 @@ dependencies {
 
     // jackson-dataformat-xml
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.3'
+
+    // word similarity
+    implementation("org.apache.commons:commons-text:1.10.0")
 }
 
 tasks.named('test') {
