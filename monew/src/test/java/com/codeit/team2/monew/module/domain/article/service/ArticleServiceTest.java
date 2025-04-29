@@ -198,34 +198,6 @@ public class ArticleServiceTest {
         when(articleViewRepository.findViewedArticleIds(eq(userId), anyList())).thenReturn(
             viewedArticleIds);
 
-//        ArticleDto articleDto1 = new ArticleDto(
-//            articles.get(0).getId(),
-//            "source",
-//            "sourceUrl",
-//            "title1",
-//            Instant.now(),
-//            "summary",
-//            5L,   // 댓글 수
-//            10L,  // 조회 수
-//            true   // 내가 본 여부
-//        );
-//
-//        ArticleDto articleDto2 = new ArticleDto(
-//            articles.get(1).getId(),
-//            "source",
-//            "sourceUrl",
-//            "title2",
-//            Instant.now(),
-//            "summary",
-//            3L,   // 댓글 수
-//            8L,   // 조회 수
-//            false  // 내가 본 여부
-//        );
-//
-//        // `articleMapper`의 `toDto()` 메서드가 정확한 `ArticleDto`를 반환하도록 설정
-//        when(articleMapper.toDto(articles.get(0), 5L, true)).thenReturn(articleDto1);
-//        when(articleMapper.toDto(articles.get(1), 3L, false)).thenReturn(articleDto2);
-
         // when
         CursorPageResponseArticleDto result = articleService.findAll(userId, requestDto);
 
