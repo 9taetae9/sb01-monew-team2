@@ -68,8 +68,6 @@ class SubscriptionServiceImplTest {
             .thenReturn(Optional.of(mockInterest));
         when(subscriptionRepository.existsByInterestAndUser(mockInterest, mockUser))
             .thenReturn(false);
-        when(interestRepository.saveAndFlush(any(Interest.class)))
-            .thenReturn(mockInterest);
 
         // when
         SubscriptionDto result = subscriptionService.subscription(mockInterest.getId(),
