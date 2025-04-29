@@ -5,6 +5,7 @@ import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundE
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.subscription.event.SubscriptionDeleteEvent;
 import com.codeit.team2.monew.module.domain.subscription.event.SubscriptionRegisterEvent;
 import com.codeit.team2.monew.module.domain.subscription.exception.DuplicateSubscriptionException;
 import com.codeit.team2.monew.module.domain.subscription.exception.SubscriptionNotFoundException;
@@ -44,19 +45,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         Subscription subscription = interest.addSubscriber(user);
-        interestRepository.saveAndFlush(interest);
+        Subscription savedSubscription = subscriptionRepository.save(subscription);
 
         List<String> keywords = interest.getKeywords().stream()
             .map(keyword -> keyword.getKeyword().getName())
             .collect(Collectors.toList());
 
+        // 구독 생성 이벤트 발생
         publisher.publishEvent(new SubscriptionRegisterEvent(
-            subscription,
+            savedSubscription,
             interest,
             userId
         ));
 
-        return subscriptionMapper.toDto(subscription, interest, keywords);
+        return subscriptionMapper.toDto(savedSubscription, interest, keywords);
     }
 
     @Override
@@ -71,6 +73,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         interest.cancelSubscription(subscription);
         subscriptionRepository.deleteByInterestAndUser(interest, user);
+
+        // 구독 취소 이벤트 발생
+        publisher.publishEvent(new SubscriptionDeleteEvent(
+            subscription,
+            userId
+        ));
     }
 
     private User getUserOrThrow(UUID userId) {

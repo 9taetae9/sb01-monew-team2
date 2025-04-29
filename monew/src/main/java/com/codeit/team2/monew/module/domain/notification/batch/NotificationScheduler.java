@@ -24,7 +24,7 @@ public class NotificationScheduler {
         this.deleteNotificationJob = deleteNotificationJob;
     }
 
-    @Scheduled(cron = "0 0 3 * * *")    // 매일 오전 3시
+    @Scheduled(cron = "0 30 2 * * *")
     public void runJob() throws Exception {
         JobParameters parameters = new JobParametersBuilder()
             .addLong("timestamp", System.currentTimeMillis())

@@ -5,6 +5,7 @@ import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
@@ -16,6 +17,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.service.SubscriptionService;
 import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest;
+import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
@@ -152,6 +154,105 @@ public class TestDataInitializer implements ApplicationRunner {
         InterestDto interestDto = interestService.create(request, userDto.id());
 
         subscriptionService.subscription(interestDto.id(), userDto.id());
+        subscriptionService.cancelSubscription(interestDto.id(), userDto.id());
+    }
+
+    void initUserRegisterEventData() {
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest(
+            "email",
+            "nickname",
+            "password"
+        );
+        userService.registerUser(userRegisterRequest);
+    }
+
+    void initUserNicknameUpdateEventData() {
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest(
+            "email",
+            "nickname",
+            "password"
+        );
+        UserDto userDto = userService.registerUser(userRegisterRequest);
+
+        Article article = articleRepository.save(
+            new Article(
+                "title",
+                "NAVER",
+                "sourceUrl",
+                "summary",
+                Set.of(),
+                0L,
+                Instant.now(),
+                false
+            ));
+
+        CommentRegisterRequest commentRegisterRequest = new CommentRegisterRequest(
+            article.getId(),
+            userDto.id(),
+            "comment1"
+        );
+
+        Comment comment = commentService.register(commentRegisterRequest);
+        CommentLike commentLike = commentLikeService.like(comment.getId(), userDto.id());
+
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname1");
+        userService.updateUser(
+            userDto.id(),
+            userDto.id(),
+            userUpdateRequest
+        );
+    }
+
+    void initCommentContentUpdateEventData() {
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest(
+            "email",
+            "nickname",
+            "password"
+        );
+        UserDto userDto = userService.registerUser(userRegisterRequest);
+
+        Article article = articleRepository.save(
+            new Article(
+                "title",
+                "NAVER",
+                "sourceUrl",
+                "summary",
+                Set.of(),
+                0L,
+                Instant.now(),
+                false
+            ));
+
+        CommentRegisterRequest commentRegisterRequest = new CommentRegisterRequest(
+            article.getId(),
+            userDto.id(),
+            "comment1"
+        );
+
+        Comment comment = commentService.register(commentRegisterRequest);
+        CommentLike commentLike = commentLikeService.like(comment.getId(), userDto.id());
+
+        CommentUpdateRequest commentUpdateRequest = new CommentUpdateRequest("newContent");
+        commentService.edit(comment.getId(), userDto.id(), commentUpdateRequest);
+    }
+
+    void intiInterestDeleteEventData() {
+        UserDto userDto = userService.registerUser(new UserRegisterRequest(
+                "email@a.com",
+                "nickname1",
+                "password"
+            )
+        );
+
+        InterestRegisterRequest request = new InterestRegisterRequest(
+            "IT",
+            List.of("java", "python")
+        );
+
+        InterestDto interestDto = interestService.create(request, userDto.id());
+
+        subscriptionService.subscription(interestDto.id(), userDto.id());
+        interestService.delete(interestDto.id(), userDto.id());
     }
 
     @Override

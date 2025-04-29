@@ -36,6 +36,19 @@ jobs:
           ./gradlew clean test jacocoTestReport
         working-directory: ./monew
 
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+
+        with:
+          name: test-reports
+          path: |
+            ./monew/build/reports/tests/
+            ./monew/build/reports/jacoco/
+            ./monew/build/reports/problems/
+          retention-days: 7
+          include-hidden-files: true
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:

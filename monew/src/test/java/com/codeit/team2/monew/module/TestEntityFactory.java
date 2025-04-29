@@ -3,6 +3,9 @@ package com.codeit.team2.monew.module;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
+import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import java.time.Instant;
 import java.util.Set;
@@ -51,4 +54,24 @@ public class TestEntityFactory {
         return comment;
     }
 
+    public static CommentLike createCommentLike(Comment comment, User user) {
+        CommentLike commentLike = CommentLike.create(comment, user);
+
+        ReflectionTestUtils.setField(commentLike, "id", UUID.randomUUID());
+        return commentLike;
+    }
+
+    public static Subscription createSubscription(User user, Interest interest) {
+        Subscription subscription = new Subscription(user, interest);
+
+        ReflectionTestUtils.setField(subscription, "id", UUID.randomUUID());
+        return subscription;
+    }
+
+    public static Interest createInterest(String name) {
+        Interest interest = Interest.create(name);
+
+        ReflectionTestUtils.setField(interest, "id", UUID.randomUUID());
+        return interest;
+    }
 }
