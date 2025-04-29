@@ -503,4 +503,79 @@ class MongoUserActivityServiceTest {
         }
     }
 
+    @Nested
+    class updateCommentContentInActivityTest {
+
+        @Test
+        void 댓글_내용_수정_시_UserActivity_수정_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Article article = TestEntityFactory.createArticle("article1");
+            Comment comment = TestEntityFactory.createComment(article, user, "comment1");
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            CommentLike commentLike = TestEntityFactory.createCommentLike(comment, user);
+
+            CommentItem commentItem = new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentItem(commentItem);
+
+            CommentLikeItem commentLikeItem = new CommentLikeItem(
+                commentLike.getId(),
+                commentLike.getCreatedAt(),
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentLikeItem(commentLikeItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            String newCommentContent = "newContent";
+            comment.update(newCommentContent);
+            userActivityService.updateCommentContentInActivity(comment, user.getId());
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            saved.getComments().stream()
+                .filter(savedCommentItem -> savedCommentItem.getId().equals(comment.getId()))
+                .forEach(savedCommentItem -> assertEquals(newCommentContent,
+                    savedCommentItem.getContent()));
+
+            saved.getCommentLikes().stream()
+                .filter(savedCommentLikeItem -> savedCommentLikeItem.getCommentId()
+                    .equals(comment.getId()))
+                .forEach(
+                    savedCommentLikeItem -> assertEquals(newCommentContent,
+                        savedCommentLikeItem.getCommentContent()));
+        }
+    }
 }
