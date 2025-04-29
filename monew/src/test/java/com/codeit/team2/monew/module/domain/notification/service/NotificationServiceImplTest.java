@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -36,8 +37,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -233,7 +235,7 @@ class NotificationServiceImplTest {
         // then
         verify(notificationRepository).confirmAllByUserId(userId);
     }
-    
+
     @DisplayName("알림 전체 확인 - 실패")
     @Test
     void confirmAllNotificationsShouldFail() {
@@ -252,14 +254,14 @@ class NotificationServiceImplTest {
         // given
         User user = mock(User.class);
         UUID userId = UUID.randomUUID();
-        when(userRepository.existsById(userId)).thenReturn(true);
 
         Notification n1 = new Notification(user, "content", UUID.randomUUID(),
             ResourceType.COMMENT);
         Notification n2 = new Notification(user, "content", UUID.randomUUID(),
             ResourceType.COMMENT);
-        Page<Notification> pages = new PageImpl<>(List.of(n1, n2));
-        when(notificationRepository.findFirstPage(any(), any())).thenReturn(pages);
+        Slice<Notification> slices = new SliceImpl<>(List.of(n1, n2), PageRequest.of(0, 5), false);
+        when(notificationRepository.findWithCursor(any(), any(), any(), anyInt())).thenReturn(
+            slices);
         when(notificationRepository.countForPagination(userId)).thenReturn(2L);
         when(notificationMapper.toDto(any(Notification.class))).thenAnswer(invocation -> {
             Notification notification = invocation.getArgument(0);
@@ -275,12 +277,11 @@ class NotificationServiceImplTest {
 
         // then
         assertNotNull(result);
-        assertEquals(2, result.size());
         assertEquals(2L, result.totalElements());
         assertFalse(result.hasNext());
         assertNull(result.nextCursor());
         assertNull(result.nextCursor());
-        verify(notificationRepository).findFirstPage(any(), any());
+        verify(notificationRepository).findWithCursor(any(), any(), any(), anyInt());
         verify(notificationRepository).countForPagination(any());
     }
 

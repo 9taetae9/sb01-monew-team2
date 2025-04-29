@@ -9,7 +9,6 @@ import com.codeit.team2.monew.module.domain.notification.dto.NotificationDto;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
 import com.codeit.team2.monew.module.domain.notification.mapper.NotificationMapper;
-import com.codeit.team2.monew.module.domain.notification.repository.NotificationCustomRepository;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
@@ -40,7 +39,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final CommentRepository commentRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final NotificationMapper notificationMapper;
-    private final NotificationCustomRepository notificationCustomRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
@@ -141,7 +139,7 @@ public class NotificationServiceImpl implements NotificationService {
     public CursorPageResponseNotificationDto findAll(UUID userId, Instant cursor, Instant after,
         int limit) {
         // 정렬 조건은 시간 순으로 고정
-        Slice<Notification> slices = notificationCustomRepository.findWithCursor(userId, cursor,
+        Slice<Notification> slices = notificationRepository.findWithCursor(userId, cursor,
             after, limit);
         // dto로 변환
         List<Notification> notifications = slices.getContent();
