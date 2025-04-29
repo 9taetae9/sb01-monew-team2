@@ -173,6 +173,23 @@ public class MongoUserActivityService implements UserActivityService {
         userActivityRepository.save(userActivity);
     }
 
+    public void updateCommentContentInActivity(Comment comment, UUID userId) {
+        UserActivity userActivity = findUserActivityOrThrow(userId);
+
+        // CommentItem의 content도 함께 갱신
+        userActivity.getComments().stream()
+            .filter(commentItem -> commentItem.getId().equals(comment.getId()))
+            .forEach(commentItem -> commentItem.updateContent(comment.getContent()));
+
+        // CommentLikeItem의 commentContent도 함께 갱신
+        userActivity.getCommentLikes().stream()
+            .filter(commentLikeItem -> commentLikeItem.getCommentId().equals(comment.getId()))
+            .forEach(
+                commentLikeItem -> commentLikeItem.updateCommentContent(comment.getContent()));
+
+        userActivityRepository.save(userActivity);
+    }
+
     private UserActivity findUserActivityOrThrow(UUID userId) {
         return userActivityRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));

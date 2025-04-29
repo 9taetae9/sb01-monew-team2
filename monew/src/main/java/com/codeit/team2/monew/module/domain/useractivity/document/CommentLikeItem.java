@@ -28,4 +28,8 @@ public class CommentLikeItem {
     public void updateCommentUserNickname(String commentUserNickname) {
         this.commentUserNickname = commentUserNickname;
     }
+
+    public void updateCommentContent(String commentContent) {
+        this.commentContent = commentContent;
+    }
 }

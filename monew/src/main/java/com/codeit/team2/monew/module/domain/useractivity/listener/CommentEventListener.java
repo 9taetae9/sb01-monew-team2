@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.useractivity.listener;
 
 import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
+import com.codeit.team2.monew.module.domain.comment.event.CommentUpdateEvent;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -32,4 +33,11 @@ public class CommentEventListener {
         );
     }
 
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void updateCommentItem(CommentUpdateEvent event) {
+        userActivityService.updateCommentContentInActivity(
+            event.comment(),
+            event.userId()
+        );
+    }
 }

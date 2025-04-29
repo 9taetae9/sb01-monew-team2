@@ -30,5 +30,9 @@ public class CommentItem {
     public void updateUserNickname(String userNickname) {
         this.userNickname = userNickname;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
 

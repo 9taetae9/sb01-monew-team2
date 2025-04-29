@@ -5,6 +5,7 @@ import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentRegisterRequest;
+import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
@@ -199,7 +200,39 @@ public class TestDataInitializer implements ApplicationRunner {
             userDto.id(),
             userUpdateRequest
         );
+    }
 
+    void initCommentContentUpdateEventData() {
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest(
+            "email",
+            "nickname",
+            "password"
+        );
+        UserDto userDto = userService.registerUser(userRegisterRequest);
+
+        Article article = articleRepository.save(
+            new Article(
+                "title",
+                "NAVER",
+                "sourceUrl",
+                "summary",
+                Set.of(),
+                0L,
+                Instant.now(),
+                false
+            ));
+
+        CommentRegisterRequest commentRegisterRequest = new CommentRegisterRequest(
+            article.getId(),
+            userDto.id(),
+            "comment1"
+        );
+
+        Comment comment = commentService.register(commentRegisterRequest);
+        CommentLike commentLike = commentLikeService.like(comment.getId(), userDto.id());
+
+        CommentUpdateRequest commentUpdateRequest = new CommentUpdateRequest("newContent");
+        commentService.edit(comment.getId(), userDto.id(), commentUpdateRequest);
     }
 
     @Override
