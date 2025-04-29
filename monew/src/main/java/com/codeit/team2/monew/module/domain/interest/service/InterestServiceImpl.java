@@ -120,7 +120,6 @@ public class InterestServiceImpl implements InterestService {
 
         interestRepository.delete(interest);
 
-        // TODO: 배치 작업 추가 필요 or 비동기로 처리
         keywordRepository.deleteAllOrphanKeywords();
     }
 

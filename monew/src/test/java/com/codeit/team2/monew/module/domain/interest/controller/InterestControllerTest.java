@@ -114,7 +114,8 @@ class InterestControllerTest {
                 .content(objectMapper.writeValueAsString(requestDto))
             ).andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.timestamp").exists())
-            .andExpect(jsonPath("$.code").value(400))
+            .andExpect(jsonPath("$.status").value(400))
+            .andExpect(jsonPath("$.code").value("INVALID_INPUT_VALUE"))
             .andExpect(jsonPath("$.exceptionType").value("MethodArgumentNotValidException"))
             .andExpect(jsonPath("$.message").value("관심사명을 비워둘 수 없습니다.")) // CommonErrorCode 메시지
             .andExpect(jsonPath("$.details").exists())
@@ -220,5 +221,5 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.subscriberCount").value(subscriptionDto.subscriberCount()));
 
     }
-    
+
 }
