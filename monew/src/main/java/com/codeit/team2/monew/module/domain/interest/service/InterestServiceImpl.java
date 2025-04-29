@@ -10,6 +10,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.event.InterestDeleteEvent;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,7 @@ public class InterestServiceImpl implements InterestService {
     private final InterestKeywordRepository interestKeywordRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final InterestCustomRepository interestCustomRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     @Transactional
@@ -121,6 +124,12 @@ public class InterestServiceImpl implements InterestService {
         interestRepository.delete(interest);
 
         keywordRepository.deleteAllOrphanKeywords();
+
+        // 관심사 삭제 이벤트 발생
+        publisher.publishEvent(new InterestDeleteEvent(
+            interest,
+            userId
+        ));
     }
 
     private User getUserOrThrow(UUID userId) {

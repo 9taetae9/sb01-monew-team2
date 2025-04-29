@@ -201,6 +201,17 @@ public class MongoUserActivityService implements UserActivityService {
         userActivityRepository.save(userActivity);
     }
 
+    @Transactional
+    public void deleteSubscriptionItem(Interest interest, UUID userId) {
+        UserActivity userActivity = findUserActivityOrThrow(userId);
+
+        userActivity.getSubscriptions()
+            .removeIf(
+                subscriptionItem -> subscriptionItem.getInterestId().equals(interest.getId()));
+
+        userActivityRepository.save(userActivity);
+    }
+
     public void deleteCommentLikeItem(CommentLike commentLike) {
         User user = commentLike.getUser();
         Comment comment = commentLike.getComment();

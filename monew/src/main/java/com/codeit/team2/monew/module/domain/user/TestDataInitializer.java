@@ -236,6 +236,25 @@ public class TestDataInitializer implements ApplicationRunner {
         commentService.edit(comment.getId(), userDto.id(), commentUpdateRequest);
     }
 
+    void intiInterestDeleteEventData() {
+        UserDto userDto = userService.registerUser(new UserRegisterRequest(
+                "email@a.com",
+                "nickname1",
+                "password"
+            )
+        );
+
+        InterestRegisterRequest request = new InterestRegisterRequest(
+            "IT",
+            List.of("java", "python")
+        );
+
+        InterestDto interestDto = interestService.create(request, userDto.id());
+
+        subscriptionService.subscription(interestDto.id(), userDto.id());
+        interestService.delete(interestDto.id(), userDto.id());
+    }
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
     }
