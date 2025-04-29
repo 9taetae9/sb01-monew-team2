@@ -154,6 +154,7 @@ public class TestDataInitializer implements ApplicationRunner {
         InterestDto interestDto = interestService.create(request, userDto.id());
 
         subscriptionService.subscription(interestDto.id(), userDto.id());
+        subscriptionService.cancelSubscription(interestDto.id(), userDto.id());
     }
 
     void initUserRegisterEventData() {
