@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceImplTest {
@@ -45,6 +46,9 @@ class SubscriptionServiceImplTest {
     @Spy
     private SubscriptionMapper subscriptionMapper = Mappers.getMapper(SubscriptionMapper.class);
 
+    @Spy
+    private ApplicationEventPublisher publisher;
+
     @InjectMocks
     private SubscriptionServiceImpl subscriptionService;
 
@@ -52,7 +56,7 @@ class SubscriptionServiceImplTest {
     @Test
     void subscription_success() {
         // given
-        User mockUser =TestUserFactory.createWithName("name");
+        User mockUser = TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
@@ -68,7 +72,8 @@ class SubscriptionServiceImplTest {
             .thenReturn(mockInterest);
 
         // when
-        SubscriptionDto result = subscriptionService.subscription(mockInterest.getId(), mockUser.getId());
+        SubscriptionDto result = subscriptionService.subscription(mockInterest.getId(),
+            mockUser.getId());
 
         // then
         assertThat(result.interestKeywords()).hasSize(2).contains("당근", "시금치");
@@ -80,7 +85,7 @@ class SubscriptionServiceImplTest {
     @Test
     void subscription_failure() {
         // given
-        User mockUser =TestUserFactory.createWithName("name");
+        User mockUser = TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
@@ -96,7 +101,8 @@ class SubscriptionServiceImplTest {
             .thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> subscriptionService.subscription(mockInterest.getId(), mockSubscription.getId()))
+        assertThatThrownBy(
+            () -> subscriptionService.subscription(mockInterest.getId(), mockSubscription.getId()))
             .isInstanceOf(DuplicateRequestException.class);
     }
 
@@ -140,7 +146,8 @@ class SubscriptionServiceImplTest {
             .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> subscriptionService.cancelSubscription(interest.getId(), user.getId()))
+        assertThatThrownBy(
+            () -> subscriptionService.cancelSubscription(interest.getId(), user.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 

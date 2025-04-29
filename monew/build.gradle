@@ -3,10 +3,11 @@ plugins {
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
+    id("org.springdoc.openapi-gradle-plugin") version "1.7.0"
 }
 
 group = 'com.codeit.team2'
-version = 'v1.0.0'
+version = 'v1.0.1'
 
 
 java {
@@ -23,6 +24,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
@@ -89,6 +91,19 @@ clean {
     delete file('src/main/generated')
 }
 
+// openApi - json 자동 추출
+openApi {
+    apiDocsUrl.set("http://localhost:8080/sb/monew/api/v3/api-docs/customer")
+    outputDir.set(layout.projectDirectory.dir("docs/api"))
+    outputFileName.set("swagger-${project.version}.json")
+    waitTimeInSeconds.set(100) // 호출 전 어플리케이션 시작을 기다리는 시간
+}
+
+tasks.named('forkedSpringBootRun') {
+    doNotTrackState("Gradle 8.13 compatibility workaround")
+}
+
+// jacoco
 jacoco {
     toolVersion = '0.8.11'
 }
@@ -119,13 +134,13 @@ jacocoTestReport {
 // 테스트 태스크 분리
 tasks.register('unitTest', Test) {
     useJUnitPlatform {
-        excludeTags 'integration'  // 'integration' 태그가 없는 테스트만 실행
+        excludeTags 'integration'
     }
 }
 
 tasks.register('integrationTest', Test) {
     useJUnitPlatform {
-        includeTags 'integration'  // 'integration' 태그가 있는 테스트만 실행
+        includeTags 'integration'
     }
 }
 
