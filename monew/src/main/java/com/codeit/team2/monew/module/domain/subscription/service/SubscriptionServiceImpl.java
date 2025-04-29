@@ -60,6 +60,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public void cancelSubscription(UUID interestId, UUID userId) {
 
         User user = getUserOrThrow(userId);
@@ -68,7 +69,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = subscriptionRepository.findByInterestAndUser(interest, user)
             .orElseThrow(() -> new SubscriptionNotFoundException(interestId, userId));
 
-        subscriptionRepository.delete(subscription);
+        interest.cancelSubscription(subscription);
+        subscriptionRepository.deleteByInterestAndUser(interest, user);
     }
 
     private User getUserOrThrow(UUID userId) {
