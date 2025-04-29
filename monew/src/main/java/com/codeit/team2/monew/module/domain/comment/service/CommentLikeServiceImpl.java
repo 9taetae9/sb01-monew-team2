@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.comment.service;
 
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
+import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.notification.service.NotificationService;
@@ -11,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public CommentLike like(UUID commentId, UUID userId) {
@@ -50,6 +53,9 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
         // 알림 생성
         notificationService.createCommentNotification(comment, comment.getUser(), user);
+
+        // 댓글 좋아요 이벤트 발행
+        publisher.publishEvent(new CommentLikeRegisterEvent(commentLike));
 
         return commentLikeRepository.save(commentLike);
     }

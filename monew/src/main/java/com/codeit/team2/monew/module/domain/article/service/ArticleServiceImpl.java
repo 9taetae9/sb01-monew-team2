@@ -6,6 +6,7 @@ import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticl
 import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageRequestArticleDto;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
+import com.codeit.team2.monew.module.domain.article.event.ArticleViewCreateEvent;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
@@ -34,6 +35,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
     private final CommentRepository commentRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     @Override
@@ -53,6 +55,13 @@ public class ArticleServiceImpl implements ArticleService {
             });
 
         // TODO : CommentRepository 완성시 관련 Comment 조회 로직
+
+        // article view 생성 이벤트 발생
+        publisher.publishEvent(new ArticleViewCreateEvent(
+            articleView,
+            user
+        ));
+
         return articleMapper.toResponseDto(article, articleView, userId, 0);
     }
 
