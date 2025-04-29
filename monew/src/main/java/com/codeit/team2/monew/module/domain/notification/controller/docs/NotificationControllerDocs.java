@@ -40,7 +40,8 @@ public interface NotificationControllerDocs {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @GetMapping("")
-    ResponseEntity<CursorPageResponseNotificationDto> findAll(UUID userId, Instant cursor, Instant after, int limit);
+    ResponseEntity<CursorPageResponseNotificationDto> findAll(UUID userId, Instant cursor,
+        Instant after, int limit);
 
     @Operation(
         summary = "전체 알림 확인",
