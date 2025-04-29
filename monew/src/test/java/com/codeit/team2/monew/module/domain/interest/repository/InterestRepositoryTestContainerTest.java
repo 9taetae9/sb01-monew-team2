@@ -3,6 +3,7 @@ package com.codeit.team2.monew.module.domain.interest.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.codeit.team2.monew.config.JpaConfig;
+import com.codeit.team2.monew.config.QuerydslConfig;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Slf4j
 @DataJpaTest
 @Testcontainers
-@Import(JpaConfig.class)
+@Import({JpaConfig.class, QuerydslConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class InterestRepositoryTestContainerTest {
 
