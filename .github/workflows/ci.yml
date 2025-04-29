@@ -46,6 +46,7 @@ jobs:
             ./monew/build/reports/jacoco/
             ./monew/build/reports/problems/
           retention-days: 7
+          include-hidden-files: true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
