@@ -15,6 +15,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResp
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
@@ -118,7 +119,7 @@ class InterestServiceImplTest {
 
         // when & then
         assertThatThrownBy(() -> interestService.create(request, user.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(SimilarInterestAlreadyExistsException.class);
     }
 
     @DisplayName("관심사 수정에서 키워드 추가/삭제가 정상적으로 수행된다.")
