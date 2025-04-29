@@ -578,4 +578,74 @@ class MongoUserActivityServiceTest {
                         savedCommentLikeItem.getCommentContent()));
         }
     }
+
+    @Nested
+    class deleteCommentLikeItemTest {
+
+        @Test
+        void 댓글_좋아요_취소_시_CommentLikeItem_제거_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Article article = TestEntityFactory.createArticle("article1");
+            Comment comment = TestEntityFactory.createComment(article, user, "comment1");
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            CommentLike commentLike = TestEntityFactory.createCommentLike(comment, user);
+            comment.incrementLikeCount();
+
+            CommentItem commentItem = new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentItem(commentItem);
+
+            CommentLikeItem commentLikeItem = new CommentLikeItem(
+                commentLike.getId(),
+                commentLike.getCreatedAt(),
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentLikeItem(commentLikeItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            comment.decrementLikeCount();
+            userActivityService.deleteCommentLikeItem(commentLike);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            saved.getComments().stream()
+                .filter(savedCommentItem -> savedCommentItem.getId().equals(comment.getId()))
+                .forEach(savedCommentItem -> assertEquals(0, savedCommentItem.getLikeCount()));
+
+            assertEquals(0, saved.getCommentLikes().size());
+        }
+    }
 }
