@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class CommentNotFoundException extends BaseException {
 
-    CommentNotFoundException(UUID commentId) {
+    public CommentNotFoundException(UUID commentId) {
         super(CommentErrorCode.COMMENT_NOT_FOUND, Map.of("commentId", commentId));
     }
 }
