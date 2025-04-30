@@ -11,6 +11,7 @@ import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.event.InterestDeleteEvent;
+import com.codeit.team2.monew.module.domain.interest.event.InterestUpdateEvent;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
@@ -110,6 +111,13 @@ public class InterestServiceImpl implements InterestService {
         List<String> keywords = interest.getKeywords().stream()
             .map(ik -> ik.getKeyword().getName())
             .collect(Collectors.toList());
+
+        // 관심사 수정 이벤트 발생
+        publisher.publishEvent(new InterestUpdateEvent(
+            interest,
+            keywords,
+            userId
+        ));
 
         return interestMapper.toDto(interest, keywords, subscribedByMe);
     }

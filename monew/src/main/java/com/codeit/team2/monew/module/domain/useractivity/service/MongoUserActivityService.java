@@ -173,6 +173,18 @@ public class MongoUserActivityService implements UserActivityService {
         userActivityRepository.save(userActivity);
     }
 
+    public void updateSubscriptionItemInActivity(Interest interest, List<String> keywords,
+        UUID userId) {
+        UserActivity userActivity = findUserActivityOrThrow(userId);
+
+        userActivity.getSubscriptions().stream()
+            .filter(subscriptionItem -> subscriptionItem.getInterestId().equals(interest.getId()))
+            .findAny()
+            .ifPresent(subscriptionItem -> subscriptionItem.updateInterestKeywords(keywords));
+
+        userActivityRepository.save(userActivity);
+    }
+
     public void updateCommentContentInActivity(Comment comment, UUID userId) {
         UserActivity userActivity = findUserActivityOrThrow(userId);
 
