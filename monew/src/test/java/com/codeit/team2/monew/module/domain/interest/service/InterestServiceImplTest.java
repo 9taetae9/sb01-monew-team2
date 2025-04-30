@@ -17,7 +17,6 @@ import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
-import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -60,8 +59,6 @@ class InterestServiceImplTest {
     @Mock
     private SubscriptionRepository subscriptionRepository;
 
-    @Mock
-    private InterestCustomRepository interestCustomRepository;
 
     @Mock
     private InterestNameSimilarityService interestNameSimilarityService;
@@ -209,8 +206,6 @@ class InterestServiceImplTest {
         // given
         User user = TestUserFactory.createWithName("name");
         UUID userId = user.getId();
-        when(userRepository.existsById(userId)).thenReturn(true);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         CursorPageRequestInterestDto cursorPageRequestInterestDto = new CursorPageRequestInterestDto(
             null,
@@ -218,15 +213,13 @@ class InterestServiceImplTest {
 
         Interest interest = TestInterestFactory.create("interest1", List.of("k1", "k2"));
         Slice<Interest> slices = new SliceImpl<>(List.of(interest), PageRequest.of(0, 3), false);
-        when(interestCustomRepository.findAll(cursorPageRequestInterestDto.keyword(),
+        when(interestRepository.findAll(cursorPageRequestInterestDto.keyword(),
             cursorPageRequestInterestDto.orderBy(), cursorPageRequestInterestDto.direction(),
             cursorPageRequestInterestDto.cursor(), cursorPageRequestInterestDto.after(),
             cursorPageRequestInterestDto.limit())).thenReturn(slices);
 
-        when(interestCustomRepository.countFilteredTotalElements(any(), any(), any())).thenReturn(
+        when(interestRepository.countFilteredTotalElements(any(), any(), any())).thenReturn(
             1L);
-
-        when(subscriptionRepository.existsByInterestAndUser(interest, user)).thenReturn(false);
 
         //when
         CursorPageResponseInterestDto result = interestService.findAll(userId,
@@ -238,8 +231,7 @@ class InterestServiceImplTest {
         assertThat(result.hasNext()).isEqualTo(false);
         assertThat(result.nextCursor()).isNull();
         assertThat(result.nextAfter()).isNull();
-        verify(userRepository).existsById(userId);
-        verify(interestCustomRepository).findAll(cursorPageRequestInterestDto.keyword(),
+        verify(interestRepository).findAll(cursorPageRequestInterestDto.keyword(),
             cursorPageRequestInterestDto.orderBy(), cursorPageRequestInterestDto.direction(),
             cursorPageRequestInterestDto.cursor(), cursorPageRequestInterestDto.after(),
             cursorPageRequestInterestDto.limit());

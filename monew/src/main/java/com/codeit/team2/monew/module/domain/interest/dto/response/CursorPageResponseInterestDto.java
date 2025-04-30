@@ -11,7 +11,7 @@ public record CursorPageResponseInterestDto(
     List<InterestDto> content,
 
     @Schema(description = "다음 페이지 커서")
-    Object nextCursor,
+    String nextCursor,
 
     @Schema(description = "다음 보조 커서(마지막 요소의 생성 시간)", format = "date-time", example = "2025-04-06T15:04:05.000Z")
     Instant nextAfter,
@@ -25,4 +25,6 @@ public record CursorPageResponseInterestDto(
     @Schema(description = "다음 페이지 여부", example = "true")
     boolean hasNext
 
-) {}
+) {
+
+}
