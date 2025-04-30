@@ -26,7 +26,7 @@ public class DummyArticleProcessor implements
         Map<String, List<Interest>> keywordMap = keywordCache.getCache();
 
         // TODO : 지금 O(N * K) 시간 복잡도.. 개선 필요
-        return keywordMap.entrySet().stream()
+        List<ArticleInterestCreateCommand> tmp = keywordMap.entrySet().stream()
             .filter(entry -> item.getTitle().contains(entry.getKey()) || item.getSummary().contains(
                 entry.getKey()))
             .flatMap(entry -> entry.getValue().stream()
@@ -35,5 +35,7 @@ public class DummyArticleProcessor implements
                         interest)
                 )
             ).toList();
+
+        return tmp;
     }
 }

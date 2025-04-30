@@ -16,10 +16,12 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Getter
 @Entity
+@Setter // TODO : 이후 변경 예정 빠르게 개발하기 위해 추가
 @Table(name = "articles")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

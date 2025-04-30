@@ -3,6 +3,7 @@ package com.codeit.team2.monew.module.domain.useractivity.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -500,6 +501,55 @@ class MongoUserActivityServiceTest {
                 .forEach(
                     savedCommentLikeItem -> assertEquals(newNickname,
                         savedCommentLikeItem.getCommentUserNickname()));
+        }
+    }
+
+    @Nested
+    class updateSubscriptionItemInActivityTest {
+
+        @Test
+        void 관심사_수정_시_SubscriptionItem_수정_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Interest interest = TestEntityFactory.createInterest("AI");
+            Subscription subscription = TestEntityFactory.createSubscription(user, interest);
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            SubscriptionItem subscriptionItem = new SubscriptionItem(
+                subscription.getId(),
+                interest.getId(),
+                interest.getName(),
+                List.of("GPT", "deepsick"),
+                interest.getSubscriberCount(),
+                subscription.getCreatedAt()
+            );
+            userActivity.addSubscriptionItem(subscriptionItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            List<String> newKeywords = List.of("claude", "grock", "gemminai");
+            userActivityService.updateSubscriptionItemInActivity(
+                interest, newKeywords, user.getId());
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            saved.getSubscriptions().get(0).getInterestKeywords()
+                .forEach(interestKeywords -> assertTrue(newKeywords.contains(interestKeywords)));
         }
     }
 

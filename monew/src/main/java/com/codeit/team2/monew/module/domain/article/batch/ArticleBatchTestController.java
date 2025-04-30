@@ -62,6 +62,12 @@ public class ArticleBatchTestController {
         scheduler.runArticleBatch();
     }
 
+    @PostMapping("/test-rss-all")
+    public void testAllRss() {
+        rssFetchService.fetchAllRss();
+        scheduler.runRssBatch();
+    }
+
     @PostMapping("/run")
     public void runBatch() {
         try {

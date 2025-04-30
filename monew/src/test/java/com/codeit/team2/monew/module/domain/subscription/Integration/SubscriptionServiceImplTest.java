@@ -21,11 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+@Disabled
 @SpringBootTest
 @Transactional
 @ActiveProfiles({"test-temp"})
 @Tag("integration")
-@Disabled
 public class SubscriptionServiceImplTest {
 
     // Could not resolve placeholder 'NAVER_CLIENT_ID' in value "${NAVER_CLIENT_ID}" 문제로 보류

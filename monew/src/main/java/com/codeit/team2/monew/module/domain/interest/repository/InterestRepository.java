@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.interest.repository;
 
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,7 @@ public interface InterestRepository extends JpaRepository<Interest, UUID>,
 
     @Query(value = "SELECT similarity(:a, :b)", nativeQuery = true)
     Double getSimilarity(@Param("a") String a, @Param("b") String b);
+
+    @Query("SELECT i.name FROM Interest i")
+    List<String> findAllNames();
 }

@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.useractivity.listener;
 
 import com.codeit.team2.monew.module.domain.interest.event.InterestDeleteEvent;
+import com.codeit.team2.monew.module.domain.interest.event.InterestUpdateEvent;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,11 +17,19 @@ public class InterestEventListener {
     private final MongoUserActivityService userActivityService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void updateSubscriptionItem(InterestUpdateEvent event) {
+        userActivityService.updateSubscriptionItemInActivity(
+            event.interest(),
+            event.keywords(),
+            event.userId()
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void deleteSubscriptionItem(InterestDeleteEvent event) {
         userActivityService.deleteSubscriptionItem(
             event.interest(),
             event.userId()
         );
     }
-
 }

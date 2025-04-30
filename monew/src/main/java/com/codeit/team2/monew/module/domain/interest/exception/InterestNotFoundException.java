@@ -2,7 +2,9 @@ package com.codeit.team2.monew.module.domain.interest.exception;
 
 import com.codeit.team2.monew.module.common.exception.BaseException;
 import com.codeit.team2.monew.module.common.exception.ErrorCode;
+import com.codeit.team2.monew.module.domain.interest.code.InterestErrorCode;
 import java.util.Map;
+import java.util.UUID;
 
 public class InterestNotFoundException extends BaseException {
 
@@ -16,5 +18,9 @@ public class InterestNotFoundException extends BaseException {
 
     public InterestNotFoundException(ErrorCode errorCode, Map<String, Object> details) {
         super(errorCode, details);
+    }
+
+    public InterestNotFoundException(UUID id) {
+        super(InterestErrorCode.INTEREST_NOT_FOUND, Map.of("id", id));
     }
 }
