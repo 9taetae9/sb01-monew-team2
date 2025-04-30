@@ -13,6 +13,7 @@ import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository
 import com.codeit.team2.monew.module.domain.comment.service.CommentLikeService;
 import com.codeit.team2.monew.module.domain.comment.service.CommentService;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.service.SubscriptionService;
@@ -154,7 +155,11 @@ public class TestDataInitializer implements ApplicationRunner {
         InterestDto interestDto = interestService.create(request, userDto.id());
 
         subscriptionService.subscription(interestDto.id(), userDto.id());
-        subscriptionService.cancelSubscription(interestDto.id(), userDto.id());
+
+        InterestUpdateRequest updateRequest = new InterestUpdateRequest(
+            List.of("ruby", "javascript", "dart")
+        );
+        interestService.update(updateRequest, interestDto.id(), userDto.id());
     }
 
     void initUserRegisterEventData() {

@@ -39,8 +39,7 @@ public class MongoUserActivityService implements UserActivityService {
             throw new RuntimeException("Not Authorized");
         }
 
-        UserActivity userActivity = userActivityRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+        UserActivity userActivity = findUserActivityOrThrow(userId);
 
         return userActivityMapper.toUserActivityDto(userActivity);
     }
@@ -154,8 +153,7 @@ public class MongoUserActivityService implements UserActivityService {
     }
 
     public void updateUserNicknameInActivity(User user) {
-        UserActivity userActivity = userActivityRepository.findById(user.getId())
-            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+        UserActivity userActivity = findUserActivityOrThrow(user.getId());
 
         userActivity.updateNickname(user.getNickname());
 
@@ -169,6 +167,18 @@ public class MongoUserActivityService implements UserActivityService {
             .filter(commentLikeItem -> commentLikeItem.getCommentUserId().equals(user.getId()))
             .forEach(
                 commentLikeItem -> commentLikeItem.updateCommentUserNickname(user.getNickname()));
+
+        userActivityRepository.save(userActivity);
+    }
+
+    public void updateSubscriptionItemInActivity(Interest interest, List<String> keywords,
+        UUID userId) {
+        UserActivity userActivity = findUserActivityOrThrow(userId);
+
+        userActivity.getSubscriptions().stream()
+            .filter(subscriptionItem -> subscriptionItem.getInterestId().equals(interest.getId()))
+            .findAny()
+            .ifPresent(subscriptionItem -> subscriptionItem.updateInterestKeywords(keywords));
 
         userActivityRepository.save(userActivity);
     }

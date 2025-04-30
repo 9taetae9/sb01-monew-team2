@@ -21,5 +21,9 @@ public class SubscriptionItem {
     private List<String> interestKeywords;
     private Long interestSubscriberCount;
     private Instant createdAt;
+
+    public void updateInterestKeywords(List<String> keywords) {
+        this.interestKeywords = keywords;
+    }
 }
 
