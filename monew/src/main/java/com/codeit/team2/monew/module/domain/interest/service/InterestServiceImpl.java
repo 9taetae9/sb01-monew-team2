@@ -1,6 +1,5 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
-import com.codeit.team2.monew.module.domain.interest.code.InterestErrorCode;
 import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestOrderBy;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
@@ -13,6 +12,7 @@ import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.event.InterestDeleteEvent;
 import com.codeit.team2.monew.module.domain.interest.event.InterestUpdateEvent;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
+import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
@@ -38,6 +38,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InterestServiceImpl implements InterestService {
 
+    private final double SIMILARITY_THRESHOLD = 0.8;
+
     private final InterestMapper interestMapper;
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
@@ -46,6 +48,7 @@ public class InterestServiceImpl implements InterestService {
     private final SubscriptionRepository subscriptionRepository;
     private final InterestCustomRepository interestCustomRepository;
     private final ApplicationEventPublisher publisher;
+    private final InterestNameSimilarityService interestNameSimilarityService;
 
     @Override
     @Transactional
@@ -54,13 +57,17 @@ public class InterestServiceImpl implements InterestService {
         User user = getUserOrThrow(userId);
         boolean subscribedByMe = false;
 
-        // TODO: 추후에 index 추가 예정
-        // 참고: pg_trgm 특성상 유사도 계산 알고리즘이 달라 사람이 판단하는 것과 다름. 보완 필요
-        if (interestRepository.existsByNameSimilarTo(request.name())) {
-            throw new IllegalArgumentException("비슷한 관심사가 이미 존재합니다.");
+        List<String> savedNames = interestRepository.findAllNames();
+        String interestName = request.name();
+
+        for (String savedName : savedNames) {
+            if (interestNameSimilarityService.isSimilar(interestName, savedName,
+                SIMILARITY_THRESHOLD)) {
+                throw new SimilarInterestAlreadyExistsException(interestName);
+            }
         }
 
-        Interest interest = Interest.create(request.name());
+        Interest interest = Interest.create(interestName);
 
         for (String keyword : request.keywords()) {
             Keyword getKeyword = keywordRepository.findByName(keyword)
@@ -147,8 +154,7 @@ public class InterestServiceImpl implements InterestService {
 
     private Interest getByIdOrThrow(UUID id) {
         return interestRepository.findById(id).orElseThrow(
-            () -> new InterestNotFoundException(InterestErrorCode.INTEREST_NOT_FOUND,
-                Map.of("id", id)));
+            () -> new InterestNotFoundException(id));
     }
 
     @Override

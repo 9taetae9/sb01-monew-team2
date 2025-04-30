@@ -12,12 +12,13 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestReposito
 import com.codeit.team2.monew.module.domain.subscription.TestSubscriptionFactory;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.subscription.exception.DuplicateSubscriptionException;
+import com.codeit.team2.monew.module.domain.subscription.exception.SubscriptionNotFoundException;
 import com.codeit.team2.monew.module.domain.subscription.mapper.SubscriptionMapper;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
-import com.sun.jdi.request.DuplicateRequestException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -101,7 +102,7 @@ class SubscriptionServiceImplTest {
         // when & then
         assertThatThrownBy(
             () -> subscriptionService.subscription(mockInterest.getId(), mockSubscription.getId()))
-            .isInstanceOf(DuplicateRequestException.class);
+            .isInstanceOf(DuplicateSubscriptionException.class);
     }
 
     @DisplayName("유저가 관심사 구독을 취소한다.")
@@ -124,7 +125,7 @@ class SubscriptionServiceImplTest {
         subscriptionService.cancelSubscription(interest.getId(), user.getId());
 
         // then 삭제 조회가 호출 되었는지
-        verify(subscriptionRepository).delete(any(Subscription.class));
+        verify(subscriptionRepository).deleteByInterestAndUser(interest, user);
     }
 
     @DisplayName("유저가 관심사 구독을 하지 않은 상태에서 취소하면 실패한다.")
@@ -146,7 +147,7 @@ class SubscriptionServiceImplTest {
         // when & then
         assertThatThrownBy(
             () -> subscriptionService.cancelSubscription(interest.getId(), user.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(SubscriptionNotFoundException.class);
     }
 
 }

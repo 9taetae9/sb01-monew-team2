@@ -65,4 +65,9 @@ public class Interest extends BaseEntity {
         return articleInterest;
     }
 
+    public void cancelSubscription(Subscription subscription) {
+        this.subscriptions.remove(subscription);
+        this.subscriberCount--;
+    }
+
 }

@@ -15,6 +15,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResp
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
@@ -58,8 +59,12 @@ class InterestServiceImplTest {
 
     @Mock
     private SubscriptionRepository subscriptionRepository;
+
     @Mock
     private InterestCustomRepository interestCustomRepository;
+
+    @Mock
+    private InterestNameSimilarityService interestNameSimilarityService;
 
     @Spy
     private InterestMapper interestMapper = Mappers.getMapper(InterestMapper.class);
@@ -85,7 +90,10 @@ class InterestServiceImplTest {
             .thenReturn(Optional.of(user));
         when(keywordRepository.findByName(any(String.class)))
             .thenReturn(Optional.empty());
-        when(interestRepository.existsByNameSimilarTo(any(String.class)))
+        when(interestRepository.findAllNames())
+            .thenReturn(List.of("당근"));
+        when(interestNameSimilarityService.isSimilar(any(String.class), any(String.class),
+            any(Double.class)))
             .thenReturn(false);
         when(keywordRepository.save(any(Keyword.class)))
             .thenAnswer(invocation -> {
@@ -111,18 +119,21 @@ class InterestServiceImplTest {
         // given
         User user = TestUserFactory.createWithName("name");
 
-        String name = "채소";
+        String name = "채소식단";
         List<String> inputKeywords = List.of("당근", "시금치");
         InterestRegisterRequest request = new InterestRegisterRequest(name, inputKeywords);
 
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(user));
-        when(interestRepository.existsByNameSimilarTo(any(String.class)))
+        when(interestRepository.findAllNames())
+            .thenReturn(List.of("채소식단용"));
+        when(interestNameSimilarityService.isSimilar(any(String.class), any(String.class),
+            any(Double.class)))
             .thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> interestService.create(request, user.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(SimilarInterestAlreadyExistsException.class);
     }
 
     @DisplayName("관심사 수정에서 키워드 추가/삭제가 정상적으로 수행된다.")

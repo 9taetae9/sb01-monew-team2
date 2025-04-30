@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.common.exception;
 
+import com.codeit.team2.monew.module.domain.interest.exception.InvalidSimilarityInputException;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(InvalidSimilarityInputException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidSimilarityInput(
+        InvalidSimilarityInputException ex) {
+        log.error("Invalid similarity input", ex);
+
+        ErrorResponse errorResponse = ErrorResponse.from(ex);
+        return createErrorResponseEntity(errorResponse);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
