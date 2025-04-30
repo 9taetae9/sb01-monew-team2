@@ -13,7 +13,6 @@ import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.interest.event.InterestDeleteEvent;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
-import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -45,7 +44,6 @@ public class InterestServiceImpl implements InterestService {
     private final KeywordRepository keywordRepository;
     private final InterestKeywordRepository interestKeywordRepository;
     private final SubscriptionRepository subscriptionRepository;
-    private final InterestCustomRepository interestCustomRepository;
     private final ApplicationEventPublisher publisher;
 
     @Override
@@ -148,7 +146,7 @@ public class InterestServiceImpl implements InterestService {
     @Override
     public CursorPageResponseInterestDto findAll(UUID userId,
         CursorPageRequestInterestDto cursorPageRequestInterestDto) {
-        Slice<Interest> slices = interestCustomRepository.findAll(
+        Slice<Interest> slices = interestRepository.findAll(
             cursorPageRequestInterestDto.keyword(), cursorPageRequestInterestDto.orderBy(),
             cursorPageRequestInterestDto.direction(), cursorPageRequestInterestDto.cursor(),
             cursorPageRequestInterestDto.after(), cursorPageRequestInterestDto.limit());
@@ -173,7 +171,7 @@ public class InterestServiceImpl implements InterestService {
             interestDtos.add(dto);
         }
 
-        long totalElements = interestCustomRepository.countFilteredTotalElements(
+        long totalElements = interestRepository.countFilteredTotalElements(
             cursorPageRequestInterestDto.keyword(), cursorPageRequestInterestDto.orderBy(),
             cursorPageRequestInterestDto.direction());
 
