@@ -125,7 +125,7 @@ class SubscriptionServiceImplTest {
         subscriptionService.cancelSubscription(interest.getId(), user.getId());
 
         // then 삭제 조회가 호출 되었는지
-        verify(subscriptionRepository).delete(any(Subscription.class));
+        verify(subscriptionRepository).deleteByInterestAndUser(interest, user);
     }
 
     @DisplayName("유저가 관심사 구독을 하지 않은 상태에서 취소하면 실패한다.")

@@ -11,9 +11,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @Tag("integration")
+@ActiveProfiles({"test-temp"})
 class InterestNameSimilarityServiceTest {
 
     private static final double DEFAULT_THRESHOLD = 0.8;

@@ -90,7 +90,10 @@ class InterestServiceImplTest {
             .thenReturn(Optional.of(user));
         when(keywordRepository.findByName(any(String.class)))
             .thenReturn(Optional.empty());
-        when(interestRepository.existsByNameSimilarTo(any(String.class)))
+        when(interestRepository.findAllNames())
+            .thenReturn(List.of("당근"));
+        when(interestNameSimilarityService.isSimilar(any(String.class), any(String.class),
+            any(Double.class)))
             .thenReturn(false);
         when(keywordRepository.save(any(Keyword.class)))
             .thenAnswer(invocation -> {
