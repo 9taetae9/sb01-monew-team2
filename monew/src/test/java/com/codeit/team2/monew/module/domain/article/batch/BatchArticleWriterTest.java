@@ -2,8 +2,8 @@ package com.codeit.team2.monew.module.domain.article.batch;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
 
 import com.codeit.team2.monew.module.domain.article.dto.ArticleInterestCreateCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
@@ -13,11 +13,9 @@ import com.codeit.team2.monew.module.domain.notification.service.NotificationSer
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.batch.item.Chunk;
@@ -67,21 +65,11 @@ public class BatchArticleWriterTest {
 
         Chunk<List<ArticleInterestCreateCommand>> combined = new Chunk(List.of(cmd1, cmd2));
 
-        given(articleRepository.findAllBySourceUrlIn(any()))
-            .willReturn(List.of());
-        given(articleRepository.saveAll(any()))
-            .willReturn(List.of(a, b));
-
         //when
         writer.write(combined);
 
         // then
-        ArgumentCaptor<List<Article>> captor = ArgumentCaptor.forClass(List.class);
-        then(articleRepository).should().saveAll(captor.capture());
+        then(jdbcTemplate).should(times(2)).batchUpdate(any(), any(), anyInt(), any());
 
-        List<Article> flatList = captor.getValue();
-        Assertions.assertThat(flatList).hasSize(2);
-        then(jdbcTemplate).should()
-            .batchUpdate(any(String.class), any(List.class), anyInt(), any());
     }
 }

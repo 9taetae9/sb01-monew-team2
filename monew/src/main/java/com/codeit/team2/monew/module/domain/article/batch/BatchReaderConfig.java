@@ -29,7 +29,7 @@ public class BatchReaderConfig {
         return new JpaPagingItemReaderBuilder<DummyArticle>()
             .name("dummyArticleReader")
             .entityManagerFactory(emf)
-            .queryString("SELECT d FROM DummyArticle d ORDER BY d.publishedDate")
+            .queryString("SELECT d FROM DummyArticle d")
             .pageSize(100)
             .build();
     }
