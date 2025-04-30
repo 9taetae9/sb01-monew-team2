@@ -39,8 +39,7 @@ public class MongoUserActivityService implements UserActivityService {
             throw new RuntimeException("Not Authorized");
         }
 
-        UserActivity userActivity = userActivityRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+        UserActivity userActivity = findUserActivityOrThrow(userId);
 
         return userActivityMapper.toUserActivityDto(userActivity);
     }
@@ -154,8 +153,7 @@ public class MongoUserActivityService implements UserActivityService {
     }
 
     public void updateUserNicknameInActivity(User user) {
-        UserActivity userActivity = userActivityRepository.findById(user.getId())
-            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+        UserActivity userActivity = findUserActivityOrThrow(user.getId());
 
         userActivity.updateNickname(user.getNickname());
 
