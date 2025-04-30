@@ -45,10 +45,8 @@ public class KeywordCache {
                     Collectors.mapping(InterestKeyword::getInterest, Collectors.toList())
                 )
             );
-        
+
         for (Keyword keyword : keywords) {
-//            List<Interest> interests = interestKeywordRepository.findAllByKeyword(keyword).stream()
-//                .map(InterestKeyword::getInterest).toList();
             cache.put(keyword.getName(),
                 keywordToInterests.getOrDefault(keyword.getName(), Collections.emptyList()));
         }
