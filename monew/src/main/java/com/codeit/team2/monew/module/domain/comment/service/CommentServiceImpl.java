@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.comment.service;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.exception.ArticleNotFoundException;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentOrderBy;
@@ -11,13 +12,15 @@ import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommen
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentUpdateEvent;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentPermissionDeniedException;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,18 +51,17 @@ public class CommentServiceImpl implements CommentService {
         User user = userRepository.findById(request.userId())
             .orElseThrow(() -> {
                 log.debug("User Not Found - userId: {}", request.userId());
-                return new EntityNotFoundException("User Not Found");
+                return new UserNotFoundException(request.userId());
             });
 
         Article article = articleRepository.findById(request.articleId())
             .orElseThrow(() -> {
                 log.debug("Article Not Found - userId: {}", request.articleId());
-                return new EntityNotFoundException("Article Not Found");
+                return new ArticleNotFoundException(request.articleId());
             });
 
         Comment comment = commentMapper.toEntity(request, article, user);
 
-        // comment 생성 이벤트 발생
         publisher.publishEvent(new CommentRegisterEvent(comment, article, user));
 
         return commentRepository.save(comment);
@@ -70,13 +72,13 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found - commentId: {}", commentId);
-                return new EntityNotFoundException("Comment Not Found");
+                return new CommentNotFoundException(commentId);
             });
 
         if (!comment.getUser().getId().equals(userId)) {
             log.debug("Edit Permission Denied - Attempted UserId: {}, Author UserId: {}",
                 userId, comment.getUser().getId());
-            throw new SecurityException("Edit Permission Denied");
+            throw new CommentPermissionDeniedException(commentId, userId);
         }
 
         comment.update(request.content());
@@ -84,7 +86,6 @@ public class CommentServiceImpl implements CommentService {
         boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(),
             userId);
 
-        // comment 수정 이벤트 발생
         publisher.publishEvent(new CommentUpdateEvent(
             comment,
             userId
@@ -98,13 +99,13 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found - commentId: {}", commentId);
-                return new EntityNotFoundException("Comment Not Found");
+                return new CommentNotFoundException(commentId);
             });
 
         if (!comment.getUser().getId().equals(userId)) {
             log.debug("Delete Permission Denied - Attempted UserId: {}, Author UserId: {}",
                 userId, comment.getUser().getId());
-            throw new SecurityException("Delete Permission Denied");
+            throw new CommentPermissionDeniedException(commentId, userId);
         }
 
         comment.delete();
@@ -115,7 +116,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found - commentId: {}", commentId);
-                return new EntityNotFoundException("Comment Not Found");
+                return new CommentNotFoundException(commentId);
             });
 
         commentRepository.delete(comment);
