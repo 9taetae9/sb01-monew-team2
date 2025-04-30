@@ -8,6 +8,7 @@ import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import com.codeit.team2.monew.module.domain.useractivity.document.ArticleViewItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentLikeItem;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MongoUserActivityService implements UserActivityService {
 
     private final MongoUserActivityRepository userActivityRepository;
+    private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final UserActivityMapper userActivityMapper;
 
@@ -39,13 +41,13 @@ public class MongoUserActivityService implements UserActivityService {
             throw new RuntimeException("Not Authorized");
         }
 
-        UserActivity userActivity = findUserActivityOrThrow(userId);
+        UserActivity userActivity = findUserActivityOrSave(userId);
 
         return userActivityMapper.toUserActivityDto(userActivity);
     }
 
-    public void createUserActivity(User user) {
-        userActivityRepository.save(
+    public UserActivity createUserActivity(User user) {
+        return userActivityRepository.save(
             new UserActivity(
                 user.getId(),
                 user.getEmail(),
@@ -61,7 +63,7 @@ public class MongoUserActivityService implements UserActivityService {
 
     @Transactional
     public void createSubscriptionItem(Subscription subscription, Interest interest, UUID userId) {
-        UserActivity userActivity = findUserActivityOrThrow(userId);
+        UserActivity userActivity = findUserActivityOrSave(userId);
 
         List<String> keywords = interest.getKeywords().stream().map(
             interestKeyword -> interestKeyword.getKeyword().getName()
@@ -93,7 +95,7 @@ public class MongoUserActivityService implements UserActivityService {
             comment.getCreatedAt()
         );
 
-        UserActivity userActivity = findUserActivityOrThrow(user.getId());
+        UserActivity userActivity = findUserActivityOrSave(user.getId());
 
         userActivity.addCommentItem(commentItem);
         userActivityRepository.save(userActivity);
@@ -105,7 +107,7 @@ public class MongoUserActivityService implements UserActivityService {
         Comment comment = commentLike.getComment();
         Article article = comment.getArticle();
 
-        UserActivity userActivity = findUserActivityOrThrow(user.getId());
+        UserActivity userActivity = findUserActivityOrSave(user.getId());
 
         CommentLikeItem commentLikeItem = new CommentLikeItem(
             commentLike.getId(),
@@ -132,7 +134,7 @@ public class MongoUserActivityService implements UserActivityService {
     }
 
     public void createArticleViewItem(ArticleView articleView, User user) {
-        UserActivity userActivity = findUserActivityOrThrow(user.getId());
+        UserActivity userActivity = findUserActivityOrSave(user.getId());
         Article article = articleView.getArticle();
         ArticleViewItem articleViewItem = new ArticleViewItem(
             articleView.getId(),
@@ -153,7 +155,7 @@ public class MongoUserActivityService implements UserActivityService {
     }
 
     public void updateUserNicknameInActivity(User user) {
-        UserActivity userActivity = findUserActivityOrThrow(user.getId());
+        UserActivity userActivity = findUserActivityOrSave(user.getId());
 
         userActivity.updateNickname(user.getNickname());
 
@@ -173,7 +175,7 @@ public class MongoUserActivityService implements UserActivityService {
 
     public void updateSubscriptionItemInActivity(Interest interest, List<String> keywords,
         UUID userId) {
-        UserActivity userActivity = findUserActivityOrThrow(userId);
+        UserActivity userActivity = findUserActivityOrSave(userId);
 
         userActivity.getSubscriptions().stream()
             .filter(subscriptionItem -> subscriptionItem.getInterestId().equals(interest.getId()))
@@ -184,7 +186,7 @@ public class MongoUserActivityService implements UserActivityService {
     }
 
     public void updateCommentContentInActivity(Comment comment, UUID userId) {
-        UserActivity userActivity = findUserActivityOrThrow(userId);
+        UserActivity userActivity = findUserActivityOrSave(userId);
 
         // CommentItem의 content도 함께 갱신
         userActivity.getComments().stream()
@@ -202,7 +204,7 @@ public class MongoUserActivityService implements UserActivityService {
 
     @Transactional
     public void deleteSubscriptionItem(Subscription subscription, UUID userId) {
-        UserActivity userActivity = findUserActivityOrThrow(userId);
+        UserActivity userActivity = findUserActivityOrSave(userId);
 
         userActivity.getSubscriptions()
             .removeIf(
@@ -213,7 +215,7 @@ public class MongoUserActivityService implements UserActivityService {
 
     @Transactional
     public void deleteSubscriptionItem(Interest interest, UUID userId) {
-        UserActivity userActivity = findUserActivityOrThrow(userId);
+        UserActivity userActivity = findUserActivityOrSave(userId);
 
         userActivity.getSubscriptions()
             .removeIf(
@@ -226,7 +228,7 @@ public class MongoUserActivityService implements UserActivityService {
         User user = commentLike.getUser();
         Comment comment = commentLike.getComment();
 
-        UserActivity userActivity = findUserActivityOrThrow(user.getId());
+        UserActivity userActivity = findUserActivityOrSave(user.getId());
 
         // commentLikes에서 삭제
         userActivity.getCommentLikes()
@@ -242,8 +244,12 @@ public class MongoUserActivityService implements UserActivityService {
         userActivityRepository.save(userActivity);
     }
 
-    private UserActivity findUserActivityOrThrow(UUID userId) {
+    private UserActivity findUserActivityOrSave(UUID userId) {
         return userActivityRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Not Found UserActivity"));
+            .orElseGet(() -> {
+                User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Not Found User"));
+                return createUserActivity(user);
+            });
     }
 }
