@@ -1,4 +1,4 @@
-package com.codeit.team2.monew.module.domain.subscription.code;
+package com.codeit.team2.monew.module.domain.subscription.exception;
 
 import com.codeit.team2.monew.module.common.exception.ErrorCode;
 import org.springframework.http.HttpStatus;

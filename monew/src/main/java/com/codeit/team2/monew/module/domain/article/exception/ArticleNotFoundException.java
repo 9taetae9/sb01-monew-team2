@@ -1,7 +1,6 @@
 package com.codeit.team2.monew.module.domain.article.exception;
 
 import com.codeit.team2.monew.module.common.exception.BaseException;
-import com.codeit.team2.monew.module.domain.article.code.ArticleErrorCode;
 import java.util.Map;
 import java.util.UUID;
 

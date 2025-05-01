@@ -1,4 +1,4 @@
-package com.codeit.team2.monew.module.domain.user.code;
+package com.codeit.team2.monew.module.domain.user.exception;
 
 import com.codeit.team2.monew.module.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;

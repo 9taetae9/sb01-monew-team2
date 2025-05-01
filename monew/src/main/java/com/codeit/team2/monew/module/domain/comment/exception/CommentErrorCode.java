@@ -1,4 +1,4 @@
-package com.codeit.team2.monew.module.domain.comment.code;
+package com.codeit.team2.monew.module.domain.comment.exception;
 
 import com.codeit.team2.monew.module.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
