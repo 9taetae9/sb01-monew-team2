@@ -29,7 +29,7 @@ public class ArticleBackupConfig {
     public Step articleBackupStep(JobRepository jobRepository,
         PlatformTransactionManager transactionManager) {
         return new StepBuilder("articleBackupStep", jobRepository)
-            .<Article, ArticleBackupDto>chunk(100, transactionManager)
+            .<Article, ArticleBackupDto>chunk(50, transactionManager)
             .reader(articleBackupReader)
             .processor(articleBackupProcessor)
             .writer(articleBackupWriter)
