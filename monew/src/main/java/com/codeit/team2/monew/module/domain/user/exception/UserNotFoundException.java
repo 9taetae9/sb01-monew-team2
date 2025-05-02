@@ -1,7 +1,6 @@
 package com.codeit.team2.monew.module.domain.user.exception;
 
 import com.codeit.team2.monew.module.common.exception.BaseException;
-import com.codeit.team2.monew.module.domain.user.code.UserErrorCode;
 import java.util.Map;
 import java.util.UUID;
 

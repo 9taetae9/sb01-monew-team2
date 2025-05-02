@@ -36,7 +36,7 @@ public class ArticleBackupReaderConfig {
                 "startDate", startOfDay,
                 "endDate", endOfDay
             ))
-            .pageSize(100)
+            .pageSize(50)
             .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.codeit.team2.monew.module.domain.interest.code;
+package com.codeit.team2.monew.module.domain.interest.exception;
 
 import com.codeit.team2.monew.module.common.exception.ErrorCode;
 import org.springframework.http.HttpStatus;

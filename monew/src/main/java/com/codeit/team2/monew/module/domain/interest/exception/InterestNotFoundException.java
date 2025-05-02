@@ -2,7 +2,6 @@ package com.codeit.team2.monew.module.domain.interest.exception;
 
 import com.codeit.team2.monew.module.common.exception.BaseException;
 import com.codeit.team2.monew.module.common.exception.ErrorCode;
-import com.codeit.team2.monew.module.domain.interest.code.InterestErrorCode;
 import java.util.Map;
 import java.util.UUID;
 
