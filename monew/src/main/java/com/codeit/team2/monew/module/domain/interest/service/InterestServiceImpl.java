@@ -9,8 +9,11 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.event.InterestDeleteEvent;
+import com.codeit.team2.monew.module.domain.interest.event.InterestUpdateEvent;
+import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
+import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
-import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -19,12 +22,15 @@ import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +39,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InterestServiceImpl implements InterestService {
 
+    private final double SIMILARITY_THRESHOLD = 0.8;
+
     private final InterestMapper interestMapper;
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
     private final KeywordRepository keywordRepository;
     private final InterestKeywordRepository interestKeywordRepository;
     private final SubscriptionRepository subscriptionRepository;
-    private final InterestCustomRepository interestCustomRepository;
+    private final ApplicationEventPublisher publisher;
+    private final InterestNameSimilarityService interestNameSimilarityService;
 
     @Override
     @Transactional
@@ -48,13 +57,17 @@ public class InterestServiceImpl implements InterestService {
         User user = getUserOrThrow(userId);
         boolean subscribedByMe = false;
 
-        // TODO: 추후에 index 추가 예정
-        // 참고: pg_trgm 특성상 유사도 계산 알고리즘이 달라 사람이 판단하는 것과 다름. 보완 필요
-        if (interestRepository.existsByNameSimilarTo(request.name())) {
-            throw new IllegalArgumentException("비슷한 관심사가 이미 존재합니다.");
+        List<String> savedNames = interestRepository.findAllNames();
+        String interestName = request.name();
+
+        for (String savedName : savedNames) {
+            if (interestNameSimilarityService.isSimilar(interestName, savedName,
+                SIMILARITY_THRESHOLD)) {
+                throw new SimilarInterestAlreadyExistsException(interestName);
+            }
         }
 
-        Interest interest = Interest.create(request.name());
+        Interest interest = Interest.create(interestName);
 
         for (String keyword : request.keywords()) {
             Keyword getKeyword = keywordRepository.findByName(keyword)
@@ -106,6 +119,13 @@ public class InterestServiceImpl implements InterestService {
             .map(ik -> ik.getKeyword().getName())
             .collect(Collectors.toList());
 
+        // 관심사 수정 이벤트 발생
+        publisher.publishEvent(new InterestUpdateEvent(
+            interest,
+            keywords,
+            userId
+        ));
+
         return interestMapper.toDto(interest, keywords, subscribedByMe);
     }
 
@@ -118,8 +138,13 @@ public class InterestServiceImpl implements InterestService {
 
         interestRepository.delete(interest);
 
-        // TODO: 배치 작업 추가 필요 or 비동기로 처리
         keywordRepository.deleteAllOrphanKeywords();
+
+        // 관심사 삭제 이벤트 발생
+        publisher.publishEvent(new InterestDeleteEvent(
+            interest,
+            userId
+        ));
     }
 
     private User getUserOrThrow(UUID userId) {
@@ -129,32 +154,44 @@ public class InterestServiceImpl implements InterestService {
 
     private Interest getByIdOrThrow(UUID id) {
         return interestRepository.findById(id).orElseThrow(
-            () -> new RuntimeException("interest not found"));
+            () -> new InterestNotFoundException(id));
     }
 
     @Override
     public CursorPageResponseInterestDto findAll(UUID userId,
         CursorPageRequestInterestDto cursorPageRequestInterestDto) {
-        if (!userRepository.existsById(userId)) {
-            log.debug("User Not Found: userId = {}", userId);
-            throw new IllegalArgumentException("User Not Found: userId = {}");
-        }
-        Slice<Interest> slices = interestCustomRepository.findAll(
+        Slice<Interest> slices = interestRepository.findAll(
             cursorPageRequestInterestDto.keyword(), cursorPageRequestInterestDto.orderBy(),
             cursorPageRequestInterestDto.direction(), cursorPageRequestInterestDto.cursor(),
             cursorPageRequestInterestDto.after(), cursorPageRequestInterestDto.limit());
 
-        List<InterestDto> interestDtos = slices.getContent().stream()
-            .map(interest -> toDto(interest, userId))
-            .collect(Collectors.toList());
+        List<Interest> interests = slices.getContent();
 
-        long totalElements = interestCustomRepository.countFilteredTotalElements(
+        // Entity -> DTO
+        Set<UUID> interestIds = interests.stream()
+            .map(Interest::getId)
+            .collect(Collectors.toSet());
+        Set<UUID> subscribedIds = subscriptionRepository
+            .findSubscribedInterestIds(userId, interestIds);    // 구독 여부 일괄 조회(bulk)
+        List<InterestDto> interestDtos = new ArrayList<>();
+        for (Interest interest : interests) {
+            List<String> keywords = new ArrayList<>();
+            for (InterestKeyword ik : interest.getKeywords()) {
+                keywords.add(ik.getKeyword().getName());
+            }
+
+            boolean subscribedByMe = subscribedIds.contains(interest.getId());
+            InterestDto dto = interestMapper.toDto(interest, keywords, subscribedByMe);
+            interestDtos.add(dto);
+        }
+
+        long totalElements = interestRepository.countFilteredTotalElements(
             cursorPageRequestInterestDto.keyword(), cursorPageRequestInterestDto.orderBy(),
             cursorPageRequestInterestDto.direction());
 
         boolean hasNext = slices.hasNext();
 
-        Object nextCursor = null;
+        String nextCursor = null;
         Instant nextAfter = null;
 
         if (hasNext) {
@@ -163,21 +200,13 @@ public class InterestServiceImpl implements InterestService {
             if (cursorPageRequestInterestDto.orderBy() == InterestOrderBy.name) {
                 nextCursor = lastInterest.getName();
             } else if (cursorPageRequestInterestDto.orderBy() == InterestOrderBy.subscriberCount) {
-                nextCursor = lastInterest.getSubscriberCount();
-                nextAfter = lastInterest.getCreatedAt();
+                nextCursor = String.valueOf(lastInterest.getSubscriberCount());
             }
+            nextAfter = lastInterest.getCreatedAt();
         }
 
         return new CursorPageResponseInterestDto(interestDtos, nextCursor, nextAfter,
-            interestDtos.size(), totalElements, hasNext);
+            slices.getSize(), totalElements, hasNext);
     }
 
-    private InterestDto toDto(Interest interest, UUID userId) {
-        User user = getUserOrThrow(userId);
-        boolean subscribedByMe = subscriptionRepository.existsByInterestAndUser(interest, user);
-        List<String> keywords = interest.getKeywords().stream()
-            .map(ik -> ik.getKeyword().getName())
-            .collect(Collectors.toList());
-        return interestMapper.toDto(interest, keywords, subscribedByMe);
-    }
 }

@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.comment.service;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.exception.ArticleNotFoundException;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentOrderBy;
@@ -9,19 +10,24 @@ import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestCommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
+import com.codeit.team2.monew.module.domain.comment.event.CommentUpdateEvent;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentPermissionDeniedException;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
-import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,24 +42,26 @@ public class CommentServiceImpl implements CommentService {
     private final ArticleRepository articleRepository;
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
-    private final CommentCustomRepository commentCustomRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public Comment register(CommentRegisterRequest request) {
         User user = userRepository.findById(request.userId())
             .orElseThrow(() -> {
                 log.debug("User Not Found - userId: {}", request.userId());
-                return new EntityNotFoundException("User Not Found");
+                return new UserNotFoundException(request.userId());
             });
 
         Article article = articleRepository.findById(request.articleId())
             .orElseThrow(() -> {
                 log.debug("Article Not Found - userId: {}", request.articleId());
-                return new EntityNotFoundException("Article Not Found");
+                return new ArticleNotFoundException(request.articleId());
             });
 
         Comment comment = commentMapper.toEntity(request, article, user);
+
+        publisher.publishEvent(new CommentRegisterEvent(comment, article, user));
 
         return commentRepository.save(comment);
     }
@@ -63,18 +71,25 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found - commentId: {}", commentId);
-                return new EntityNotFoundException("Comment Not Found");
+                return new CommentNotFoundException(commentId);
             });
 
         if (!comment.getUser().getId().equals(userId)) {
             log.debug("Edit Permission Denied - Attempted UserId: {}, Author UserId: {}",
                 userId, comment.getUser().getId());
-            throw new SecurityException("Edit Permission Denied");
+            throw new CommentPermissionDeniedException(commentId, userId);
         }
 
         comment.update(request.content());
 
-        boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(), userId);
+        boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(),
+            userId);
+
+        publisher.publishEvent(new CommentUpdateEvent(
+            comment,
+            userId
+        ));
+
         return commentMapper.toDto(comment, likedByMe);
     }
 
@@ -83,13 +98,13 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found - commentId: {}", commentId);
-                return new EntityNotFoundException("Comment Not Found");
+                return new CommentNotFoundException(commentId);
             });
 
         if (!comment.getUser().getId().equals(userId)) {
             log.debug("Delete Permission Denied - Attempted UserId: {}, Author UserId: {}",
                 userId, comment.getUser().getId());
-            throw new SecurityException("Delete Permission Denied");
+            throw new CommentPermissionDeniedException(commentId, userId);
         }
 
         comment.delete();
@@ -100,7 +115,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found - commentId: {}", commentId);
-                return new EntityNotFoundException("Comment Not Found");
+                return new CommentNotFoundException(commentId);
             });
 
         commentRepository.delete(comment);
@@ -110,7 +125,7 @@ public class CommentServiceImpl implements CommentService {
     public CursorPageResponseCommentDto findAll(UUID userId,
         CursorPageRequestCommentDto cursorPageRequestCommentDto) {
 
-        Slice<Comment> slices = commentCustomRepository.findAll(
+        Slice<Comment> slices = commentRepository.findAll(
             cursorPageRequestCommentDto.articleId(),
             cursorPageRequestCommentDto.orderBy(),
             cursorPageRequestCommentDto.direction(),
@@ -118,12 +133,19 @@ public class CommentServiceImpl implements CommentService {
             cursorPageRequestCommentDto.after(),
             cursorPageRequestCommentDto.limit());
 
-        List<CommentDto> commentDtos = new ArrayList<>();
-        slices.getContent().forEach(comment -> {
-            boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(),
-                userId);
-            commentDtos.add(commentMapper.toDto(comment, likedByMe));
-        });
+        List<UUID> commentIds = slices.getContent().stream()
+            .map(Comment::getId)
+            .collect(Collectors.toList());
+
+        Set<UUID> likedCommentIds = commentLikeRepository.findLikedCommentIdsByUserIdAndCommentIds(
+            userId, commentIds);
+
+        List<CommentDto> commentDtos = slices.getContent().stream()
+            .map(comment -> {
+                boolean likedByMe = likedCommentIds.contains(comment.getId());
+                return commentMapper.toDto(comment, likedByMe);
+            })
+            .toList();
 
         Long totalElements = commentRepository.countByArticleId(
             cursorPageRequestCommentDto.articleId());

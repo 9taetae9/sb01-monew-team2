@@ -3,17 +3,38 @@ package com.codeit.team2.monew.module.domain.useractivity.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeit.team2.monew.module.TestEntityFactory;
+import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
+import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
+import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
+import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import com.codeit.team2.monew.module.domain.interest.entity.InterestKeyword;
+import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.useractivity.document.ArticleViewItem;
+import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
+import com.codeit.team2.monew.module.domain.useractivity.document.CommentLikeItem;
+import com.codeit.team2.monew.module.domain.useractivity.document.SubscriptionItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.UserActivity;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
 import com.codeit.team2.monew.module.domain.useractivity.repository.MongoUserActivityRepository;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,6 +51,9 @@ class MongoUserActivityServiceTest {
 
     @Mock
     private MongoUserActivityRepository userActivityRepository;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @Spy
     private UserActivityMapper userActivitiesMapper = Mappers.getMapper(
@@ -113,4 +137,653 @@ class MongoUserActivityServiceTest {
         assertThat(saved.getArticleViews()).isEmpty();
     }
 
+    @Test
+    void CommentItem_추가_성공() {
+        // given
+        UUID userId = UUID.randomUUID();
+        String email = "email";
+        String userNickname = "nickname";
+        Instant createdAt = Instant.now();
+
+        UUID commentId = UUID.randomUUID();
+        UUID articleId = UUID.randomUUID();
+        String articleTitle = "title";
+        String content = "content";
+        Long likeCount = 0L;
+
+        User user = mock(User.class);
+        Comment comment = mock(Comment.class);
+        Article article = mock(Article.class);
+        CommentItem commentItem = mock(CommentItem.class);
+        UserActivity userActivity = new UserActivity(
+            userId,
+            email,
+            userNickname,
+            createdAt,
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>()
+        );
+
+        // comments의 개수를 미리 10개로 채워 놓는다.
+        for (int i = 0; i < 10; i++) {
+            userActivity.addCommentItem(commentItem);
+        }
+
+        // comment
+        when(comment.getId()).thenReturn(commentId);
+        when(comment.getContent()).thenReturn(content);
+        when(comment.getLikeCount()).thenReturn(likeCount);
+        when(comment.getCreatedAt()).thenReturn(createdAt);
+
+        // article
+        when(article.getId()).thenReturn(articleId);
+        when(article.getTitle()).thenReturn(articleTitle);
+
+        // user
+        when(user.getId()).thenReturn(userId);
+        when(user.getNickname()).thenReturn(userNickname);
+
+        when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+        // when
+        userActivityService.createCommentItem(comment, article, user);
+
+        // then
+        ArgumentCaptor<UserActivity> userActivityArgumentCaptor = ArgumentCaptor.forClass(
+            UserActivity.class);
+        verify(userActivityRepository).save(userActivityArgumentCaptor.capture());
+
+        UserActivity userActivitySaved = userActivityArgumentCaptor.getValue();
+        assertEquals(userId, userActivitySaved.getId());
+        assertEquals(email, userActivitySaved.getEmail());
+        assertEquals(userNickname, userActivitySaved.getNickname());
+        assertEquals(createdAt, userActivitySaved.getCreatedAt());
+        assertEquals(10, userActivitySaved.getComments().size());
+    }
+
+    @Nested
+    class createSubscriptionItemTest {
+
+        @Test
+        void SubscriptionItem_추가_성공() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID subscriptionId = UUID.randomUUID();
+            UUID interestId = UUID.randomUUID();
+            String interestName = "AI";
+            List<String> keywords = List.of("chatgpt", "llm");
+            Long subscriberCount = 100L;
+            Instant createdAt = Instant.now();
+
+            // mocks
+            UserActivity userActivity = new UserActivity(
+                userId,
+                "email@test.com",
+                "nickname",
+                createdAt,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            Subscription subscription = mock(Subscription.class);
+            Interest interest = mock(Interest.class);
+            InterestKeyword keyword1 = mock(InterestKeyword.class);
+            InterestKeyword keyword2 = mock(InterestKeyword.class);
+            Keyword k1 = mock(Keyword.class);
+            Keyword k2 = mock(Keyword.class);
+
+            when(subscription.getId()).thenReturn(subscriptionId);
+            when(subscription.getCreatedAt()).thenReturn(createdAt);
+
+            when(interest.getId()).thenReturn(interestId);
+            when(interest.getName()).thenReturn(interestName);
+            when(interest.getSubscriberCount()).thenReturn(subscriberCount);
+            when(interest.getKeywords()).thenReturn(Set.of(keyword1, keyword2));
+
+            when(keyword1.getKeyword()).thenReturn(k1);
+            when(keyword2.getKeyword()).thenReturn(k2);
+            when(k1.getName()).thenReturn(keywords.get(0));
+            when(k2.getName()).thenReturn(keywords.get(1));
+
+            for (int i = 0; i < 10; i++) {
+                userActivity.addSubscriptionItem(mock(SubscriptionItem.class));
+            }
+
+            when(userActivityRepository.findById(userId)).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.createSubscriptionItem(subscription, interest, userId);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+            assertEquals(11, saved.getSubscriptions().size());
+
+            SubscriptionItem savedItem = saved.getSubscriptions().get(0);
+            assertEquals(subscriptionId, savedItem.getId());
+            assertEquals(interestId, savedItem.getInterestId());
+            assertEquals(interestName, savedItem.getInterestName());
+            assertEquals(subscriberCount, savedItem.getInterestSubscriberCount());
+            assertEquals(createdAt, savedItem.getCreatedAt());
+        }
+    }
+
+    @Nested
+    class createCommentLikeItemTest {
+
+        @Test
+        void CommentLikeItem_추가_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Article article = TestEntityFactory.createArticle("title1");
+            Comment comment = TestEntityFactory.createComment(article, user, "comment1");
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            CommentItem commentItem = new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+
+            CommentItem mockCommentItem = mock(CommentItem.class);
+            when(mockCommentItem.getId()).thenReturn(UUID.randomUUID());
+
+            for (int i = 0; i < 4; i++) {
+                userActivity.addCommentItem(mockCommentItem);
+            }
+            userActivity.addCommentItem(commentItem);
+            for (int i = 0; i < 5; i++) {
+                userActivity.addCommentItem(mockCommentItem);
+            }
+
+            CommentLike commentLike = CommentLike.create(comment, user);
+            comment.incrementLikeCount();
+
+            for (int i = 0; i < 10; i++) {
+                userActivity.addCommentLikeItem(mock(CommentLikeItem.class));
+            }
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.createCommentLikeItem(commentLike);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+            assertEquals(10, saved.getCommentLikes().size());
+
+            userActivity.getComments().stream()
+                .filter(savedCommentItem -> savedCommentItem.getId().equals(comment.getId()))
+                .findAny()
+                .ifPresent(
+                    findedCommentItem -> assertEquals(1, findedCommentItem.getLikeCount()));
+        }
+    }
+
+    @Nested
+    class createArticleViewItemTest {
+
+        @Test
+        void ArticleViewItem_추가_성공() {
+            // given
+            // article
+            Article article = mock(Article.class);
+            UUID articleId = UUID.randomUUID();
+            String source = "NAVER";
+            String sourceUrl = "http://example.com";
+            String title = "title";
+            Instant publishedDate = Instant.now();
+            String summary = "summary";
+            Long viewCount = 0L;
+
+            when(article.getId()).thenReturn(articleId);
+            when(article.getSource()).thenReturn(source);
+            when(article.getSourceUrl()).thenReturn(sourceUrl);
+            when(article.getTitle()).thenReturn(title);
+            when(article.getPublishedDate()).thenReturn(publishedDate);
+            when(article.getSummary()).thenReturn(summary);
+            when(article.getViewCount()).thenReturn(viewCount);
+            when(commentRepository.countByArticle(any())).thenReturn(10L);
+
+            // articleView
+            ArticleView articleView = mock(ArticleView.class);
+            UUID articleViewId = UUID.randomUUID();
+            Instant createdAt = Instant.now();
+
+            when(articleView.getArticle()).thenReturn(article);
+            when(articleView.getId()).thenReturn(articleViewId);
+            when(articleView.getCreatedAt()).thenReturn(createdAt);
+
+            // user
+            User user = mock(User.class);
+            UUID userId = UUID.randomUUID();
+
+            when(user.getId()).thenReturn(userId);
+
+            // user activity
+            UserActivity userActivity = new UserActivity(
+                userId,
+                "email@test.com",
+                "nickname",
+                createdAt,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            for (int i = 0; i < 10; i++) {
+                userActivity.addArticleViewItem(mock(ArticleViewItem.class));
+            }
+
+            when(userActivityRepository.findById(userId)).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.createArticleViewItem(articleView, user);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+            assertEquals(10, saved.getArticleViews().size());
+
+            ArticleViewItem savedItem = saved.getArticleViews().get(0);
+            assertEquals(articleViewId, savedItem.getId());
+            assertEquals(userId, savedItem.getViewedBy());
+            assertEquals(createdAt, savedItem.getCreatedAt());
+            assertEquals(articleId, savedItem.getArticleId());
+            assertEquals(source, savedItem.getSource());
+            assertEquals(sourceUrl, savedItem.getSourceUrl());
+            assertEquals(title, savedItem.getArticleTitle());
+            assertEquals(publishedDate, savedItem.getArticlePublishedDate());
+            assertEquals(summary, savedItem.getArticleSummary());
+            assertEquals(10L, savedItem.getArticleCommentCount());
+            assertEquals(viewCount, savedItem.getArticleViewCount());
+        }
+    }
+
+    @Nested
+    class updateUserNicknameInActivityTest {
+
+        @Test
+        void 사용자_닉네임_수정_시_UserActivity_수정_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            Article article = TestEntityFactory.createArticle("article1");
+            Comment comment = TestEntityFactory.createComment(article, user, "comment1");
+            CommentLike commentLike = TestEntityFactory.createCommentLike(comment, user);
+
+            CommentItem commentItem = new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentItem(commentItem);
+
+            CommentLikeItem commentLikeItem = new CommentLikeItem(
+                commentLike.getId(),
+                commentLike.getCreatedAt(),
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentLikeItem(commentLikeItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            String newNickname = "nickname2";
+            user.updateNickname(newNickname);
+            userActivityService.updateUserNicknameInActivity(user);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+            assertEquals(newNickname, saved.getNickname());
+
+            saved.getComments().stream()
+                .filter(savedCommentItem -> savedCommentItem.getUserId().equals(user.getId()))
+                .forEach(savedCommentItem -> assertEquals(newNickname,
+                    savedCommentItem.getUserNickname()));
+
+            saved.getCommentLikes().stream()
+                .filter(savedCommentLikeItem -> savedCommentLikeItem.getCommentUserId()
+                    .equals(user.getId()))
+                .forEach(
+                    savedCommentLikeItem -> assertEquals(newNickname,
+                        savedCommentLikeItem.getCommentUserNickname()));
+        }
+    }
+
+    @Nested
+    class updateSubscriptionItemInActivityTest {
+
+        @Test
+        void 관심사_수정_시_SubscriptionItem_수정_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Interest interest = TestEntityFactory.createInterest("AI");
+            Subscription subscription = TestEntityFactory.createSubscription(user, interest);
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            SubscriptionItem subscriptionItem = new SubscriptionItem(
+                subscription.getId(),
+                interest.getId(),
+                interest.getName(),
+                List.of("GPT", "deepsick"),
+                interest.getSubscriberCount(),
+                subscription.getCreatedAt()
+            );
+            userActivity.addSubscriptionItem(subscriptionItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            List<String> newKeywords = List.of("claude", "grock", "gemminai");
+            userActivityService.updateSubscriptionItemInActivity(
+                interest, newKeywords, user.getId());
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            saved.getSubscriptions().get(0).getInterestKeywords()
+                .forEach(interestKeywords -> assertTrue(newKeywords.contains(interestKeywords)));
+        }
+    }
+
+    @Nested
+    class updateCommentContentInActivityTest {
+
+        @Test
+        void 댓글_내용_수정_시_UserActivity_수정_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Article article = TestEntityFactory.createArticle("article1");
+            Comment comment = TestEntityFactory.createComment(article, user, "comment1");
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            CommentLike commentLike = TestEntityFactory.createCommentLike(comment, user);
+
+            CommentItem commentItem = new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentItem(commentItem);
+
+            CommentLikeItem commentLikeItem = new CommentLikeItem(
+                commentLike.getId(),
+                commentLike.getCreatedAt(),
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentLikeItem(commentLikeItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            String newCommentContent = "newContent";
+            comment.update(newCommentContent);
+            userActivityService.updateCommentContentInActivity(comment, user.getId());
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            saved.getComments().stream()
+                .filter(savedCommentItem -> savedCommentItem.getId().equals(comment.getId()))
+                .forEach(savedCommentItem -> assertEquals(newCommentContent,
+                    savedCommentItem.getContent()));
+
+            saved.getCommentLikes().stream()
+                .filter(savedCommentLikeItem -> savedCommentLikeItem.getCommentId()
+                    .equals(comment.getId()))
+                .forEach(
+                    savedCommentLikeItem -> assertEquals(newCommentContent,
+                        savedCommentLikeItem.getCommentContent()));
+        }
+    }
+
+    @Nested
+    class deleteSubscriptionItem {
+
+        @Test
+        void 구독_취소_시_SubscriptionItem_제거_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Interest interest = TestEntityFactory.createInterest("AI");
+            Subscription subscription = TestEntityFactory.createSubscription(user, interest);
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            SubscriptionItem subscriptionItem = new SubscriptionItem(
+                subscription.getId(),
+                interest.getId(),
+                interest.getName(),
+                List.of("GPT", "deepsick"),
+                interest.getSubscriberCount(),
+                subscription.getCreatedAt()
+            );
+            userActivity.addSubscriptionItem(subscriptionItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.deleteSubscriptionItem(subscription, user.getId());
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            assertEquals(0, saved.getSubscriptions().size());
+        }
+
+        @Test
+        void 관심사_삭제_시_SubscriptionItem_제거_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Interest interest = TestEntityFactory.createInterest("AI");
+            Subscription subscription = TestEntityFactory.createSubscription(user, interest);
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            SubscriptionItem subscriptionItem = new SubscriptionItem(
+                subscription.getId(),
+                interest.getId(),
+                interest.getName(),
+                List.of("GPT", "deepsick"),
+                interest.getSubscriberCount(),
+                subscription.getCreatedAt()
+            );
+            userActivity.addSubscriptionItem(subscriptionItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            userActivityService.deleteSubscriptionItem(interest, user.getId());
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            assertEquals(0, saved.getSubscriptions().size());
+        }
+    }
+
+    @Nested
+    class deleteCommentLikeItemTest {
+
+        @Test
+        void 댓글_좋아요_취소_시_CommentLikeItem_제거_성공() {
+            // given
+            User user = TestUserFactory.createWithName("user1");
+            Article article = TestEntityFactory.createArticle("article1");
+            Comment comment = TestEntityFactory.createComment(article, user, "comment1");
+
+            UserActivity userActivity = new UserActivity(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getCreatedAt(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+            );
+
+            CommentLike commentLike = TestEntityFactory.createCommentLike(comment, user);
+            comment.incrementLikeCount();
+
+            CommentItem commentItem = new CommentItem(
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentItem(commentItem);
+
+            CommentLikeItem commentLikeItem = new CommentLikeItem(
+                commentLike.getId(),
+                commentLike.getCreatedAt(),
+                comment.getId(),
+                article.getId(),
+                article.getTitle(),
+                user.getId(),
+                user.getNickname(),
+                comment.getContent(),
+                comment.getLikeCount(),
+                comment.getCreatedAt()
+            );
+            userActivity.addCommentLikeItem(commentLikeItem);
+
+            when(userActivityRepository.findById(any())).thenReturn(Optional.of(userActivity));
+
+            // when
+            comment.decrementLikeCount();
+            userActivityService.deleteCommentLikeItem(commentLike);
+
+            // then
+            ArgumentCaptor<UserActivity> captor = ArgumentCaptor.forClass(UserActivity.class);
+            verify(userActivityRepository).save(captor.capture());
+
+            UserActivity saved = captor.getValue();
+
+            saved.getComments().stream()
+                .filter(savedCommentItem -> savedCommentItem.getId().equals(comment.getId()))
+                .forEach(savedCommentItem -> assertEquals(0, savedCommentItem.getLikeCount()));
+
+            assertEquals(0, saved.getCommentLikes().size());
+        }
+    }
 }

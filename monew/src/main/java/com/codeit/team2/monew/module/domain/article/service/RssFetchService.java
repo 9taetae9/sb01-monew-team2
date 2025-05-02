@@ -1,18 +1,12 @@
 package com.codeit.team2.monew.module.domain.article.service;
 
 
-import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.RssNewsClient;
-import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
-import com.codeit.team2.monew.module.domain.article.repository.DummyArticleRepository;
-import jakarta.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,8 +19,7 @@ public class RssFetchService {
 
     private final List<RssNewsClient> clients;
     private final JdbcTemplate jdbcTemplate;
-    private final DummyArticleRepository dummyArticleRepository;
-    private final ArticleRepository articleRepository;
+    private final DummyArticleService dummyArticleService;
 
     public void fetchAllRss() {
 
@@ -58,18 +51,8 @@ public class RssFetchService {
         } catch (Exception e) {
             log.warn("ERROR: reason={}", e.getMessage());
         } finally {
-            removeDuplicateArticles();
+            dummyArticleService.removeDuplicateArticles();
         }
     }
 
-    @Transactional
-    protected void removeDuplicateArticles() {
-        List<DummyArticle> dummyArticles = dummyArticleRepository.findAll();
-        Set<String> urls = dummyArticles.stream().map(DummyArticle::getSourceUrl)
-            .collect(Collectors.toSet());
-        List<String> existingArticles = articleRepository.findAllBySourceUrlIn(urls).stream()
-            .map(Article::getSourceUrl).toList();
-
-        dummyArticleRepository.deleteAllBySourceUrlIn(existingArticles);
-    }
 }

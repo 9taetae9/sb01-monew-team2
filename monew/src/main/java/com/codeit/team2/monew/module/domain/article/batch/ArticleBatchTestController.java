@@ -37,6 +37,7 @@ public class ArticleBatchTestController {
     private final ChosunRssNewsClient chosunRssNewsClient;
     private final YonhapRssNewsClient yonhapRssNewsClient;
     private final RssFetchService rssFetchService;
+    private final ArticleBatchScheduler scheduler;
 
     public ArticleBatchTestController(JobLauncher jobLauncher,
         @Qualifier("articleBatchJob") Job articleBatchJob,
@@ -44,7 +45,8 @@ public class ArticleBatchTestController {
         HankyungRssNewsClient hankyungNewsClient,
         ChosunRssNewsClient chosunRssNewsClient,
         YonhapRssNewsClient yonhapRssNewsClient,
-        RssFetchService rssFetchService) {
+        RssFetchService rssFetchService,
+        ArticleBatchScheduler scheduler) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
         this.rssArticleBatchJob = rssArticleBatchJob;
@@ -52,6 +54,18 @@ public class ArticleBatchTestController {
         this.chosunRssNewsClient = chosunRssNewsClient;
         this.yonhapRssNewsClient = yonhapRssNewsClient;
         this.rssFetchService = rssFetchService;
+        this.scheduler = scheduler;
+    }
+
+    @PostMapping("/test-all")
+    public void testALL() {
+        scheduler.runArticleBatch();
+    }
+
+    @PostMapping("/test-rss-all")
+    public void testAllRss() {
+        rssFetchService.fetchAllRss();
+        scheduler.runRssBatch();
     }
 
     @PostMapping("/run")

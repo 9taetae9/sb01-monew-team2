@@ -3,14 +3,21 @@ package com.codeit.team2.monew.module.domain.article.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.codeit.team2.monew.module.TestEntityFactory;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
+import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticleDto;
+import com.codeit.team2.monew.module.domain.article.dto.request.ArticleOrderBy;
+import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageRequestArticleDto;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapperImpl;
-import com.codeit.team2.monew.module.domain.article.repository.ArticleCustomRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
@@ -18,6 +25,7 @@ import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +34,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,19 +49,20 @@ public class ArticleServiceTest {
     private ArticleRepository articleRepository;
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private ArticleViewRepository articleViewRepository;
     private ArticleMapper articleMapper;
     private ArticleService articleService;
-    private ArticleCustomRepository articleCustomRepository;
+    @Mock
     private CommentRepository commentRepository;
+    @Spy
+    private ApplicationEventPublisher publisher;
 
     @BeforeEach
     void setup() {
         articleMapper = new ArticleMapperImpl();
         articleService = new ArticleServiceImpl(articleRepository, articleViewRepository,
-            userRepository, articleMapper, articleCustomRepository, commentRepository);
+            userRepository, articleMapper, commentRepository, publisher);
     }
 
     @Test
@@ -158,4 +172,47 @@ public class ArticleServiceTest {
         assertThatThrownBy(() -> articleService.softDelete(randomId))
             .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void test_findAll() {
+        // given
+        UUID userId = UUID.randomUUID();
+        CursorPageRequestArticleDto requestDto = new CursorPageRequestArticleDto(
+            null, null, null, null, null, ArticleOrderBy.publishDate, Direction.ASC, null, null, 10
+        );
+
+        List<Article> articles = List.of(
+            TestEntityFactory.createArticle("title1"),
+            TestEntityFactory.createArticle("title2")
+        );
+
+        Slice<Article> slices = new SliceImpl<>(articles);
+
+        when(articleRepository.findWithCursor(requestDto)).thenReturn(slices);
+
+        List<Object[]> commentCounts = List.of(
+            new Object[]{articles.get(0).getId(), 5L},
+            new Object[]{articles.get(1).getId(), 3L}
+        );
+
+        when(commentRepository.countByArticleIds(anyList())).thenReturn(commentCounts);
+
+        List<UUID> viewedArticleIds = List.of(articles.get(0).getId(), articles.get(1).getId());
+        when(articleViewRepository.findViewedArticleIds(eq(userId), anyList())).thenReturn(
+            viewedArticleIds);
+
+        // when
+        CursorPageResponseArticleDto result = articleService.findAll(userId, requestDto);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.content().size()).isEqualTo(2);
+        assertThat(result.content().get(0).commentCount()).isEqualTo(5L);
+        assertThat(result.content().get(0).viewedByMe()).isTrue();
+
+        verify(articleRepository).findWithCursor(any(CursorPageRequestArticleDto.class));
+        verify(commentRepository).countByArticleIds(anyList());
+        verify(articleViewRepository).findViewedArticleIds(eq(userId), anyList());
+    }
+
 }

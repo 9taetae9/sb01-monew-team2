@@ -1,8 +1,8 @@
 package com.codeit.team2.monew.module.domain.article.backup.controller;
 
 
-import com.codeit.team2.monew.module.domain.article.backup.dto.ArticleRestoreResultDto;
 import com.codeit.team2.monew.module.domain.article.backup.controller.docs.ArticleRestoreControllerDocs;
+import com.codeit.team2.monew.module.domain.article.backup.dto.ArticleRestoreResultDto;
 import com.codeit.team2.monew.module.domain.article.backup.service.ArticleRestoreService;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,8 +28,10 @@ public class ArticleRestoreController implements ArticleRestoreControllerDocs {
         @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
-        log.info("Restoring articles from date range: {} to {}", from, to);
+        log.info("Start - ArticleRestoreController/restoreArticles: Date Range {} to {}", from, to);
         List<ArticleRestoreResultDto> results = articleRestoreService.restoreArticles(from, to);
+
+        log.info("Complete - ArticleRestoreController/restoreArticles");
 
         return ResponseEntity.ok(results);
     }

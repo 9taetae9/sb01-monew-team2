@@ -12,12 +12,13 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestReposito
 import com.codeit.team2.monew.module.domain.subscription.TestSubscriptionFactory;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.subscription.exception.DuplicateSubscriptionException;
+import com.codeit.team2.monew.module.domain.subscription.exception.SubscriptionNotFoundException;
 import com.codeit.team2.monew.module.domain.subscription.mapper.SubscriptionMapper;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
-import com.sun.jdi.request.DuplicateRequestException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceImplTest {
@@ -45,6 +47,9 @@ class SubscriptionServiceImplTest {
     @Spy
     private SubscriptionMapper subscriptionMapper = Mappers.getMapper(SubscriptionMapper.class);
 
+    @Spy
+    private ApplicationEventPublisher publisher;
+
     @InjectMocks
     private SubscriptionServiceImpl subscriptionService;
 
@@ -52,7 +57,7 @@ class SubscriptionServiceImplTest {
     @Test
     void subscription_success() {
         // given
-        User mockUser =TestUserFactory.createWithName("name");
+        User mockUser = TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
@@ -64,11 +69,10 @@ class SubscriptionServiceImplTest {
             .thenReturn(Optional.of(mockInterest));
         when(subscriptionRepository.existsByInterestAndUser(mockInterest, mockUser))
             .thenReturn(false);
-        when(interestRepository.saveAndFlush(any(Interest.class)))
-            .thenReturn(mockInterest);
 
         // when
-        SubscriptionDto result = subscriptionService.subscription(mockInterest.getId(), mockUser.getId());
+        SubscriptionDto result = subscriptionService.subscription(mockInterest.getId(),
+            mockUser.getId());
 
         // then
         assertThat(result.interestKeywords()).hasSize(2).contains("당근", "시금치");
@@ -80,7 +84,7 @@ class SubscriptionServiceImplTest {
     @Test
     void subscription_failure() {
         // given
-        User mockUser =TestUserFactory.createWithName("name");
+        User mockUser = TestUserFactory.createWithName("name");
 
         String name = "채소";
         List<String> inputKeywords = List.of("당근", "시금치");
@@ -96,8 +100,9 @@ class SubscriptionServiceImplTest {
             .thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> subscriptionService.subscription(mockInterest.getId(), mockSubscription.getId()))
-            .isInstanceOf(DuplicateRequestException.class);
+        assertThatThrownBy(
+            () -> subscriptionService.subscription(mockInterest.getId(), mockSubscription.getId()))
+            .isInstanceOf(DuplicateSubscriptionException.class);
     }
 
     @DisplayName("유저가 관심사 구독을 취소한다.")
@@ -120,7 +125,7 @@ class SubscriptionServiceImplTest {
         subscriptionService.cancelSubscription(interest.getId(), user.getId());
 
         // then 삭제 조회가 호출 되었는지
-        verify(subscriptionRepository).delete(any(Subscription.class));
+        verify(subscriptionRepository).deleteByInterestAndUser(interest, user);
     }
 
     @DisplayName("유저가 관심사 구독을 하지 않은 상태에서 취소하면 실패한다.")
@@ -140,8 +145,9 @@ class SubscriptionServiceImplTest {
             .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> subscriptionService.cancelSubscription(interest.getId(), user.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(
+            () -> subscriptionService.cancelSubscription(interest.getId(), user.getId()))
+            .isInstanceOf(SubscriptionNotFoundException.class);
     }
 
 }

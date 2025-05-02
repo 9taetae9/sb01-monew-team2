@@ -39,7 +39,7 @@ news:
     client-secret: ${NAVER_CLIENT_SECRET}
 
 aws:
-#  profile-name: monew-acc
+  #  profile-name: monew-acc
   region: ${AWS_REGION:ap-northeast-2}
   credentials:
     accessKey: ${AWS_ACCESS_KEY}
@@ -50,6 +50,7 @@ aws:
 
 app:
   db-type: postgresql  # postgresql || mongodb
+  version: ${version}
 
 server:
   tomcat:

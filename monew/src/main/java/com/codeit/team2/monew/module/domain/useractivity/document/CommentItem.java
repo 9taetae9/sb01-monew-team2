@@ -22,5 +22,17 @@ public class CommentItem {
     private String content;
     private Long likeCount;
     private Instant createdAt;
+
+    public void updateLikeCount(Long likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public void updateUserNickname(String userNickname) {
+        this.userNickname = userNickname;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
 

@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ArticleViewRepository extends JpaRepository<ArticleView, UUID> {
 
@@ -17,4 +19,9 @@ public interface ArticleViewRepository extends JpaRepository<ArticleView, UUID> 
     List<ArticleView> findTop10ByUserOrderByViewedAtDesc(User user);
 
     boolean existsByUserIdAndArticleId(UUID userId, UUID articleId);
+
+    @Query("SELECT av.article.id FROM ArticleView av WHERE av.user.id = :userId AND av.article.id IN :articleIds")
+    List<UUID> findViewedArticleIds(@Param("userId") UUID userId,
+        @Param("articleIds") List<UUID> articleIds);
+
 }

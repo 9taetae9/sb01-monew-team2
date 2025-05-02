@@ -47,11 +47,12 @@ public class KeywordCacheTest {
 
         given(keywordRepository.findAll())
             .willReturn(List.of(k1, k2));
-        given(interestKeywordRepository.findAllByKeyword(k1))
-            .willReturn(List.of(ik1, ik3));
-        given(interestKeywordRepository.findAllByKeyword(k2))
-            .willReturn(List.of(ik2));
-
+//        given(interestKeywordRepository.findAllByKeyword(k1))
+//            .willReturn(List.of(ik1, ik3));
+//        given(interestKeywordRepository.findAllByKeyword(k2))
+//            .willReturn(List.of(ik2));
+        given(interestKeywordRepository.findAllWithInterests())
+            .willReturn(List.of(ik1, ik2, ik3));
         // when
         keywordCache.init();
         Map<String, List<Interest>> cache = keywordCache.getCache();

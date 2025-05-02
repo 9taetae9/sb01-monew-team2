@@ -15,8 +15,8 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResp
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
-import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -35,6 +35,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -57,11 +58,16 @@ class InterestServiceImplTest {
 
     @Mock
     private SubscriptionRepository subscriptionRepository;
+
+
     @Mock
-    private InterestCustomRepository interestCustomRepository;
+    private InterestNameSimilarityService interestNameSimilarityService;
 
     @Spy
     private InterestMapper interestMapper = Mappers.getMapper(InterestMapper.class);
+
+    @Spy
+    private ApplicationEventPublisher publisher;
 
     @InjectMocks
     private InterestServiceImpl interestService;
@@ -81,7 +87,10 @@ class InterestServiceImplTest {
             .thenReturn(Optional.of(user));
         when(keywordRepository.findByName(any(String.class)))
             .thenReturn(Optional.empty());
-        when(interestRepository.existsByNameSimilarTo(any(String.class)))
+        when(interestRepository.findAllNames())
+            .thenReturn(List.of("당근"));
+        when(interestNameSimilarityService.isSimilar(any(String.class), any(String.class),
+            any(Double.class)))
             .thenReturn(false);
         when(keywordRepository.save(any(Keyword.class)))
             .thenAnswer(invocation -> {
@@ -107,18 +116,21 @@ class InterestServiceImplTest {
         // given
         User user = TestUserFactory.createWithName("name");
 
-        String name = "채소";
+        String name = "채소식단";
         List<String> inputKeywords = List.of("당근", "시금치");
         InterestRegisterRequest request = new InterestRegisterRequest(name, inputKeywords);
 
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(user));
-        when(interestRepository.existsByNameSimilarTo(any(String.class)))
+        when(interestRepository.findAllNames())
+            .thenReturn(List.of("채소식단용"));
+        when(interestNameSimilarityService.isSimilar(any(String.class), any(String.class),
+            any(Double.class)))
             .thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> interestService.create(request, user.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(SimilarInterestAlreadyExistsException.class);
     }
 
     @DisplayName("관심사 수정에서 키워드 추가/삭제가 정상적으로 수행된다.")
@@ -194,8 +206,6 @@ class InterestServiceImplTest {
         // given
         User user = TestUserFactory.createWithName("name");
         UUID userId = user.getId();
-        when(userRepository.existsById(userId)).thenReturn(true);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         CursorPageRequestInterestDto cursorPageRequestInterestDto = new CursorPageRequestInterestDto(
             null,
@@ -203,15 +213,13 @@ class InterestServiceImplTest {
 
         Interest interest = TestInterestFactory.create("interest1", List.of("k1", "k2"));
         Slice<Interest> slices = new SliceImpl<>(List.of(interest), PageRequest.of(0, 3), false);
-        when(interestCustomRepository.findAll(cursorPageRequestInterestDto.keyword(),
+        when(interestRepository.findAll(cursorPageRequestInterestDto.keyword(),
             cursorPageRequestInterestDto.orderBy(), cursorPageRequestInterestDto.direction(),
             cursorPageRequestInterestDto.cursor(), cursorPageRequestInterestDto.after(),
             cursorPageRequestInterestDto.limit())).thenReturn(slices);
 
-        when(interestCustomRepository.countFilteredTotalElements(any(), any(), any())).thenReturn(
+        when(interestRepository.countFilteredTotalElements(any(), any(), any())).thenReturn(
             1L);
-
-        when(subscriptionRepository.existsByInterestAndUser(interest, user)).thenReturn(false);
 
         //when
         CursorPageResponseInterestDto result = interestService.findAll(userId,
@@ -223,8 +231,7 @@ class InterestServiceImplTest {
         assertThat(result.hasNext()).isEqualTo(false);
         assertThat(result.nextCursor()).isNull();
         assertThat(result.nextAfter()).isNull();
-        verify(userRepository).existsById(userId);
-        verify(interestCustomRepository).findAll(cursorPageRequestInterestDto.keyword(),
+        verify(interestRepository).findAll(cursorPageRequestInterestDto.keyword(),
             cursorPageRequestInterestDto.orderBy(), cursorPageRequestInterestDto.direction(),
             cursorPageRequestInterestDto.cursor(), cursorPageRequestInterestDto.after(),
             cursorPageRequestInterestDto.limit());

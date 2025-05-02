@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort.Direction;
 public interface InterestCustomRepository {
 
     Slice<Interest> findAll(String keyword, InterestOrderBy orderBy, Direction direction,
-        Object cursor,
+        String cursor,
         Instant after, int limit);
 
     long countFilteredTotalElements(String keyword, InterestOrderBy orderBy, Direction direction);

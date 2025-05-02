@@ -3,7 +3,7 @@ spring:
     name: monew
   data:
     mongodb:
-      uri: mongodb://localhost:27017/monew
+      uri: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DB_PROD}?retryWrites=true&w=majority&appName=Cluster0
   jpa:
     hibernate:
       ddl-auto: none
@@ -35,5 +35,11 @@ logging:
     root: info
     org.hibernate.SQL: warn
     org.hibernate.orm.jdbc.bind: warn
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
 
 

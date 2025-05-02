@@ -5,18 +5,24 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 import java.util.List;
 import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+
+    @Autowired
+    private BuildProperties buildProperties;
+
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
             .info(new Info()
                 .title("MoNew API team2")
                 .description("팀2 MoNew 문서입니다.")
-                .version("v1.0.0"))
+                .version(buildProperties.getVersion()))
             .servers(List.of(new Server()
                 .url("http://localhost:8080")
                 .description("Local Server")));
@@ -36,7 +42,7 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi adminApiGroup() {
-        String[] pathsToMatch = {"/admin/**" ,"/api/batch/**", "/api/backup/**"};
+        String[] pathsToMatch = {"/admin/**", "/api/batch/**", "/api/backup/**"};
 
         return GroupedOpenApi.builder()
             .group("admin") // Swagger UI 탭 이름

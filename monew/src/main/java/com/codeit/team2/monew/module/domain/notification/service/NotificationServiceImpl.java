@@ -24,11 +24,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,26 +138,17 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public CursorPageResponseNotificationDto findAll(UUID userId, Instant cursor, Instant after,
         int limit) {
-        if (!userRepository.existsById(userId)) {
-            log.debug("[Notification finding] Failed: User not found - userId: {}", userId);
-            throw new RuntimeException("User Not Found");
-        }
         // 정렬 조건은 시간 순으로 고정
-        Pageable pageable = PageRequest.of(0, limit, Sort.by(Direction.ASC, "createdAt"));
-        Page<Notification> pages;
-        if (cursor != null) {
-            pages = notificationRepository.findPageWithCursor(userId, cursor, pageable);
-        } else {
-            pages = notificationRepository.findFirstPage(userId, pageable);
-        }
+        Slice<Notification> slices = notificationRepository.findWithCursor(userId, cursor,
+            after, limit);
         // dto로 변환
-        List<Notification> notifications = pages.getContent();
+        List<Notification> notifications = slices.getContent();
         List<NotificationDto> notificationDtos = notifications.stream()
             .map(notification -> notificationMapper.toDto(notification))
             .collect(Collectors.toList());
 
-        int size = pages.getSize();
-        boolean hasNext = pages.hasNext();
+        int size = slices.getSize();
+        boolean hasNext = slices.hasNext();
         Instant nextCursor = null;
         Instant nextAfter = null;
         if (hasNext) {

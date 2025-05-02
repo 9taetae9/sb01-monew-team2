@@ -35,7 +35,6 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
 
         // 커서 조건
         if (cursor != null) {
-            System.out.println("cursor: " + cursor);
             // 날짜 기준 정렬
             if (orderBy.equals(CommentOrderBy.createdAt)) {
                 // Object -> Instant
@@ -87,6 +86,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
 
         List<Comment> result = queryFactory
             .selectFrom(comment)
+            .leftJoin(comment.user).fetchJoin()
             .where(where)
             .orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]))
             .limit(limit + 1)

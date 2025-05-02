@@ -4,7 +4,6 @@ package com.codeit.team2.monew.module.domain.article.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 
@@ -37,6 +36,8 @@ public class RssFetchServiceTest {
     private ArticleRepository articleRepository;
     @Mock
     private List<RssNewsClient> clients;
+    @Mock
+    private DummyArticleService dummyArticleService;
     @InjectMocks
     private RssFetchService rssFetchService;
 
@@ -47,14 +48,10 @@ public class RssFetchServiceTest {
         // given
         DummyArticle dummyArticle = TestEntityFactory.dummyArticle("test");
         Article article = TestEntityFactory.createArticle("test");
-
+        ReflectionTestUtils.setField(rssFetchService, "clients", List.of(client));
         BDDMockito.given(client.fetchArticles())
             .willReturn(List.of(dummyArticle));
-        BDDMockito.given(dummyArticleRepository.findAll())
-            .willReturn(List.of(dummyArticle));
-        BDDMockito.given(articleRepository.findAllBySourceUrlIn(anySet()))
-            .willReturn(List.of(article));
-        ReflectionTestUtils.setField(rssFetchService, "clients", List.of(client));
+        BDDMockito.doNothing().when(dummyArticleService).removeDuplicateArticles();
 
         // when
         rssFetchService.fetchAllRss();
@@ -62,7 +59,7 @@ public class RssFetchServiceTest {
         // then
         BDDMockito.then(jdbcTemplate).should(times(1))
             .batchUpdate(anyString(), anyList(), anyInt(), any());
-        BDDMockito.then(dummyArticleRepository).should().deleteAllBySourceUrlIn(anyList());
+//        BDDMockito.then(dummyArticleRepository).should().deleteAllBySourceUrlIn(anyList());
 
     }
 }

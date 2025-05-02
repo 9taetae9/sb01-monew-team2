@@ -3,27 +3,25 @@ package com.codeit.team2.monew.module.domain.article.service;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleDto;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
 import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticleDto;
-import com.codeit.team2.monew.module.domain.article.dto.request.ArticleOrderBy;
 import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageRequestArticleDto;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.entity.ArticleView;
+import com.codeit.team2.monew.module.domain.article.event.ArticleViewCreateEvent;
 import com.codeit.team2.monew.module.domain.article.mapper.ArticleMapper;
-import com.codeit.team2.monew.module.domain.article.repository.ArticleCustomRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +35,8 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleViewRepository articleViewRepository;
     private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
-    private final ArticleCustomRepository articleCustomRepository;
     private final CommentRepository commentRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     @Override
@@ -58,6 +56,13 @@ public class ArticleServiceImpl implements ArticleService {
             });
 
         // TODO : CommentRepository 완성시 관련 Comment 조회 로직
+
+        // article view 생성 이벤트 발생
+        publisher.publishEvent(new ArticleViewCreateEvent(
+            articleView,
+            user
+        ));
+
         return articleMapper.toResponseDto(article, articleView, userId, 0);
     }
 
@@ -90,62 +95,30 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public CursorPageResponseArticleDto findAll(UUID userId,
         CursorPageRequestArticleDto cursorPageRequestArticleDto) {
-        Slice<Article> slices;
-        Pageable pageable = PageRequest.of(0, cursorPageRequestArticleDto.limit(), Sort.unsorted());
-        if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.publishDate)) {
-            slices = articleCustomRepository.findByPublishDate(
-                cursorPageRequestArticleDto.keyword(),
-                cursorPageRequestArticleDto.interestId(),
-                cursorPageRequestArticleDto.sourceIn(),
-                cursorPageRequestArticleDto.getPublishDateFromInstant(),
-                cursorPageRequestArticleDto.getPublishDateToInstant(),
-                cursorPageRequestArticleDto.direction(),
-                cursorPageRequestArticleDto.cursor(),
-                cursorPageRequestArticleDto.after(),
-                pageable);
-        } else if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.viewCount)) {
-            slices = articleCustomRepository.findByViewCount(cursorPageRequestArticleDto.keyword(),
-                cursorPageRequestArticleDto.interestId(),
-                cursorPageRequestArticleDto.sourceIn(),
-                cursorPageRequestArticleDto.getPublishDateFromInstant(),
-                cursorPageRequestArticleDto.getPublishDateToInstant(),
-                cursorPageRequestArticleDto.direction(),
-                cursorPageRequestArticleDto.cursor(),
-                cursorPageRequestArticleDto.after(),
-                pageable);
-        } else if (cursorPageRequestArticleDto.orderBy().equals(ArticleOrderBy.commentCount)) {
-            slices = articleCustomRepository.findByCommentCount(
-                cursorPageRequestArticleDto.keyword(),
-                cursorPageRequestArticleDto.interestId(),
-                cursorPageRequestArticleDto.sourceIn(),
-                cursorPageRequestArticleDto.getPublishDateFromInstant(),
-                cursorPageRequestArticleDto.getPublishDateToInstant(),
-                cursorPageRequestArticleDto.direction(),
-                cursorPageRequestArticleDto.cursor(),
-                cursorPageRequestArticleDto.after(),
-                pageable);
-        } else {
-            slices = null;
-        }
+        Slice<Article> slices = articleRepository.findWithCursor(cursorPageRequestArticleDto);
 
         List<Article> articles = slices.getContent();
-        List<ArticleDto> articleDtos = new ArrayList<>();
-        articles.stream().forEach(article -> {
-            Long commentCount = commentRepository.countByArticle(article);
-            boolean viewedByMe = articleViewRepository.existsByUserIdAndArticleId(userId,
-                article.getId());
-            articleDtos.add(new ArticleDto(article.getId(),
-                article.getSource(),
-                article.getSourceUrl(),
-                article.getTitle(),
-                article.getPublishedDate(),
-                article.getSummary(),
-                commentCount,
-                article.getViewCount(),
-                viewedByMe));
-        });
+        List<UUID> articleIds = articles.stream().map(article -> article.getId())
+            .collect(Collectors.toList());
+        // DTO 매핑을 위해 필요한 값 bulk로 가져오기
+        Map<UUID, Long> commentCountMap = commentRepository.countByArticleIds(articleIds).stream()
+            .collect(Collectors.toMap(
+                row -> (UUID) row[0],  // 첫 번째 컬럼: articleId
+                row -> (Long) row[1]   // 두 번째 컬럼: count
+            ));
+        List<UUID> viewedArticleIds = articleViewRepository.findViewedArticleIds(userId,
+            articleIds);
 
-        long totalElements = articleCustomRepository.countFilteredTotalElements(
+        // Article -> ArticleDto 매핑
+        List<ArticleDto> articleDtos = articles.stream()
+            .map(article -> {
+                Long commentCount = commentCountMap.getOrDefault(article.getId(), 0L);
+                boolean viewedByMe = viewedArticleIds.contains(article.getId());
+                return articleMapper.toDto(article, commentCount, viewedByMe);
+            })
+            .toList();
+
+        long totalElements = articleRepository.countFilteredTotalElements(
             cursorPageRequestArticleDto.keyword(), cursorPageRequestArticleDto.interestId(),
             cursorPageRequestArticleDto.sourceIn(),
             cursorPageRequestArticleDto.getPublishDateFromInstant(),

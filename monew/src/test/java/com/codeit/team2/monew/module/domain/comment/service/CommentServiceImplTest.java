@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
+import com.codeit.team2.monew.module.domain.article.exception.ArticleNotFoundException;
 import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentOrderBy;
@@ -16,11 +17,13 @@ import com.codeit.team2.monew.module.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageRequestCommentDto;
 import com.codeit.team2.monew.module.domain.comment.dto.CursorPageResponseCommentDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentPermissionDeniedException;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
-import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.time.Instant;
 import java.util.List;
@@ -32,7 +35,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -53,9 +58,10 @@ class CommentServiceImplTest {
     @Mock
     private CommentMapper commentMapper;
     @Mock
-    private CommentCustomRepository commentCustomRepository;
-    @Mock
     private CommentLikeRepository commentLikeRepository;
+
+    @Spy
+    private ApplicationEventPublisher publisher;
 
     @InjectMocks
     private CommentServiceImpl commentService;
@@ -113,7 +119,8 @@ class CommentServiceImplTest {
 
         //then
         assertThatThrownBy(() -> commentService.register(request))
-            .isInstanceOf(RuntimeException.class);
+            .isInstanceOf(UserNotFoundException.class)
+            .hasFieldOrPropertyWithValue("errorCode.httpStatus.value", 404);
     }
 
     @Test
@@ -129,7 +136,8 @@ class CommentServiceImplTest {
 
         //then
         assertThatThrownBy(() -> commentService.register(request))
-            .isInstanceOf(RuntimeException.class);
+            .isInstanceOf(ArticleNotFoundException.class)
+            .hasFieldOrPropertyWithValue("errorCode.httpStatus.value", 404);
     }
 
     @Test
@@ -178,8 +186,21 @@ class CommentServiceImplTest {
         when(user.getId()).thenReturn(userId);
 
         assertThatThrownBy(() -> commentService.edit(commentId, UUID.randomUUID(), request))
-            .isInstanceOf(RuntimeException.class);
+            .isInstanceOf(CommentPermissionDeniedException.class)
+            .hasFieldOrPropertyWithValue("errorCode.httpStatus.value", 403);
 
+    }
+
+    @Test
+    @DisplayName("댓글 수정 - 실패: 댓글 없음")
+    void edit_Not_Found() {
+        CommentUpdateRequest request = new CommentUpdateRequest("edited comment");
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> commentService.edit(commentId, userId, request))
+            .isInstanceOf(CommentNotFoundException.class)
+            .hasFieldOrPropertyWithValue("errorCode.httpStatus.value", 404);
     }
 
     @Test
@@ -209,8 +230,37 @@ class CommentServiceImplTest {
         //when
         //then
         assertThatThrownBy(() -> commentService.delete(commentId, UUID.randomUUID()))
-            .isInstanceOf(RuntimeException.class);
+            .isInstanceOf(CommentPermissionDeniedException.class)
+            .hasFieldOrPropertyWithValue("errorCode.httpStatus.value", 403);
     }
+
+    @Test
+    @DisplayName("댓글 물리 삭제 - 성공")
+    void hardDelete_success() {
+        //given
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+
+        //when
+        commentService.hardDelete(commentId);
+
+        //then
+        verify(commentRepository).findById(commentId);
+        verify(commentRepository).delete(comment);
+    }
+
+    @Test
+    @DisplayName("댓글 물리 삭제 - 실패: 댓글 없음")
+    void hardDelete_Comment_Not_Found() {
+        //given
+        when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> commentService.hardDelete(commentId))
+            .isInstanceOf(CommentNotFoundException.class)
+            .hasFieldOrPropertyWithValue("errorCode.httpStatus.value", 404);
+    }
+
 
     @Test
     @DisplayName("댓글 목록 조회 - 성공")
@@ -220,7 +270,7 @@ class CommentServiceImplTest {
             articleId, CommentOrderBy.createdAt, Direction.ASC, null, null, 10);
 
         Slice<Comment> slices = new SliceImpl<>(List.of(comment), PageRequest.of(0, 10), false);
-        when(commentCustomRepository.findAll(cursorPageRequestCommentDto.articleId(),
+        when(commentRepository.findAll(cursorPageRequestCommentDto.articleId(),
             cursorPageRequestCommentDto.orderBy(), cursorPageRequestCommentDto.direction(),
             cursorPageRequestCommentDto.cursor(), cursorPageRequestCommentDto.after(),
             cursorPageRequestCommentDto.limit())).thenReturn(slices);

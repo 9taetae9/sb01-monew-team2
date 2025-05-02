@@ -1,7 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.backup.controller;
 
 import java.time.LocalDate;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * ArticleBackup을 수동으로 실행하는 테스트 컨트롤러, 배포 환경에서 삭제 고려
@@ -41,8 +39,7 @@ public class ArticleBackupTestController {
 
         try {
             if (backupDate == null) {
-                backupDate = LocalDate.now().minusDays(1); // (dev)날짜가 제공되지 않으면 어제 날짜 사용
-//                backupDate = LocalDate.now();
+                backupDate = LocalDate.now().minusDays(1);
             }
 
             String backupDateStr = backupDate.toString();
@@ -52,13 +49,13 @@ public class ArticleBackupTestController {
                 .addLong("timestamp", System.currentTimeMillis())
                 .toJobParameters();
 
-            log.info("Starting manual article backup job for date: {}", backupDateStr);
+            log.info("Start - ArticleBackupController/runBackup: article backup job for date: {}", backupDateStr);
             jobLauncher.run(articleBackupJob, params);
 
             return ResponseEntity.ok("Backup job started for date: " + backupDateStr);
 
         } catch (Exception e) {
-            log.error("Error during article backup: {}", e.getMessage(), e);
+            log.error("Error occurred during article backup: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError()
                 .body("Backup failed: " + e.getMessage());
         }

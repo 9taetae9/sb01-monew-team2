@@ -2,7 +2,6 @@ package com.codeit.team2.monew.module.domain.interest.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.Instant;
 import org.springframework.data.domain.Sort.Direction;
 
@@ -12,7 +11,8 @@ public record CursorPageRequestInterestDto(
     @Schema(description = "검색어 (관심사 이름, 키워드)", example = "스포츠")
     String keyword,
 
-    @Schema(description = "정렬 속성 이름", example = "name", allowableValues = {"name", "subscriberCount"})
+    @Schema(description = "정렬 속성 이름", example = "name", allowableValues = {"name",
+        "subscriberCount"})
     @NotNull
     InterestOrderBy orderBy,
 
@@ -21,7 +21,7 @@ public record CursorPageRequestInterestDto(
     Direction direction,
 
     @Schema(description = "커서 값")
-    Object cursor,
+    String cursor,
 
     @Schema(description = "보조 커서(createdAt) 값", format = "date-time")
     Instant after,
