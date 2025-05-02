@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.comment.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -270,6 +271,8 @@ class CommentServiceImplTest {
             articleId, CommentOrderBy.createdAt, Direction.ASC, null, null, 10);
 
         Slice<Comment> slices = new SliceImpl<>(List.of(comment), PageRequest.of(0, 10), false);
+
+        when(userRepository.existsById(any())).thenReturn(true);
         when(commentRepository.findAll(cursorPageRequestCommentDto.articleId(),
             cursorPageRequestCommentDto.orderBy(), cursorPageRequestCommentDto.direction(),
             cursorPageRequestCommentDto.cursor(), cursorPageRequestCommentDto.after(),
