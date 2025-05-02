@@ -11,8 +11,13 @@ jobs:
   generate-docs:
     runs-on: ubuntu-latest
     env:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+      SPRING_PROFILES_ACTIVE: "openapi"
       NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
       NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY2 }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY2 }}
+      AWS_S3_BUCKET_NAME: dummy
 
     steps:
       - name: Checkout PR branch
@@ -69,7 +74,7 @@ jobs:
 
       - name: Generate OpenAPI docs
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
-        run: ./gradlew generateOpenApiDocs --no-daemon -Dspring.profiles.active=openapi
+        run: ./gradlew generateOpenApiDocs
         working-directory: ./pr-branch/monew
         continue-on-error: false
 
