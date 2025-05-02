@@ -23,8 +23,8 @@ jobs:
       - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
-          path: pr-branch
+          ref: ${{ github.base_ref }}
+          path: release-branch
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -39,7 +39,7 @@ jobs:
           VERSION=$(./gradlew properties --console=plain | grep "^version:" | awk '{print $2}')
           echo "Project version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-        working-directory: ./pr-branch/monew
+        working-directory: ./release-branch/monew
         continue-on-error: false
 
       - name: Checkout target branch
@@ -58,7 +58,7 @@ jobs:
             echo "✔️ swagger file does not exist in PR branch"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-        working-directory: ./pr-branch
+        working-directory: ./release-branch
 
       - name: Check if swagger file exists in target branch
         id: check_target
@@ -75,7 +75,7 @@ jobs:
       - name: Generate OpenAPI docs
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
         run: ./gradlew generateOpenApiDocs
-        working-directory: ./pr-branch/monew
+        working-directory: ./release-branch/monew
         continue-on-error: false
 
       - name: Copy file to docs/
@@ -87,17 +87,17 @@ jobs:
           cp build/openapi/docs/swagger-${{ steps.get_version.outputs.version }}.json docs/
           echo "➡ 복사 후 docs/ 경로:"
           ls -al docs/
-        working-directory: ./pr-branch/monew
+        working-directory: ./release-branch/monew
 
       - name: Commit and push
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
         run: |
-          cd ./pr-branch/monew
+          cd ./release-branch/monew
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/swagger-${{ steps.get_version.outputs.version }}.json
           git commit -m "chore[bot]: add swagger spec for version ${{ steps.get_version.outputs.version }}"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin ${{ github.base_ref }}
 
       - name: Comment on PR - Generated
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
