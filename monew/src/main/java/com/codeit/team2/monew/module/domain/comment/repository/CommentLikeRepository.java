@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLike, UUID> {
 
@@ -22,5 +24,8 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, UUID> 
     })
     List<CommentLike> findTop10ByUserOrderByLikedAtDesc(User user);
 
-    Set<UUID> findLikedCommentIdsByUserIdAndCommentIds(UUID userId, List<UUID> commentIds);
+    @Query("SELECT cl.comment.id FROM CommentLike cl WHERE cl.user.id = :userId AND cl.comment.id IN :commentIds")
+    Set<UUID> findLikedCommentIdsByUserIdAndCommentIds(@Param("userId") UUID userId,
+        @Param("commentIds") List<UUID> commentIds);
+
 }

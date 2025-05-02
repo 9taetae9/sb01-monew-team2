@@ -20,7 +20,6 @@ import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
 import com.codeit.team2.monew.module.domain.comment.exception.CommentPermissionDeniedException;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
-import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
@@ -58,8 +57,6 @@ class CommentServiceImplTest {
 
     @Mock
     private CommentMapper commentMapper;
-    @Mock
-    private CommentCustomRepository commentCustomRepository;
     @Mock
     private CommentLikeRepository commentLikeRepository;
 
@@ -273,7 +270,7 @@ class CommentServiceImplTest {
             articleId, CommentOrderBy.createdAt, Direction.ASC, null, null, 10);
 
         Slice<Comment> slices = new SliceImpl<>(List.of(comment), PageRequest.of(0, 10), false);
-        when(commentCustomRepository.findAll(cursorPageRequestCommentDto.articleId(),
+        when(commentRepository.findAll(cursorPageRequestCommentDto.articleId(),
             cursorPageRequestCommentDto.orderBy(), cursorPageRequestCommentDto.direction(),
             cursorPageRequestCommentDto.cursor(), cursorPageRequestCommentDto.after(),
             cursorPageRequestCommentDto.limit())).thenReturn(slices);

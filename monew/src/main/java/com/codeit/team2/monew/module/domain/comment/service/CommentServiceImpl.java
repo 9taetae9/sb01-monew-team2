@@ -15,7 +15,6 @@ import com.codeit.team2.monew.module.domain.comment.event.CommentUpdateEvent;
 import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
 import com.codeit.team2.monew.module.domain.comment.exception.CommentPermissionDeniedException;
 import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
-import com.codeit.team2.monew.module.domain.comment.repository.CommentCustomRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
@@ -43,7 +42,6 @@ public class CommentServiceImpl implements CommentService {
     private final ArticleRepository articleRepository;
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
-    private final CommentCustomRepository commentCustomRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final ApplicationEventPublisher publisher;
 
@@ -127,7 +125,7 @@ public class CommentServiceImpl implements CommentService {
     public CursorPageResponseCommentDto findAll(UUID userId,
         CursorPageRequestCommentDto cursorPageRequestCommentDto) {
 
-        Slice<Comment> slices = commentCustomRepository.findAll(
+        Slice<Comment> slices = commentRepository.findAll(
             cursorPageRequestCommentDto.articleId(),
             cursorPageRequestCommentDto.orderBy(),
             cursorPageRequestCommentDto.direction(),
