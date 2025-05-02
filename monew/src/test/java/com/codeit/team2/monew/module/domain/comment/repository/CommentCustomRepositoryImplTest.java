@@ -26,7 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
-@ActiveProfiles("test")
+@ActiveProfiles("test-temp")
 @Import({JpaConfig.class, QuerydslConfig.class})
 @Transactional
 class CommentCustomRepositoryImplTest {
