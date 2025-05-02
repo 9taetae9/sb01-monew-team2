@@ -109,7 +109,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📄 OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전 생성 완료.\n\nPath: `docs/swagger-${{ steps.get_version.outputs.version }}.json`'
+              body: '📄 OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전 생성 완료.\n\npath: `monew/docs/swagger-${{ steps.get_version.outputs.version }}.json`'
             })
 
       - name: Comment on PR - Already in PR branch
