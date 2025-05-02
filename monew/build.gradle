@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.codeit.team2'
-version = 'v1.0.1'
+version = 'v1.0.2'
 
 
 java {
@@ -25,6 +25,10 @@ configurations {
 repositories {
     mavenCentral()
     gradlePluginPortal()
+}
+
+springBoot {
+    buildInfo()
 }
 
 dependencies {

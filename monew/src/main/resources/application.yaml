@@ -50,6 +50,7 @@ aws:
 
 app:
   db-type: postgresql  # postgresql || mongodb
+  version: ${version}
 
 server:
   tomcat:
