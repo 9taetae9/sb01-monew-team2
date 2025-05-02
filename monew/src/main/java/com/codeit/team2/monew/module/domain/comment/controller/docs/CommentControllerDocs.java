@@ -100,7 +100,7 @@ public interface CommentControllerDocs {
     ResponseEntity<Void> hardDelete(UUID commentId);
 
     @Operation(
-        summary = "댓글 물리 삭제",
+        summary = "댓글 목록 조회",
         description = "댓글을 영구적으로 삭제합니다.",
         parameters = {
             @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
