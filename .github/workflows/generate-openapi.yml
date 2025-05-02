@@ -10,6 +10,10 @@ permissions:
 jobs:
   generate-docs:
     runs-on: ubuntu-latest
+    env:
+      NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+      NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@v4
@@ -65,7 +69,7 @@ jobs:
 
       - name: Generate OpenAPI docs
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
-        run: ./gradlew generateOpenApiDocs --no-daemon
+        run: ./gradlew generateOpenApiDocs --no-daemon -Dspring.profiles.active=openapi
         working-directory: ./pr-branch/monew
         continue-on-error: false
 
