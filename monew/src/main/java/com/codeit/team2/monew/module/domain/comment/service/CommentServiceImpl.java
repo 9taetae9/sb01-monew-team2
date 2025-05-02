@@ -22,9 +22,10 @@ import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -134,12 +135,19 @@ public class CommentServiceImpl implements CommentService {
             cursorPageRequestCommentDto.after(),
             cursorPageRequestCommentDto.limit());
 
-        List<CommentDto> commentDtos = new ArrayList<>();
-        slices.getContent().forEach(comment -> {
-            boolean likedByMe = commentLikeRepository.existsByCommentIdAndUserId(comment.getId(),
-                userId);
-            commentDtos.add(commentMapper.toDto(comment, likedByMe));
-        });
+        List<UUID> commentIds = slices.getContent().stream()
+            .map(Comment::getId)
+            .collect(Collectors.toList());
+
+        Set<UUID> likedCommentIds = commentLikeRepository.findLikedCommentIdsByUserIdAndCommentIds(
+            userId, commentIds);
+
+        List<CommentDto> commentDtos = slices.getContent().stream()
+            .map(comment -> {
+                boolean likedByMe = likedCommentIds.contains(comment.getId());
+                return commentMapper.toDto(comment, likedByMe);
+            })
+            .toList();
 
         Long totalElements = commentRepository.countByArticleId(
             cursorPageRequestCommentDto.articleId());

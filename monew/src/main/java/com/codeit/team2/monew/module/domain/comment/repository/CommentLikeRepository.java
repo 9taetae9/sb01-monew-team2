@@ -4,6 +4,7 @@ import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,5 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, UUID> 
     })
     List<CommentLike> findTop10ByUserOrderByLikedAtDesc(User user);
 
+    Set<UUID> findLikedCommentIdsByUserIdAndCommentIds(UUID userId, List<UUID> commentIds);
 }
