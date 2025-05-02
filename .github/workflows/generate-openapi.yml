@@ -82,7 +82,11 @@ jobs:
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
         run: |
           mkdir -p docs
+          echo "➡ build/openapi/docs/ 경로 안 파일들:"
+          ls -al build/openapi/docs/
           cp build/openapi/docs/swagger-${{ steps.get_version.outputs.version }}.json docs/
+          echo "➡ 복사 후 docs/ 경로:"
+          ls -al docs/
         working-directory: ./pr-branch/monew
 
       - name: Commit and push
