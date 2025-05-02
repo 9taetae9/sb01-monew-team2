@@ -101,7 +101,7 @@ public interface CommentControllerDocs {
 
     @Operation(
         summary = "댓글 목록 조회",
-        description = "댓글을 영구적으로 삭제합니다.",
+        description = "조건에 맞는 댓글 목록을 조회합니다.",
         parameters = {
             @Parameter(name = "Monew-Request-User-ID", description = "요청자 ID", in = ParameterIn.HEADER),
             @Parameter(name = "articleId", description = "기사 ID", in = ParameterIn.QUERY),
