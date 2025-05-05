@@ -35,7 +35,7 @@ logging:
     path: ./logs
     name: ${logging.file.path}/application.log
     archive: ${logging.file.path}/archive
-  retention-days: 30
+  retention-days: 7
 
 news:
   naver:

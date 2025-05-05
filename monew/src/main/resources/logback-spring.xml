@@ -11,7 +11,7 @@
     </encoder>
   </appender>
 
-  <!-- 파일 로그 설정 (일별 롤링) -->
+  <!-- 파일 로그 설정 (일별 롤링) - 프리티어 최적화 -->
   <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${LOG_PATH}/application.log</file>
     <encoder>
@@ -19,8 +19,8 @@
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_ARCHIVE}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <maxHistory>30</maxHistory>
-      <totalSizeCap>3GB</totalSizeCap>
+      <maxHistory>14</maxHistory>  <!-- 최대 14일 보관 -->
+      <totalSizeCap>500MB</totalSizeCap>  <!-- 총 로그 크기 제한 -->
     </rollingPolicy>
   </appender>
 
@@ -31,5 +31,5 @@
   </root>
 
   <!-- 애플리케이션 로거 설정 -->
-  <logger name="com.codeit.team2.monew" level="DEBUG" />
+  <logger name="com.codeit.team2.monew" level="INFO" />
 </configuration>
