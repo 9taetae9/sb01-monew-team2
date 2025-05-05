@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.backup.scheduler;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -14,20 +15,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class ArticleBackupScheduler {
 
+    private final ZoneId zoneId;
+
     private final JobLauncher jobLauncher;
     private final Job articleBackupJob;
 
     public ArticleBackupScheduler(
         JobLauncher jobLauncher,
-        @Qualifier("articleBackupJob") Job articleBackupJob) {
+        @Qualifier("articleBackupJob") Job articleBackupJob,
+        ZoneId zoneId) {
         this.jobLauncher = jobLauncher;
         this.articleBackupJob = articleBackupJob;
+        this.zoneId = zoneId;
     }
 
-    @Scheduled(cron = "0 30 17 * * *")
+    @Scheduled(cron = "0 30 2 * * *", zone = "#{@timezoneId}")
     public void runArticleBackup() {
         try {
-            LocalDate yesterday = LocalDate.now().minusDays(1);
+            LocalDate yesterday = LocalDate.now(zoneId).minusDays(1);
             String backupDate = yesterday.toString();
 
             JobParameters params = new JobParametersBuilder()

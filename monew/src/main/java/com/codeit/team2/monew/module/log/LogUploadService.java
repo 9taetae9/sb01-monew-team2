@@ -24,12 +24,11 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @RequiredArgsConstructor
 public class LogUploadService {
 
-    private static final ZoneId TIME_ZONE = ZoneId.of("Asia/Seoul");
-
     private static final DateTimeFormatter LOG_FILE_DATE_FORMAT = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd");
 
     private final S3Client s3Client;
+    private final ZoneId zoneId;
 
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
@@ -43,7 +42,7 @@ public class LogUploadService {
     @Value("${logging.file.archive:${logging.file.path}/archive}")
     private String logArchivePath;
 
-    @Value("${logging.retention-days:30}")
+    @Value("${logging.retention-days:7}")
     private int logRetentionDays;
 
     /**
@@ -89,7 +88,6 @@ public class LogUploadService {
 
     }
 
-
     /**
      * 로그 파일 압축(gzip)
      *
@@ -119,7 +117,7 @@ public class LogUploadService {
                 return;
             }
 
-            LocalDate cutoffDate = LocalDate.now(TIME_ZONE).minusDays(logRetentionDays);
+            LocalDate cutoffDate = LocalDate.now(zoneId).minusDays(logRetentionDays);
 
             Files.list(logDir)
                 .filter(Files::isRegularFile)

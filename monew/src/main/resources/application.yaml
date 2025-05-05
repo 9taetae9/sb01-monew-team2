@@ -59,6 +59,7 @@ aws:
 app:
   db-type: postgresql  # postgresql || mongodb
   version: ${version}
+  timezone: Asia/Seoul
 
 server:
   tomcat:
