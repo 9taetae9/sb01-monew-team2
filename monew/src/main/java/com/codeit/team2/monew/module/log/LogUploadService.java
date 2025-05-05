@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.zip.GZIPOutputStream;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @Service
 @RequiredArgsConstructor
 public class LogUploadService {
+
+    private static final ZoneId TIME_ZONE = ZoneId.of("Asia/Seoul");
 
     private static final DateTimeFormatter LOG_FILE_DATE_FORMAT = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd");
@@ -116,7 +119,7 @@ public class LogUploadService {
                 return;
             }
 
-            LocalDate cutoffDate = LocalDate.now().minusDays(logRetentionDays);
+            LocalDate cutoffDate = LocalDate.now(TIME_ZONE).minusDays(logRetentionDays);
 
             Files.list(logDir)
                 .filter(Files::isRegularFile)

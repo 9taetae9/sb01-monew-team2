@@ -18,13 +18,15 @@ spring:
   sql:
     init:
       mode: always
-
   batch:
     jdbc:
       initialize-schema: always  # 개발 환경에서는 'always', 운영 환경에서는 'never'
     job:
       name: deleteNotificationJob
       enabled: false  # 애플리케이션 시작 시 모든 배치 작업 자동 실행 방지
+  jackson:
+    time-zone: Asia/Seoul
+    date-format: yyyy-MM-dd HH:mm:ss
 
 logging:
   level:
