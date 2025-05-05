@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class LogUploadController {
 
     private final LogUploadService logUploadService;
     private final ZoneId zoneId;
+    private final Environment environment;
 
     /**
      * 특정 날짜(default: 전날)의 로그 수동으로 S3에 업로드
@@ -57,7 +59,8 @@ public class LogUploadController {
             return ResponseEntity.ok("Log cleanup initiated with retention days: " + retentionDays);
         } else {
             logUploadService.cleanupOldLogs();
-            return ResponseEntity.ok("Log cleanup initiated with default retention days");
+            String defaultDays = environment.getProperty("logging.retention-days");
+            return ResponseEntity.ok("Log cleanup initiated with default retention days(" + defaultDays+")");
         }
     }
 }
