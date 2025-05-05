@@ -125,7 +125,7 @@ public class LogUploadService {
         }
 
         LocalDate cutoffDate = LocalDate.now(zoneId).minusDays(retentionDays);
-        log.info("Cleaning up log files older than: {} (retention days: {})", cutoffDate,
+        log.info("Cleaning up log files on or before: {} (retention days: {})", cutoffDate,
             retentionDays);
 
         try (Stream<Path> logFiles = Files.list(logDir)) {
@@ -141,10 +141,11 @@ public class LogUploadService {
                         String dateStr = fileName.substring(12, 22); // 날짜 추출
                         LocalDate logDate = LocalDate.parse(dateStr);
 
-                        if (logDate.isBefore(cutoffDate)) {
+                        if (!logDate.isAfter(cutoffDate)) {
                             log.info("Deleting old log file: {}", logFile);
                             try {
                                 Files.deleteIfExists(logFile);
+                                log.debug("Successfully deleted: {}", fileName);
                             } catch (IOException e) {
                                 log.error("Failed to delete log file {}: {}", logFile,
                                     e.getMessage(), e);
