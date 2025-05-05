@@ -31,6 +31,9 @@ public class LogUploadService {
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
+    @Value("${aws.s3.log-prefix:logs}")
+    private String s3LogPrefix;
+
     @Value("${logging.file.path:./logs}")
     private String logFilePath;
 
@@ -60,7 +63,7 @@ public class LogUploadService {
             compressLogFile(logFile, gzipFile);
 
             File file = gzipFile.toFile();
-            String s3Key = "logs/" + dateStr + "/" + gzipFileName;
+            String s3Key = s3LogPrefix + "/" + dateStr + "/" + gzipFileName;
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
