@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -91,8 +92,8 @@ public class LogUploadService {
     /**
      * 로그 파일 압축(gzip)
      *
-     * @param source
-     * @param target
+     * @param source 원본 로그 파일
+     * @param target 압축 대상 파일
      * @throws IOException
      */
     private void compressLogFile(Path source, Path target) throws IOException {
@@ -110,38 +111,50 @@ public class LogUploadService {
      * 보존 기간 지난 로그 파일 정리
      */
     public void cleanupOldLogs() {
-        try {
-            Path logDir = Paths.get(logArchivePath);
-            if (!Files.exists(logDir)) {
-                log.warn("Log directory not found: {}", logDir);
-                return;
-            }
+        cleanupOldLogs(this.logRetentionDays);
+    }
 
-            LocalDate cutoffDate = LocalDate.now(zoneId).minusDays(logRetentionDays);
+    /**
+     * 보존 기간 지난 로그 파일 정리
+     */
+    public void cleanupOldLogs(int retentionDays) {
+        Path logDir = Paths.get(logArchivePath);
+        if (!Files.exists(logDir)) {
+            log.warn("Log directory not found: {}", logDir);
+            return;
+        }
 
-            Files.list(logDir)
+        LocalDate cutoffDate = LocalDate.now(zoneId).minusDays(retentionDays);
+        log.info("Cleaning up log files older than: {} (retention days: {})", cutoffDate,
+            retentionDays);
+
+        try (Stream<Path> logFiles = Files.list(logDir)) {
+            logFiles
                 .filter(Files::isRegularFile)
                 .filter(path -> {
                     String fileName = path.getFileName().toString();
                     return fileName.startsWith("application.") && fileName.endsWith(".log");
                 })
                 .forEach(logFile -> {
+                    try {
+                        String fileName = logFile.getFileName().toString();
+                        String dateStr = fileName.substring(12, 22); // 날짜 추출
+                        LocalDate logDate = LocalDate.parse(dateStr);
 
-                    String fileName = logFile.getFileName().toString();
-                    String dateStr = fileName.substring(12, 22);// 날짜 추출
-                    LocalDate logDate = LocalDate.parse(dateStr);
-
-                    if (logDate.isBefore(cutoffDate)) {
-                        log.info("Deleting old log file: {}", logFile);
-                        try {
-                            Files.deleteIfExists(logFile);
-                        } catch (IOException e) {
-                            log.error("Failed to delete log file {}: {}", logFile,
-                                e.getMessage(), e);
+                        if (logDate.isBefore(cutoffDate)) {
+                            log.info("Deleting old log file: {}", logFile);
+                            try {
+                                Files.deleteIfExists(logFile);
+                            } catch (IOException e) {
+                                log.error("Failed to delete log file {}: {}", logFile,
+                                    e.getMessage(), e);
+                            }
                         }
+                    } catch (Exception e) {
+                        log.error("Failed to process log file {}: {}", logFile, e.getMessage(), e);
                     }
                 });
-
+            log.info("Log cleanup completed with retention days: {}", retentionDays);
         } catch (IOException e) {
             log.error("Failed to clean up old logs: {}", e.getMessage(), e);
         }
