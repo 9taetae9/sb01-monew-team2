@@ -66,7 +66,7 @@ public class LogUploadService {
             compressLogFile(logFile, gzipFile);
 
             File file = gzipFile.toFile();
-            String s3Key = s3LogPrefix + "/" + dateStr + "/" + gzipFileName;
+            String s3Key = String.format("%s/%s/%s", s3LogPrefix, dateStr, gzipFileName);
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -77,13 +77,17 @@ public class LogUploadService {
             log.info("Successfully uploaded log file {} to S3: {}/{}", gzipFileName, bucketName,
                 s3Key);
 
-            //업로드 후 압축 파일 삭제
-            Files.deleteIfExists(gzipFile);
-
             return true;
         } catch (Exception e) {
             log.error("Failed to upload log file to S3: {}", e.getMessage(), e);
             return false;
+        } finally {
+            // 업로드 시도 후 임시 gzip 파일 정리
+            try {
+                Files.deleteIfExists(gzipFile);
+            } catch (IOException e) {
+                log.warn("Failed to delete temporary gzip file: {}", gzipFile, e);
+            }
         }
 
 
