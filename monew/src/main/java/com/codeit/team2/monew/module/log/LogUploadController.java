@@ -31,18 +31,15 @@ public class LogUploadController {
      */
     @PostMapping("/upload")
     public ResponseEntity<String> uploadLogs(
-        @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE)LocalDate date) {
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = ISO.DATE)LocalDate date) {
 
-        if (date == null) {
-            date = LocalDate.now(zoneId).minusDays(1);
-        }
+        LocalDate targetDate = (date != null) ? date : LocalDate.now(zoneId).minusDays(1);
 
-        boolean success = logUploadService.uploadLogByDate(date);
-
-        if(success) {
-            return ResponseEntity.ok("Successfully uploaded logs for date: " + date.format(DATE_FORMAT));
+        if (logUploadService.uploadLogByDate(targetDate)) {
+            return ResponseEntity.ok("Successfully uploaded logs for date: " + targetDate);
         } else {
-            return ResponseEntity.badRequest().body("Failed to upload logs for date: " + date.format(DATE_FORMAT));
+            return ResponseEntity.badRequest().body("Failed to upload logs for date: " + targetDate);
         }
     }
 
