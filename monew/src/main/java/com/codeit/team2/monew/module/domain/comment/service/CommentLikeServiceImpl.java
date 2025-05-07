@@ -4,10 +4,14 @@ import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.event.CommentLikeDeleteEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentLikeAlreadyExistsException;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentLikeNotFoundException;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.notification.service.NotificationService;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
@@ -34,19 +38,19 @@ public class CommentLikeServiceImpl implements CommentLikeService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found: commentId={}", commentId);
-                return new EntityNotFoundException("Comment Not Found");
+                return new CommentNotFoundException(commentId);
             });
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> {
                 log.debug("User Not Found: userId={}", userId);
-                return new EntityNotFoundException("User Not Found");
+                return new UserNotFoundException(userId);
             });
 
         if (commentLikeRepository.existsByCommentIdAndUserId(commentId, userId)) {
             log.debug("Already liked this comment: commentId = {}, userId={}",
                 commentId, userId);
-            throw new IllegalStateException("Already liked this comment");
+            throw new CommentLikeAlreadyExistsException(commentId, userId);
         }
 
         CommentLike commentLike = CommentLike.create(comment, user);
@@ -67,7 +71,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
         CommentLike commentLike = commentLikeRepository.findByCommentIdAndUserId(commentId, userId)
             .orElseThrow(() -> {
                 log.debug("CommentLike Not Found: commentId={}, userId={}", commentId, userId);
-                return new EntityNotFoundException("CommentLike Not Found");
+                return new CommentLikeNotFoundException(commentId, userId);
             });
 
         Comment comment = commentLike.getComment();

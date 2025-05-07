@@ -2,6 +2,8 @@ package com.codeit.team2.monew.module.domain.article.backup.service;
 
 import com.codeit.team2.monew.module.domain.article.backup.dto.ArticleBackupDto;
 import com.codeit.team2.monew.module.domain.article.backup.dto.ArticleRestoreResultDto;
+import com.codeit.team2.monew.module.domain.article.backup.exception.ArticleBackupErrorCode;
+import com.codeit.team2.monew.module.domain.article.backup.exception.ArticleBackupException;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,11 +29,13 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 @Slf4j
@@ -67,11 +72,16 @@ public class ArticleRestoreService {
             } catch (Exception e) {
                 log.error("Failed to restore articles for date {}: {}", dateToProcess,
                     e.getMessage(), e);
-                results.add(new ArticleRestoreResultDto(
-                    Instant.now(),
-                    List.of(),
-                    0L
-                ));
+
+                if (e instanceof ArticleBackupException) {
+                    throw (ArticleBackupException) e;
+                } else {
+                    results.add(new ArticleRestoreResultDto(
+                        Instant.now(),
+                        List.of(),
+                        0L
+                    ));
+                }
             }
             current = current.plusDays(1);
         }
@@ -287,8 +297,15 @@ public class ArticleRestoreService {
             log.info("File processing summary - To restore: {}, Skipped: {}, Total: {}",
                 articlesToRestore.size(), skippedCount, backupDtos.size());
 
+        } catch (S3Exception e) {
+            log.error("S3 error reading object {}: {}", s3Object.key(), e.getMessage(), e);
+            throw new ArticleBackupException(
+                ArticleBackupErrorCode.S3_ACCESS_ERROR,
+                Map.of("file", s3Object.key(), "error", e.getMessage())
+            );
         } catch (Exception e) {
             log.error("Error reading S3 object {}: {}", s3Object.key(), e.getMessage(), e);
+            throw new RuntimeException("Error reading S3 object: " + s3Object.key(), e);
         }
 
         return articlesToRestore;
@@ -304,21 +321,35 @@ public class ArticleRestoreService {
         List<S3Object> allObjects = new ArrayList<>();
         String continuationToken = null;
 
-        do {
-            ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
-                .bucket(bucketName)
-                .prefix(prefix);
+        try {
+            do {
+                ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
+                    .bucket(bucketName)
+                    .prefix(prefix);
 
-            if (continuationToken != null) {
-                requestBuilder.continuationToken(continuationToken);
-            }
+                if (continuationToken != null) {
+                    requestBuilder.continuationToken(continuationToken);
+                }
 
-            ListObjectsV2Response response = s3Client.listObjectsV2(requestBuilder.build());
-            allObjects.addAll(response.contents());
-            continuationToken = response.nextContinuationToken();
-        } while (continuationToken != null);
+                ListObjectsV2Response response = s3Client.listObjectsV2(requestBuilder.build());
+                allObjects.addAll(response.contents());
+                continuationToken = response.nextContinuationToken();
+            } while (continuationToken != null);
 
-        return allObjects;
+            return allObjects;
+        } catch (S3Exception e) {
+            log.error("S3 error listing objects with prefix {}: {}", prefix, e.getMessage(), e);
+            throw new ArticleBackupException(
+                ArticleBackupErrorCode.S3_ACCESS_ERROR,
+                Map.of("prefix", prefix, "error", e.getMessage())
+            );
+        } catch (SdkClientException e) {
+            log.error("AWS SDK Client error when listing objects: {}", e.getMessage(), e);
+            throw new ArticleBackupException(
+                ArticleBackupErrorCode.S3_ACCESS_ERROR,
+                Map.of("prefix", prefix, "error", e.getMessage())
+            );
+        }
     }
 
     @NotNull

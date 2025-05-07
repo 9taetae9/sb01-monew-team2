@@ -14,7 +14,6 @@ import com.codeit.team2.monew.module.domain.interest.event.InterestUpdateEvent;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
-import com.codeit.team2.monew.module.domain.interest.repository.InterestCustomRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
@@ -23,8 +22,10 @@ import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,6 @@ public class InterestServiceImpl implements InterestService {
     private final KeywordRepository keywordRepository;
     private final InterestKeywordRepository interestKeywordRepository;
     private final SubscriptionRepository subscriptionRepository;
-    private final InterestCustomRepository interestCustomRepository;
     private final ApplicationEventPublisher publisher;
     private final InterestNameSimilarityService interestNameSimilarityService;
 
@@ -160,26 +160,38 @@ public class InterestServiceImpl implements InterestService {
     @Override
     public CursorPageResponseInterestDto findAll(UUID userId,
         CursorPageRequestInterestDto cursorPageRequestInterestDto) {
-        if (!userRepository.existsById(userId)) {
-            log.debug("User Not Found: userId = {}", userId);
-            throw new IllegalArgumentException("User Not Found: userId = {}");
-        }
-        Slice<Interest> slices = interestCustomRepository.findAll(
+        Slice<Interest> slices = interestRepository.findAll(
             cursorPageRequestInterestDto.keyword(), cursorPageRequestInterestDto.orderBy(),
             cursorPageRequestInterestDto.direction(), cursorPageRequestInterestDto.cursor(),
             cursorPageRequestInterestDto.after(), cursorPageRequestInterestDto.limit());
 
-        List<InterestDto> interestDtos = slices.getContent().stream()
-            .map(interest -> toDto(interest, userId))
-            .collect(Collectors.toList());
+        List<Interest> interests = slices.getContent();
 
-        long totalElements = interestCustomRepository.countFilteredTotalElements(
+        // Entity -> DTO
+        Set<UUID> interestIds = interests.stream()
+            .map(Interest::getId)
+            .collect(Collectors.toSet());
+        Set<UUID> subscribedIds = subscriptionRepository
+            .findSubscribedInterestIds(userId, interestIds);    // 구독 여부 일괄 조회(bulk)
+        List<InterestDto> interestDtos = new ArrayList<>();
+        for (Interest interest : interests) {
+            List<String> keywords = new ArrayList<>();
+            for (InterestKeyword ik : interest.getKeywords()) {
+                keywords.add(ik.getKeyword().getName());
+            }
+
+            boolean subscribedByMe = subscribedIds.contains(interest.getId());
+            InterestDto dto = interestMapper.toDto(interest, keywords, subscribedByMe);
+            interestDtos.add(dto);
+        }
+
+        long totalElements = interestRepository.countFilteredTotalElements(
             cursorPageRequestInterestDto.keyword(), cursorPageRequestInterestDto.orderBy(),
             cursorPageRequestInterestDto.direction());
 
         boolean hasNext = slices.hasNext();
 
-        Object nextCursor = null;
+        String nextCursor = null;
         Instant nextAfter = null;
 
         if (hasNext) {
@@ -188,21 +200,13 @@ public class InterestServiceImpl implements InterestService {
             if (cursorPageRequestInterestDto.orderBy() == InterestOrderBy.name) {
                 nextCursor = lastInterest.getName();
             } else if (cursorPageRequestInterestDto.orderBy() == InterestOrderBy.subscriberCount) {
-                nextCursor = lastInterest.getSubscriberCount();
-                nextAfter = lastInterest.getCreatedAt();
+                nextCursor = String.valueOf(lastInterest.getSubscriberCount());
             }
+            nextAfter = lastInterest.getCreatedAt();
         }
 
         return new CursorPageResponseInterestDto(interestDtos, nextCursor, nextAfter,
-            interestDtos.size(), totalElements, hasNext);
+            slices.getSize(), totalElements, hasNext);
     }
 
-    private InterestDto toDto(Interest interest, UUID userId) {
-        User user = getUserOrThrow(userId);
-        boolean subscribedByMe = subscriptionRepository.existsByInterestAndUser(interest, user);
-        List<String> keywords = interest.getKeywords().stream()
-            .map(ik -> ik.getKeyword().getName())
-            .collect(Collectors.toList());
-        return interestMapper.toDto(interest, keywords, subscribedByMe);
-    }
 }

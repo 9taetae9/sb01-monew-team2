@@ -9,7 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InterestRepository extends JpaRepository<Interest, UUID> {
+public interface InterestRepository extends JpaRepository<Interest, UUID>,
+    InterestCustomRepository {
 
     @Query(value = "SELECT EXISTS (SELECT 1 From interests WHERE word_similarity(name, :searchName) >= 0.6)",
         nativeQuery = true)

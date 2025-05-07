@@ -21,7 +21,7 @@ public record CursorPageRequestInterestDto(
     Direction direction,
 
     @Schema(description = "커서 값")
-    Object cursor,
+    String cursor,
 
     @Schema(description = "보조 커서(createdAt) 값", format = "date-time")
     Instant after,

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.codeit.team2'
-version = 'v1.0.1'
+version = 'v1.0.2'
 
 
 java {
@@ -25,6 +25,10 @@ configurations {
 repositories {
     mavenCentral()
     gradlePluginPortal()
+}
+
+springBoot {
+    buildInfo()
 }
 
 dependencies {
@@ -99,7 +103,7 @@ clean {
 // openApi - json 자동 추출
 openApi {
     apiDocsUrl.set("http://localhost:8080/sb/monew/api/v3/api-docs/customer")
-    outputDir.set(layout.projectDirectory.dir("docs/api"))
+    outputDir.set(layout.buildDirectory.dir("openapi/docs"))
     outputFileName.set("swagger-${project.version}.json")
     waitTimeInSeconds.set(100) // 호출 전 어플리케이션 시작을 기다리는 시간
 }

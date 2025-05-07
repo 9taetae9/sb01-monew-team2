@@ -1,7 +1,5 @@
 package com.codeit.team2.monew.module.domain.interest.repository;
 
-import static com.codeit.team2.monew.module.domain.interest.entity.QInterestKeyword.interestKeyword;
-
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestOrderBy;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.QInterest;
@@ -9,7 +7,6 @@ import com.codeit.team2.monew.module.domain.interest.entity.QInterestKeyword;
 import com.codeit.team2.monew.module.domain.interest.entity.QKeyword;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.Instant;
@@ -34,16 +31,10 @@ public class InterestCustomRepositoryImpl implements InterestCustomRepository {
         // 검색 조건: Interest.name or Keyword.name 부분일치
         BooleanBuilder where = new BooleanBuilder();
         if (keyword != null && !keyword.isBlank()) {
-            // 관심사 이름 또는 연결된 키워드 이름 중 하나라도 포함되면
-            where.and(interest.id.in(
-                JPAExpressions
-                    .select(interest.id)
-                    .from(interest)
-                    .leftJoin(interest.keywords, interestKeyword)
-                    .leftJoin(interestKeyword.keyword, keywordEntity)
-                    .where(interest.name.containsIgnoreCase(keyword)
-                        .or(keywordEntity.name.containsIgnoreCase(keyword)))
-            ));
+            where.and(
+                interest.name.containsIgnoreCase(keyword)
+                    .or(keywordEntity.name.containsIgnoreCase(keyword))
+            );
         }
         return where;
     }
@@ -55,19 +46,26 @@ public class InterestCustomRepositoryImpl implements InterestCustomRepository {
         QInterestKeyword interestKeyword = QInterestKeyword.interestKeyword;
         QKeyword keywordEntity = QKeyword.keyword;
 
-        return queryFactory
+        JPAQuery<Long> query = queryFactory
             .select(interest.countDistinct())
-            .from(interest)
-            .leftJoin(interest.keywords, interestKeyword)
-            .leftJoin(interestKeyword.keyword, keywordEntity)
-            .where(buildCommonFilters(keyword))
-            .fetchOne();
+            .from(interest);
+
+        // keyword가 있을 때만 조인
+        if (keyword != null && !keyword.isBlank()) {
+            query
+                .leftJoin(interest.keywords, interestKeyword)
+                .leftJoin(interestKeyword.keyword, keywordEntity);
+        }
+
+        query.where(buildCommonFilters(keyword));
+
+        return query.fetchOne();
     }
 
 
     @Override
     public Slice<Interest> findAll(String keyword, InterestOrderBy orderBy, Direction direction,
-        Object cursor, Instant after, int limit) {
+        String cursor, Instant after, int limit) {
         QInterest interest = QInterest.interest;
         QInterestKeyword interestKeyword = QInterestKeyword.interestKeyword;
         QKeyword keywordEntity = QKeyword.keyword;
@@ -75,26 +73,23 @@ public class InterestCustomRepositoryImpl implements InterestCustomRepository {
         JPAQuery<Interest> query = queryFactory
             .selectFrom(interest)
             .distinct()
-            .leftJoin(interest.keywords, interestKeyword).fetchJoin()   /// 지연 로딩이라 fetchjoin 필요
+            .leftJoin(interest.keywords, interestKeyword).fetchJoin()
             .leftJoin(interestKeyword.keyword, keywordEntity).fetchJoin();
 
         BooleanBuilder where = buildCommonFilters(keyword);
 
         // 커서 조건
         if (cursor != null) {
+            // name 기준 정렬
             if (orderBy == InterestOrderBy.name) {
-                // Object -> String 형 변환
-                String nameCursor = (String) cursor;
-
                 if (direction == Direction.ASC) {
-                    where.and(interest.name.gt(nameCursor));
+                    where.and(interest.name.gt(cursor));
                 } else {
-                    where.and(interest.name.lt(nameCursor));
+                    where.and(interest.name.lt(cursor));
                 }
-
+                // subscriberCount 기준 정렬
             } else if (orderBy == InterestOrderBy.subscriberCount) {
-                // Object -> long
-                long countCursor = (long) cursor;
+                Long countCursor = Long.parseLong(cursor);
 
                 if (direction == Direction.ASC) {
                     where.and(
