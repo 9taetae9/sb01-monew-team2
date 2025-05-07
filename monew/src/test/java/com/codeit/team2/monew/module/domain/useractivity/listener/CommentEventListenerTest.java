@@ -8,8 +8,10 @@ import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
+import com.codeit.team2.monew.module.domain.comment.event.CommentUpdateEvent;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -51,6 +53,20 @@ class CommentEventListenerTest {
 
         // then
         verify(userActivityService).createCommentLikeItem(commentLike);
+    }
+
+    @Test
+    void updateCommentItem_호출_성공() {
+        // given
+        Comment comment = mock(Comment.class);
+        UUID userId = UUID.randomUUID();
+        CommentUpdateEvent event = new CommentUpdateEvent(comment, userId);
+
+        // when
+        listener.updateCommentItem(event);
+
+        // then
+        verify(userActivityService).updateCommentContentInActivity(comment, userId);
     }
 
 }
