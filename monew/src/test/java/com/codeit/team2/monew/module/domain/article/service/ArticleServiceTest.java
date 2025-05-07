@@ -188,6 +188,7 @@ public class ArticleServiceTest {
 
         Slice<Article> slices = new SliceImpl<>(articles);
 
+        when(userRepository.existsById(userId)).thenReturn(true);
         when(articleRepository.findWithCursor(requestDto)).thenReturn(slices);
 
         List<Object[]> commentCounts = List.of(

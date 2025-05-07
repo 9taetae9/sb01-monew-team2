@@ -260,6 +260,7 @@ class NotificationServiceImplTest {
         Notification n2 = new Notification(user, "content", UUID.randomUUID(),
             ResourceType.COMMENT);
         Slice<Notification> slices = new SliceImpl<>(List.of(n1, n2), PageRequest.of(0, 5), false);
+        when(userRepository.existsById(userId)).thenReturn(true);
         when(notificationRepository.findWithCursor(any(), any(), any(), anyInt())).thenReturn(
             slices);
         when(notificationRepository.countForPagination(userId)).thenReturn(2L);
