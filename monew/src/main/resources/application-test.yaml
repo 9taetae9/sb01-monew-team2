@@ -28,3 +28,8 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     com.sprint.mission.discodeit: DEBUG
+
+aws:
+  credentials:
+    accessKey: tmp
+    secretKey: tmp
