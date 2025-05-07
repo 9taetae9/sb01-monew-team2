@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
+import com.codeit.team2.monew.module.domain.comment.event.CommentLikeDeleteEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentUpdateEvent;
@@ -69,4 +70,16 @@ class CommentEventListenerTest {
         verify(userActivityService).updateCommentContentInActivity(comment, userId);
     }
 
+    @Test
+    void deleteCommentLikeItem_호출_성공() {
+        // given
+        CommentLike commentLike = mock(CommentLike.class);
+        CommentLikeDeleteEvent event = new CommentLikeDeleteEvent(commentLike);
+
+        // when
+        listener.deleteCommentLikeItem(event);
+
+        // then
+        verify(userActivityService).deleteCommentLikeItem(commentLike);
+    }
 }
