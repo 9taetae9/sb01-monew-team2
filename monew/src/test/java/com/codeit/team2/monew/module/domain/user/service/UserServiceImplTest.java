@@ -12,6 +12,8 @@ import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest
 import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserEmailAlreadyExistsException;
+import com.codeit.team2.monew.module.domain.user.exception.UserNicknameAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.Optional;
@@ -77,7 +79,7 @@ class UserServiceImplTest {
             when(userRepository.existsByEmail(any())).thenReturn(true);
 
             // when & then
-            assertThrows(Exception.class, () -> {
+            assertThrows(UserEmailAlreadyExistsException.class, () -> {
                 userService.registerUser(request);
             });
         }
@@ -95,7 +97,7 @@ class UserServiceImplTest {
             when(userRepository.existsByNickname(any())).thenReturn(true);
 
             // when & then
-            assertThrows(Exception.class, () -> {
+            assertThrows(UserNicknameAlreadyExistsException.class, () -> {
                 userService.registerUser(request);
             });
         }

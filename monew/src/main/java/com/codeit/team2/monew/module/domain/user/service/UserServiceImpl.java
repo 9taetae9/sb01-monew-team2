@@ -7,6 +7,9 @@ import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.event.UserRegisterEvent;
 import com.codeit.team2.monew.module.domain.user.event.UserUpdateEvent;
+import com.codeit.team2.monew.module.domain.user.exception.UserEmailAlreadyExistsException;
+import com.codeit.team2.monew.module.domain.user.exception.UserNicknameAlreadyExistsException;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.UUID;
@@ -27,11 +30,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto registerUser(UserRegisterRequest userRegisterRequest) {
         if (userRepository.existsByEmail(userRegisterRequest.email())) {
-            throw new RuntimeException("duplicate email");
+            throw new UserEmailAlreadyExistsException(userRegisterRequest.email());
         }
 
         if (userRepository.existsByNickname(userRegisterRequest.nickname())) {
-            throw new RuntimeException("duplicate nickname");
+            throw new UserNicknameAlreadyExistsException(userRegisterRequest.nickname());
         }
 
         // password 암호화는 추후 진행
@@ -49,8 +52,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UUID loginId, UUID userId, UserUpdateRequest userUpdateRequest) {
         validateAuthority(loginId, userId);
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("not found user"));
+        User user = findUserOrThrow(userId);
 
         user.updateNickname(userUpdateRequest.nickname());
 
@@ -64,7 +66,7 @@ public class UserServiceImpl implements UserService {
     public UserDto login(UserLoginRequest userLoginRequest) {
         User user = userRepository.findByEmailAndPasswordAndDeletedFalse(
             userLoginRequest.email(), userLoginRequest.password()
-        ).orElseThrow(() -> new RuntimeException("not found user"));
+        ).orElseThrow(() -> new UserNotFoundException(userLoginRequest.email()));
 
         return userMapper.toUserDto(user);
     }
@@ -74,8 +76,7 @@ public class UserServiceImpl implements UserService {
     public void softDeleteUser(UUID loginId, UUID userId) {
         validateAuthority(loginId, userId);
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("not found user"));
+        User user = findUserOrThrow(userId);
 
         user.updateDeleted(true);
     }
@@ -85,10 +86,14 @@ public class UserServiceImpl implements UserService {
     public void hardDeleteUser(UUID loginId, UUID userId) {
         validateAuthority(loginId, userId);
 
-        userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("not found user"));
+        findUserOrThrow(userId);
 
         userRepository.deleteById(userId);
+    }
+
+    private User findUserOrThrow(UUID userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     private void validateAuthority(UUID loginId, UUID userId) {
