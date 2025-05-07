@@ -26,15 +26,18 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @WebMvcTest(LogUploadController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ComponentScan(excludeFilters = @ComponentScan.Filter(
     type = FilterType.ASSIGNABLE_TYPE,
     classes = WebConfig.class))
-@Import(LogUploadControllerTest.TestConfig.class)
+@Import({LogUploadControllerTest.TestConfig.class})
+@ActiveProfiles("test")
 public class LogUploadControllerTest {
 
     @Configuration
@@ -44,6 +47,9 @@ public class LogUploadControllerTest {
             return ZoneId.of("Asia/Seoul");
         }
     }
+
+    @MockitoBean
+    private S3Client s3Client;
 
     @Autowired
     private Environment environment;
