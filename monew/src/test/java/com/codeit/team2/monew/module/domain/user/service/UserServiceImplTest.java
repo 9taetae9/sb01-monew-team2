@@ -14,6 +14,7 @@ import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.exception.UserEmailAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.user.exception.UserNicknameAlreadyExistsException;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.exception.UserUnauthorizedException;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
@@ -165,6 +166,23 @@ class UserServiceImplTest {
             // then
             assertEquals(email, userDto.email());
             assertEquals(nickname, userDto.nickname());
+        }
+
+        @Test
+        void 올바르지_않은_이메일_혹은_비밀번호_입력_시_실패() {
+            // given
+            String email = "a@a.com";
+            String password = "password";
+
+            UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+
+            when(userRepository.findByEmailAndPasswordAndDeletedFalse(any(), any()))
+                .thenReturn(Optional.empty());
+
+            // when & then
+            assertThrows(UserNotFoundException.class, () -> {
+                userService.login(userLoginRequest);
+            });
         }
     }
 
