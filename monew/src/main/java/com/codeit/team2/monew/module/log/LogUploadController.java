@@ -2,7 +2,6 @@ package com.codeit.team2.monew.module.log;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -19,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/logs")
 @RequiredArgsConstructor
 public class LogUploadController {
-
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
     private final LogUploadService logUploadService;
     private final ZoneId zoneId;
