@@ -1,7 +1,6 @@
 package com.codeit.team2.monew.config.queryAspect;
 
 import java.lang.reflect.Proxy;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -47,9 +46,5 @@ public class QueryStatisticsAop {
             queryStatistics.getApiUrl(), queryStatistics.getQueryCounts(),
             queryStatistics.getQueryTime());
         return result;
-    }
-
-    private boolean isInRequestScope(final ServletRequestAttributes attributes) {
-        return Objects.nonNull(attributes);
     }
 }
