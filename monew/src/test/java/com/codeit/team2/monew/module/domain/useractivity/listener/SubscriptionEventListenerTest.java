@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
+import com.codeit.team2.monew.module.domain.subscription.event.SubscriptionDeleteEvent;
 import com.codeit.team2.monew.module.domain.subscription.event.SubscriptionRegisterEvent;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
 import java.util.UUID;
@@ -39,4 +40,17 @@ class SubscriptionEventListenerTest {
         verify(userActivityService).createSubscriptionItem(subscription, interest, userId);
     }
 
+    @Test
+    void deleteSubscriptionItem_호출_성공() {
+        // given
+        Subscription subscription = mock(Subscription.class);
+        UUID userId = UUID.randomUUID();
+        SubscriptionDeleteEvent event = new SubscriptionDeleteEvent(subscription, userId);
+
+        // when
+        listener.deleteSubscriptionItem(event);
+
+        // then
+        verify(userActivityService).deleteSubscriptionItem(subscription, userId);
+    }
 }
