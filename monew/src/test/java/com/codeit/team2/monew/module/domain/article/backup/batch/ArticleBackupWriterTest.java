@@ -149,8 +149,6 @@ class ArticleBackupWriterTest {
         double ratio2 = (double) bodies.get(2).contentLength() / bodies.get(1).contentLength();
 
         // 배치 크기 비율(50/5=10, 200/50=4)과 RequestBody 크기 비율이 유사한지 확인 (±10% 오차 허용)
-        System.out.println(ratio1);
-        System.out.println(ratio2);
         assertThat(ratio1).isBetween(9.0, 11.0); // 10 ±10%
         assertThat(ratio2).isBetween(3.6, 4.4);  // 4 ±10%
     }
