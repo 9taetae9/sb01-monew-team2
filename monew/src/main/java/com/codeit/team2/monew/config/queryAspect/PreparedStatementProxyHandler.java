@@ -2,6 +2,7 @@ package com.codeit.team2.monew.config.queryAspect;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +33,7 @@ public class PreparedStatementProxyHandler implements InvocationHandler {
      * @return 이 메소드가 execute, executeUpdate 등 쿼리를 실행하는 메소드인지 확인함
      */
     private boolean isExecuteQuery(final Method method) {
-        return method.getName().contains("execute");
+        List<String> JDBC_QUERY_METHOD = List.of("executeQuery", "execute", "executeUpdate");
+        return JDBC_QUERY_METHOD.contains(method.getName());
     }
 }
