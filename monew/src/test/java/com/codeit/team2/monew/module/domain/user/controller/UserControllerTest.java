@@ -1,6 +1,8 @@
 package com.codeit.team2.monew.module.domain.user.controller;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -114,5 +116,20 @@ class UserControllerTest {
             .andExpect(jsonPath("$.email").value(email))
             .andExpect(jsonPath("$.nickname").value(nickname))
             .andExpect(jsonPath("$.createdAt").value(createdAt.toString()));
+    }
+
+    @Test
+    void 사용자_논리_삭제_성공() throws Exception {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID loginId = userId;
+        doNothing().when(userService).softDeleteUser(loginId, userId);
+
+        // when & then
+        mockMvc.perform(
+                delete("/api/users/{userId}", userId)
+                    .header("Monew-Request-User-Id", loginId)
+            )
+            .andExpect(status().isNoContent());
     }
 }
