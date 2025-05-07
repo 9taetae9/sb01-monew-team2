@@ -5,7 +5,12 @@ import java.util.Map;
 import java.util.UUID;
 
 public class UserNotFoundException extends BaseException {
+
     public UserNotFoundException(UUID userId) {
         super(UserErrorCode.USER_NOT_FOUND, Map.of("userId", userId));
+    }
+
+    public UserNotFoundException(String email) {
+        super(UserErrorCode.USER_NOT_FOUND, Map.of("email", email));
     }
 }

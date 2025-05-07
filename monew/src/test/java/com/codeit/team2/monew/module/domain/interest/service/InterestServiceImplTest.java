@@ -213,6 +213,8 @@ class InterestServiceImplTest {
 
         Interest interest = TestInterestFactory.create("interest1", List.of("k1", "k2"));
         Slice<Interest> slices = new SliceImpl<>(List.of(interest), PageRequest.of(0, 3), false);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(interestRepository.findAll(cursorPageRequestInterestDto.keyword(),
             cursorPageRequestInterestDto.orderBy(), cursorPageRequestInterestDto.direction(),
             cursorPageRequestInterestDto.cursor(), cursorPageRequestInterestDto.after(),

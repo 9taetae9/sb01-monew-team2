@@ -125,6 +125,11 @@ public class CommentServiceImpl implements CommentService {
     public CursorPageResponseCommentDto findAll(UUID userId,
         CursorPageRequestCommentDto cursorPageRequestCommentDto) {
 
+        if (!userRepository.existsById(userId)) {
+            log.debug("User Not Found - userId: {}", userId);
+            throw new UserNotFoundException(userId);
+        }
+
         Slice<Comment> slices = commentRepository.findAll(
             cursorPageRequestCommentDto.articleId(),
             cursorPageRequestCommentDto.orderBy(),

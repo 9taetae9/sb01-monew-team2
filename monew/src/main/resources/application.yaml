@@ -18,19 +18,26 @@ spring:
   sql:
     init:
       mode: always
-
   batch:
     jdbc:
       initialize-schema: always  # 개발 환경에서는 'always', 운영 환경에서는 'never'
     job:
       name: deleteNotificationJob
       enabled: false  # 애플리케이션 시작 시 모든 배치 작업 자동 실행 방지
+  jackson:
+    time-zone: Asia/Seoul
+    date-format: yyyy-MM-dd HH:mm:ss
 
 logging:
   level:
     root: info
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
+  file:
+    path: ./logs
+    name: ${logging.file.path}/application.log
+    archive: ${logging.file.path}/archive
+  retention-days: 7
 
 news:
   naver:
@@ -47,10 +54,12 @@ aws:
 
   s3:
     bucket-name: ${AWS_S3_BUCKET_NAME}
+    log-prefix: logs
 
 app:
-  db-type: postgresql  # postgresql || mongodb
+  db-type: mongodb  # postgresql || mongodb
   version: ${version}
+  timezone: Asia/Seoul
 
 server:
   tomcat:

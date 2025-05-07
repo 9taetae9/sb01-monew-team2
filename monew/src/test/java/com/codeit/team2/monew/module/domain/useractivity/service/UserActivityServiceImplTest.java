@@ -17,6 +17,8 @@ import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
+import com.codeit.team2.monew.module.domain.user.exception.UserUnauthorizedException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import com.codeit.team2.monew.module.domain.useractivity.dto.UserActivityDto;
 import com.codeit.team2.monew.module.domain.useractivity.mapper.UserActivityMapper;
@@ -148,7 +150,7 @@ class UserActivityServiceImplTest {
         UUID loginId = UUID.randomUUID();
 
         // when & then
-        assertThrows(Exception.class, () -> {
+        assertThrows(UserUnauthorizedException.class, () -> {
             userActivitiesService.findUserActivities(loginId, userId);
         });
     }
@@ -162,7 +164,7 @@ class UserActivityServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when & then
-        assertThrows(Exception.class, () -> {
+        assertThrows(UserNotFoundException.class, () -> {
             userActivitiesService.findUserActivities(loginId, userId);
         });
     }
