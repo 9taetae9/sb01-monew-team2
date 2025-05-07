@@ -62,9 +62,11 @@ public class ArticleRestoreService {
                     this, dateToProcess);
 
                 results.add(result);
-                log.info("Restored {} articles for date {}", result.restoredArticleCount(), dateToProcess);
+                log.info("Restored {} articles for date {}", result.restoredArticleCount(),
+                    dateToProcess);
             } catch (Exception e) {
-                log.error("Failed to restore articles for date {}: {}", dateToProcess, e.getMessage(), e);
+                log.error("Failed to restore articles for date {}: {}", dateToProcess,
+                    e.getMessage(), e);
                 results.add(new ArticleRestoreResultDto(
                     Instant.now(),
                     List.of(),
@@ -151,7 +153,8 @@ public class ArticleRestoreService {
     /**
      * 백업파일 처리 - 트랜잭션 서비스에서 호출
      */
-    ProcessFileResult processBackupFileWithTransaction(S3Object s3Object, Set<String> existingUrls) {
+    ProcessFileResult processBackupFileWithTransaction(S3Object s3Object,
+        Set<String> existingUrls) {
         try {
             List<Article> articles = processBackupFile(s3Object, existingUrls);
             if (!articles.isEmpty()) {
@@ -177,9 +180,11 @@ public class ArticleRestoreService {
         final List<UUID> savedIds = new ArrayList<>();
         final Timestamp now = Timestamp.from(Instant.now());
 
-        String sql = "INSERT INTO articles (id, title, source, source_url, summary, view_count, published_date, deleted, created_at, updated_at) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-            "ON CONFLICT (id) DO NOTHING";
+        String sql =
+            "INSERT INTO articles (id, title, source, source_url, summary, view_count, published_date, deleted, created_at, updated_at) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                "ON CONFLICT (id) DO NOTHING";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
@@ -214,6 +219,7 @@ public class ArticleRestoreService {
      * 파일 처리 결과
      */
     public static class ProcessFileResult {
+
         final boolean success;
         final List<UUID> savedIds;
         final Set<String> processedUrls;
@@ -250,7 +256,8 @@ public class ArticleRestoreService {
             try {
                 backupDtos = objectMapper.readValue(
                     responseStream,
-                    new TypeReference<List<ArticleBackupDto>>() {});
+                    new TypeReference<List<ArticleBackupDto>>() {
+                    });
                 log.info("Parsed {} articles from backup file {}",
                     backupDtos.size(), s3Object.key());
             } catch (IOException e) {
@@ -289,6 +296,7 @@ public class ArticleRestoreService {
 
     /**
      * S3 페이지네이션
+     *
      * @param prefix
      * @return
      */
@@ -323,7 +331,8 @@ public class ArticleRestoreService {
             new HashSet<>(),
             dto.viewCount(),
             dto.publishedDate(),
-            dto.deleted()
+            dto.deleted(),
+            null
         );
 
         article.setId(dto.id());
