@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.event.UserRegisterEvent;
+import com.codeit.team2.monew.module.domain.user.event.UserUpdateEvent;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,5 +33,18 @@ class UserEventListenerTest {
 
         // then
         verify(userActivityService).createUserActivity(user);
+    }
+
+    @Test
+    void updateUserNicknameInActivity_호출_성공() {
+        // given
+        User user = mock(User.class);
+        UserUpdateEvent event = new UserUpdateEvent(user);
+
+        // when
+        listener.updateUserActivity(event);
+
+        // then
+        verify(userActivityService).updateUserNicknameInActivity(user);
     }
 }
