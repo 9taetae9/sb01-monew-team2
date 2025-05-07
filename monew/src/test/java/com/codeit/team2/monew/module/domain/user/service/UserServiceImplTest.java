@@ -142,6 +142,19 @@ class UserServiceImplTest {
                 userService.updateUser(loginId, userId, userUpdateRequest);
             });
         }
+
+        @Test
+        void 존재하지_않는_유저_조회_시_실패() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname");
+
+            // when & then
+            assertThrows(UserNotFoundException.class, () -> {
+                userService.updateUser(loginId, userId, userUpdateRequest);
+            });
+        }
     }
 
     @Nested
