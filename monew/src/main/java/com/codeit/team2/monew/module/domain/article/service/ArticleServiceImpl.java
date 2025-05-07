@@ -12,6 +12,7 @@ import com.codeit.team2.monew.module.domain.article.repository.ArticleRepository
 import com.codeit.team2.monew.module.domain.article.repository.ArticleViewRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.time.Instant;
 import java.util.List;
@@ -95,6 +96,12 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public CursorPageResponseArticleDto findAll(UUID userId,
         CursorPageRequestArticleDto cursorPageRequestArticleDto) {
+
+        if (!userRepository.existsById(userId)) {
+            log.debug("User Not Found - userId: {}", userId);
+            throw new UserNotFoundException(userId);
+        }
+        
         Slice<Article> slices = articleRepository.findWithCursor(cursorPageRequestArticleDto);
 
         List<Article> articles = slices.getContent();

@@ -2,18 +2,22 @@ package com.codeit.team2.monew.module.domain.notification.service;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.notification.dto.CursorPageResponseNotificationDto;
 import com.codeit.team2.monew.module.domain.notification.dto.NotificationDto;
 import com.codeit.team2.monew.module.domain.notification.entity.Notification;
 import com.codeit.team2.monew.module.domain.notification.entity.ResourceType;
+import com.codeit.team2.monew.module.domain.notification.exception.NotificationAccessDeniedException;
+import com.codeit.team2.monew.module.domain.notification.exception.NotificationNotFoundException;
 import com.codeit.team2.monew.module.domain.notification.mapper.NotificationMapper;
 import com.codeit.team2.monew.module.domain.notification.repository.NotificationRepository;
 import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -46,16 +50,16 @@ public class NotificationServiceImpl implements NotificationService {
         if (!commentRepository.existsById(comment.getId())) {
             log.debug("[Notification Creation] Failed: Comment not found - commentId: {}",
                 comment.getId());
-            throw new RuntimeException("Comment not found");
+            throw new CommentNotFoundException(comment.getId());
         }
         if (!userRepository.existsById(author.getId())) {
             log.debug("[Notification Creation] Failed: Author not found - userId: {}",
                 author.getId());
-            throw new RuntimeException("Author not found");
+            throw new UserNotFoundException(author.getId());
         } else if (!userRepository.existsById(liker.getId())) {
             log.debug("[Notification Creation] Failed: Liker not found - userId: {}",
                 liker.getId());
-            throw new RuntimeException("Liker not found");
+            throw new UserNotFoundException(liker.getId());
         }
         String content = liker.getNickname() + "님이 나의 댓글을 좋아합니다.";
         Notification notification = new Notification(author, content, comment.getId(),
@@ -104,21 +108,21 @@ public class NotificationServiceImpl implements NotificationService {
         // 사용자 정보 확인
         if (!userRepository.existsById(userId)) {
             log.debug("[Notification Confirm] Failed: User not found - userId: {}", userId);
-            throw new RuntimeException("User Not Found");
+            throw new UserNotFoundException(userId);
         }
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> {
                 log.debug(
                     "[Notification Confirm] Failed: Notification not found - notificationId: {}",
                     notificationId);
-                return new RuntimeException("Notification Not Found");
+                return new NotificationNotFoundException(notificationId);
             });
 
         if (!notification.getUser().getId().equals(userId)) {
             log.debug(
                 "[Notification Confirm] Failed: User Access Denied - userId: {}, notificationId = {}",
                 userId, notificationId);
-            throw new RuntimeException("User Access Denied");
+            throw new NotificationAccessDeniedException(userId, notificationId);
         }
 
         notification.confirm();
@@ -130,7 +134,7 @@ public class NotificationServiceImpl implements NotificationService {
         // 사용자 정보 확인
         if (!userRepository.existsById(userId)) {
             log.debug("[Notification Confirm] Failed: User not found - userId: {}", userId);
-            throw new RuntimeException("User Not Found");
+            throw new UserNotFoundException(userId);
         }
         notificationRepository.confirmAllByUserId(userId);
     }
@@ -138,6 +142,11 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public CursorPageResponseNotificationDto findAll(UUID userId, Instant cursor, Instant after,
         int limit) {
+        // 사용자 정보 확인
+        if (!userRepository.existsById(userId)) {
+            log.debug("[Notification Find] Failed: User not found - userId: {}", userId);
+            throw new UserNotFoundException(userId);
+        }
         // 정렬 조건은 시간 순으로 고정
         Slice<Notification> slices = notificationRepository.findWithCursor(userId, cursor,
             after, limit);

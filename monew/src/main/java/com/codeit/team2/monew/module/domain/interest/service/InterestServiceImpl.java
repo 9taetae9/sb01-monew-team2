@@ -160,6 +160,9 @@ public class InterestServiceImpl implements InterestService {
     @Override
     public CursorPageResponseInterestDto findAll(UUID userId,
         CursorPageRequestInterestDto cursorPageRequestInterestDto) {
+
+        getUserOrThrow(userId);
+
         Slice<Interest> slices = interestRepository.findAll(
             cursorPageRequestInterestDto.keyword(), cursorPageRequestInterestDto.orderBy(),
             cursorPageRequestInterestDto.direction(), cursorPageRequestInterestDto.cursor(),

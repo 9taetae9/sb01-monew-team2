@@ -35,6 +35,11 @@ logging:
     root: info
     org.hibernate.SQL: warn
     org.hibernate.orm.jdbc.bind: warn
+  file:
+    path: /var/log/monew
+    name: ${logging.file.path}/application.log
+    archive: ${logging.file.path}/archive
+  retention-days: 14
 
 springdoc:
   api-docs:
