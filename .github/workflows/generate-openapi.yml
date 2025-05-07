@@ -92,9 +92,16 @@ jobs:
       - name: Commit and push
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
         run: |
-          cd ./release-branch/monew
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # release 브랜치 체크아웃
+          git fetch origin ${{ github.base_ref }}
+          git checkout -B ${{ github.base_ref }} origin/${{ github.base_ref }}
+          
+          cp ./pr-branch/monew/docs/swagger-${{ steps.get_version.outputs.version }}.json ./monew/docs/
+          
+          cd ./monew
           git add docs/swagger-${{ steps.get_version.outputs.version }}.json
           git commit -m "chore[bot]: add swagger spec for version ${{ steps.get_version.outputs.version }}"
           git push origin ${{ github.base_ref }}
