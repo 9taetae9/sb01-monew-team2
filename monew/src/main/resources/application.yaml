@@ -57,7 +57,7 @@ aws:
     log-prefix: logs
 
 app:
-  db-type: postgresql  # postgresql || mongodb
+  db-type: mongodb  # postgresql || mongodb
   version: ${version}
   timezone: Asia/Seoul
 
