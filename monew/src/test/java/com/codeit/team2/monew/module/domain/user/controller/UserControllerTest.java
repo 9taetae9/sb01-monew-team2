@@ -132,4 +132,19 @@ class UserControllerTest {
             )
             .andExpect(status().isNoContent());
     }
+
+    @Test
+    void 사용자_물리_삭제_성공() throws Exception {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID loginId = userId;
+        doNothing().when(userService).hardDeleteUser(loginId, userId);
+
+        // when & then
+        mockMvc.perform(
+                delete("/api/users/{userId}/hard", userId)
+                    .header("Monew-Request-User-Id", loginId)
+            )
+            .andExpect(status().isNoContent());
+    }
 }
