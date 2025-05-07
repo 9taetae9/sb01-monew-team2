@@ -56,7 +56,7 @@ class LogUploadServiceTest {
         ReflectionTestUtils.setField(logUploadService, "logRetentionDays", 7);
     }
 
-    @DisplayName("로그 업로드 - 파일 존재 및 S3 업로드 성공")
+    @DisplayName("로그 업로드 - 성공: S3 업로드 및 압축 파일 정리")
     @Test
     void uploadLogByDate_Success() throws IOException {
         LocalDate yesterday = LocalDate.now(TIME_ZONE).minusDays(1);
