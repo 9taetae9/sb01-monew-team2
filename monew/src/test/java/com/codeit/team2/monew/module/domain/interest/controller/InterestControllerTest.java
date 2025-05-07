@@ -1,15 +1,21 @@
 package com.codeit.team2.monew.module.domain.interest.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.codeit.team2.monew.module.domain.interest.exception.InterestErrorCode;
+import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
+import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResponseInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
+import com.codeit.team2.monew.module.domain.interest.exception.InterestErrorCode;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
@@ -222,4 +228,38 @@ class InterestControllerTest {
 
     }
 
+    @Test
+    @DisplayName("관심사 목록 조회 API 테스트")
+    void testFindAll() throws Exception {
+        // given
+        UUID userId = UUID.randomUUID();
+
+        List<InterestDto> content = List.of(
+            new InterestDto(UUID.randomUUID(), "테크놀로지", List.of("기술", "개발"), 1L, false),
+            new InterestDto(UUID.randomUUID(), "경제", List.of("주식", "금융"), 1L, false)
+        );
+
+        CursorPageResponseInterestDto responseDto = new CursorPageResponseInterestDto(content, null,
+            null, 10, 2, false);
+
+        when(interestService.findAll(any(), any())).thenReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/interests")
+                .header("Monew-Request-User-Id", userId.toString())
+                .param("keyword", "tech")
+                .param("orderBy", "name")
+                .param("direction", "ASC")
+                .param("limit", "10")
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content").isArray())
+            .andExpect(jsonPath("$.content[0].name").value("테크놀로지"))
+            .andExpect(jsonPath("$.hasNext").value(false));
+
+        // verify
+        verify(interestService).findAll(eq(userId),
+            any(CursorPageRequestInterestDto.class));
+    }
 }
+

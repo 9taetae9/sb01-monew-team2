@@ -11,6 +11,8 @@ import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
-@ActiveProfiles("test")
+@ActiveProfiles("test-temp")
 @Import({JpaConfig.class, QuerydslConfig.class})
 @Transactional
 class CommentCustomRepositoryImplTest {
@@ -110,5 +112,61 @@ class CommentCustomRepositoryImplTest {
         );
 
         assertThat(nextSlice.getContent()).isNotEmpty();
+    }
+
+    @Test
+    void testFindAll_lastPage_hasNextFalse() {
+        // 전체 5개라서 limit=5로 요청하면 마지막 페이지임
+        Slice<Comment> slice = commentCustomRepository.findAll(
+            articleId,
+            CommentOrderBy.createdAt,
+            Direction.ASC,
+            null,
+            null,
+            5
+        );
+
+        assertThat(slice.getContent()).hasSize(5);
+        assertThat(slice.hasNext()).isFalse();
+    }
+
+    @Test
+    void testFindAll_orderByLikeCountAsc_withDifferentLikeCounts() {
+        // 댓글 중 일부의 likeCount를 조작
+        List<Comment> comments = commentRepository.findAll();
+        comments.get(0).incrementLikeCount(); // 1
+        comments.get(1).incrementLikeCount(); // 1
+        comments.get(1).incrementLikeCount(); // 2
+
+        em.flush();
+        em.clear();
+
+        Slice<Comment> slice = commentCustomRepository.findAll(
+            articleId,
+            CommentOrderBy.likeCount,
+            Direction.ASC,
+            null,
+            null,
+            5
+        );
+
+        List<Comment> content = slice.getContent();
+        assertThat(content).isSortedAccordingTo(Comparator.comparing(Comment::getLikeCount));
+    }
+
+    @Test
+    void testFindAll_orderByCreatedAtDesc() {
+        Slice<Comment> slice = commentCustomRepository.findAll(
+            articleId,
+            CommentOrderBy.createdAt,
+            Direction.DESC,
+            null,
+            null,
+            5
+        );
+
+        List<Comment> content = slice.getContent();
+        assertThat(content).isSortedAccordingTo(
+            Comparator.comparing(Comment::getCreatedAt).reversed());
     }
 }
