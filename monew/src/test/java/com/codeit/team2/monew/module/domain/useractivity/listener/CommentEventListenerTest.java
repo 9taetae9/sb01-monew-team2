@@ -5,6 +5,8 @@ import static org.mockito.Mockito.verify;
 
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
+import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
+import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEvent;
 import com.codeit.team2.monew.module.domain.comment.event.CommentRegisterEvent;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
@@ -36,6 +38,19 @@ class CommentEventListenerTest {
 
         // then
         verify(userActivityService).createCommentItem(comment, article, user);
+    }
+
+    @Test
+    void createCommentLikeItem_호출_성공() {
+        // given
+        CommentLike commentLike = mock(CommentLike.class);
+        CommentLikeRegisterEvent event = new CommentLikeRegisterEvent(commentLike);
+
+        // when
+        listener.createCommentLikeItem(event);
+
+        // then
+        verify(userActivityService).createCommentLikeItem(commentLike);
     }
 
 }
