@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
+import com.codeit.team2.monew.module.domain.interest.event.InterestDeleteEvent;
 import com.codeit.team2.monew.module.domain.interest.event.InterestUpdateEvent;
 import com.codeit.team2.monew.module.domain.useractivity.service.MongoUserActivityService;
 import java.util.ArrayList;
@@ -37,5 +38,19 @@ class InterestEventListenerTest {
 
         // then
         verify(userActivityService).updateSubscriptionItemInActivity(interest, keywords, userId);
+    }
+
+    @Test
+    void deleteSubscriptionItem_호출_성공() {
+        // given
+        Interest interest = mock(Interest.class);
+        UUID userId = UUID.randomUUID();
+        InterestDeleteEvent event = new InterestDeleteEvent(interest, userId);
+
+        // when
+        listener.deleteSubscriptionItem(event);
+
+        // then
+        verify(userActivityService).deleteSubscriptionItem(interest, userId);
     }
 }
