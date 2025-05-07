@@ -14,6 +14,7 @@ import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.exception.UserEmailAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.user.exception.UserNicknameAlreadyExistsException;
+import com.codeit.team2.monew.module.domain.user.exception.UserUnauthorizedException;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.Optional;
@@ -126,6 +127,19 @@ class UserServiceImplTest {
 
             // then
             assertEquals("newNickname", userDto.nickname());
+        }
+
+        @Test
+        void 인증_되지_않는_유저_수정_실패() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = UUID.randomUUID();
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname");
+
+            // when & then
+            assertThrows(UserUnauthorizedException.class, () -> {
+                userService.updateUser(loginId, userId, userUpdateRequest);
+            });
         }
     }
 

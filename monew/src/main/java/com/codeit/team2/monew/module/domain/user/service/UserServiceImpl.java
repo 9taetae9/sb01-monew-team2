@@ -10,6 +10,7 @@ import com.codeit.team2.monew.module.domain.user.event.UserUpdateEvent;
 import com.codeit.team2.monew.module.domain.user.exception.UserEmailAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.user.exception.UserNicknameAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
+import com.codeit.team2.monew.module.domain.user.exception.UserUnauthorizedException;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.UUID;
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
     private void validateAuthority(UUID loginId, UUID userId) {
         if (!loginId.equals(userId)) {
-            throw new RuntimeException("Not Authorized");
+            throw new UserUnauthorizedException(loginId, userId);
         }
     }
 }
