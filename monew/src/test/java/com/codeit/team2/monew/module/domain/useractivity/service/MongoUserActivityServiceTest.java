@@ -21,6 +21,9 @@ import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
+import com.codeit.team2.monew.module.domain.user.exception.UserUnauthorizedException;
+import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import com.codeit.team2.monew.module.domain.useractivity.document.ArticleViewItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentLikeItem;
@@ -51,6 +54,9 @@ class MongoUserActivityServiceTest {
 
     @Mock
     private MongoUserActivityRepository userActivityRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private CommentRepository commentRepository;
@@ -106,7 +112,22 @@ class MongoUserActivityServiceTest {
             UUID loginId = UUID.randomUUID();
 
             // when & then
-            assertThrows(Exception.class, () -> {
+            assertThrows(UserUnauthorizedException.class, () -> {
+                userActivityService.findUserActivities(loginId, userId);
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저_조회() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
+
+            // when
+            when(userRepository.findById(any())).thenReturn(Optional.empty());
+
+            // then
+            assertThrows(UserNotFoundException.class, () -> {
                 userActivityService.findUserActivities(loginId, userId);
             });
         }
