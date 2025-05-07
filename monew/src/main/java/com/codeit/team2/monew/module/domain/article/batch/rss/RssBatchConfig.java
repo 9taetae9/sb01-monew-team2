@@ -29,7 +29,7 @@ public class RssBatchConfig {
     private final ItemWriter<List<ArticleInterestCreateCommand>> articleWriter;
 
     public RssBatchConfig(ItemReader<DummyArticle> dummyArticleReader,
-        ItemProcessor<DummyArticle, List<ArticleInterestCreateCommand>> articleProcessor,
+        @Qualifier("dummyArticleProcessor") ItemProcessor<DummyArticle, List<ArticleInterestCreateCommand>> articleProcessor,
         @Qualifier("batchArticleWriter") ItemWriter<List<ArticleInterestCreateCommand>> articleWriter) {
         this.dummyArticleReader = dummyArticleReader;
         this.articleProcessor = articleProcessor;
