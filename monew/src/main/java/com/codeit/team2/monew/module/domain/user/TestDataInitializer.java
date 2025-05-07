@@ -61,7 +61,8 @@ public class TestDataInitializer implements ApplicationRunner {
                 Set.of(),
                 0L,
                 Instant.now(),
-                false
+                false,
+                null
             );
             articleRepository.save(article);
 
@@ -105,6 +106,7 @@ public class TestDataInitializer implements ApplicationRunner {
             0L,
             Instant.now(),
             false
+            , null
         );
         articleRepository.save(article);
     }
@@ -126,7 +128,7 @@ public class TestDataInitializer implements ApplicationRunner {
                 Set.of(),
                 0L,
                 Instant.now(),
-                false
+                false, null
             ));
 
         CommentRegisterRequest commentRegisterRequest = new CommentRegisterRequest(
@@ -188,7 +190,7 @@ public class TestDataInitializer implements ApplicationRunner {
                 Set.of(),
                 0L,
                 Instant.now(),
-                false
+                false, null
             ));
 
         CommentRegisterRequest commentRegisterRequest = new CommentRegisterRequest(
@@ -225,7 +227,7 @@ public class TestDataInitializer implements ApplicationRunner {
                 Set.of(),
                 0L,
                 Instant.now(),
-                false
+                false, null
             ));
 
         CommentRegisterRequest commentRegisterRequest = new CommentRegisterRequest(

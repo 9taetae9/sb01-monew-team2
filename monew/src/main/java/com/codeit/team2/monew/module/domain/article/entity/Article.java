@@ -52,6 +52,9 @@ public class Article extends BaseEntity {
     private Instant publishedDate;
     private Boolean deleted;
 
+    @Column(name = "body_tsv", columnDefinition = "tsvector", insertable = false, updatable = false)
+    private String bodyTsv;
+
     public void incrementView() {
         viewCount++;
     }

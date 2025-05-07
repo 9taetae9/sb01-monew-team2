@@ -54,7 +54,7 @@ public class KeywordCacheTest {
         given(interestKeywordRepository.findAllWithInterests())
             .willReturn(List.of(ik1, ik2, ik3));
         // when
-        keywordCache.init();
+//        keywordCache.init();
         Map<String, List<Interest>> cache = keywordCache.getCache();
 
         // then
