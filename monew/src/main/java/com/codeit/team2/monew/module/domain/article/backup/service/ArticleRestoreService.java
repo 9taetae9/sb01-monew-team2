@@ -71,16 +71,7 @@ public class ArticleRestoreService {
             } catch (Exception e) {
                 log.error("Failed to restore articles for date {}: {}", dateToProcess, e.getMessage(), e);
 
-                if (e instanceof ArticleBackupException) {
-                    throw (ArticleBackupException) e;
-                }else{
-                    results.add(new ArticleRestoreResultDto(
-                        Instant.now(),
-                        List.of(),
-                        0L
-                    ));
-                }
-
+                results.add(new ArticleRestoreResultDto(Instant.now(), List.of(), 0L));
             }
             current = current.plusDays(1);
         }
