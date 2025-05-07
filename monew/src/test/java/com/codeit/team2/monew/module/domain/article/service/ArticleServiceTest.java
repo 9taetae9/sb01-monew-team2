@@ -71,7 +71,7 @@ public class ArticleServiceTest {
         ArticleInterest interest = mock(ArticleInterest.class);
         Article article = new Article(
             "test", "NAVER", "https://test.com", "this is test summary", Set.of(interest), 0L,
-            Instant.now(), false
+            Instant.now(), false, null
         );
 
         ReflectionTestUtils.setField(article, "id", UUID.randomUUID());
@@ -106,7 +106,7 @@ public class ArticleServiceTest {
         ArticleInterest interest = mock(ArticleInterest.class);
         Article article = new Article(
             "test", "NAVER", "https://test.com", "this is test summary", Set.of(interest), 1L,
-            Instant.now(), false
+            Instant.now(), false, null
         );
 
         ReflectionTestUtils.setField(article, "id", UUID.randomUUID());
@@ -145,7 +145,8 @@ public class ArticleServiceTest {
             Set.of(),
             0L,
             Instant.now(),
-            false
+            false,
+            null
         );
 
         BDDMockito.given(articleRepository.findById(randomId))

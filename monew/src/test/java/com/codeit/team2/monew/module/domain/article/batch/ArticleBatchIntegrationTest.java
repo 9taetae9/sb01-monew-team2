@@ -3,6 +3,7 @@ package com.codeit.team2.monew.module.domain.article.batch;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
+import com.codeit.team2.monew.module.domain.article.batch.rss.KeywordCache;
 import com.codeit.team2.monew.module.domain.article.dto.FetchCommand;
 import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.article.external.NaverApiNewsClient;
@@ -56,6 +57,9 @@ public class ArticleBatchIntegrationTest {
     private JobLauncherTestUtils jobLauncherTestUtils;
 
     @Autowired
+    private KeywordCache keywordCache;
+
+    @Autowired
     @Qualifier("articleBatchJob")
     private Job articleBatchJob;
 
@@ -68,9 +72,9 @@ public class ArticleBatchIntegrationTest {
     @BeforeEach
     void setUp() {
         jobLauncherTestUtils.setJob(articleBatchJob);
-
-        Article mockArticle = new Article("mock", "NAVER", "http://mock.com", "mock", null, 0L,
-            Instant.now(), false);
+        keywordCache.refresh();
+        Article mockArticle = new Article("AI", "NAVER", "http://mock.com", "AI", null, 0L,
+            Instant.now(), false, null);
 
         BDDMockito.given(naverNewsClient.fetchArticles(any(FetchCommand.class)))
             .willReturn(List.of(mockArticle));
@@ -89,7 +93,7 @@ public class ArticleBatchIntegrationTest {
         List<Article> articles = articleRepository.findAll();
 
         assertThat(articles).hasSize(1);
-        assertThat(articles.get(0).getTitle()).isEqualTo("mock");
+        assertThat(articles.get(0).getTitle()).isEqualTo("AI");
     }
 
 }

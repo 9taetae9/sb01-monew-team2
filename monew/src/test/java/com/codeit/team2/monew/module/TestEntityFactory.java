@@ -23,7 +23,7 @@ public class TestEntityFactory {
             "Test Summary",
             0L,
             Instant.now(),
-            false
+            false, null
         );
     }
 
@@ -36,7 +36,7 @@ public class TestEntityFactory {
             Set.of(),
             0L,
             Instant.now(),
-            false
+            false, null
         );
 
         ReflectionTestUtils.setField(article, "id", UUID.randomUUID());
