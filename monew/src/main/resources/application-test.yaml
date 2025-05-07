@@ -22,6 +22,11 @@ spring:
       mode: never
   main:
     allow-bean-definition-overriding: true
+  batch:
+    jdbc:
+      initialize-schema: embedded
+    job:
+      enabled: false # 테스트 시 자동 실행 방지
 
 logging:
   level:
@@ -33,3 +38,5 @@ aws:
   credentials:
     accessKey: tmp
     secretKey: tmp
+  s3:
+    bucket-name: test-bucket

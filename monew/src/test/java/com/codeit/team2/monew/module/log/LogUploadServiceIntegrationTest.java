@@ -38,9 +38,6 @@ import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 @Testcontainers
 @ActiveProfiles("test")
 @Tag("integration")
-@TestPropertySource(properties = {
-    "aws.s3.bucket-name=test-bucket"
-})
 public class LogUploadServiceIntegrationTest {
 
     @Container
