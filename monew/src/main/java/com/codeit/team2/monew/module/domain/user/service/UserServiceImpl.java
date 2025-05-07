@@ -15,10 +15,12 @@ import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -31,10 +33,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto registerUser(UserRegisterRequest userRegisterRequest) {
         if (userRepository.existsByEmail(userRegisterRequest.email())) {
+            log.debug("User Email Already Exists: email={}", userRegisterRequest.email());
             throw new UserEmailAlreadyExistsException(userRegisterRequest.email());
         }
 
         if (userRepository.existsByNickname(userRegisterRequest.nickname())) {
+            log.debug("User Nickname Already Exists: nickname={}", userRegisterRequest.nickname());
             throw new UserNicknameAlreadyExistsException(userRegisterRequest.nickname());
         }
 
@@ -67,7 +71,10 @@ public class UserServiceImpl implements UserService {
     public UserDto login(UserLoginRequest userLoginRequest) {
         User user = userRepository.findByEmailAndPasswordAndDeletedFalse(
             userLoginRequest.email(), userLoginRequest.password()
-        ).orElseThrow(() -> new UserNotFoundException(userLoginRequest.email()));
+        ).orElseThrow(() -> {
+            log.debug("User Not Found: email={}", userLoginRequest.email());
+            return new UserNotFoundException(userLoginRequest.email());
+        });
 
         return userMapper.toUserDto(user);
     }
@@ -94,11 +101,15 @@ public class UserServiceImpl implements UserService {
 
     private User findUserOrThrow(UUID userId) {
         return userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(userId));
+            .orElseThrow(() -> {
+                log.debug("User Not Found: id={}", userId);
+                return new UserNotFoundException(userId);
+            });
     }
 
     private void validateAuthority(UUID loginId, UUID userId) {
         if (!loginId.equals(userId)) {
+            log.debug("User Unauthorized: loginId={} userId={}", loginId, userId);
             throw new UserUnauthorizedException(loginId, userId);
         }
     }
