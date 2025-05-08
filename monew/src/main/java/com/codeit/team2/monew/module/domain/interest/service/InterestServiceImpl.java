@@ -98,7 +98,8 @@ public class InterestServiceImpl implements InterestService {
         Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
             .collect(Collectors.toMap(ik -> ik.getKeyword().getName(), ik -> ik));
 
-        for (String keyword : request.keywords()) {
+        Set<String> keywordSet = new HashSet<>(request.keywords());
+        for (String keyword : keywordSet) {
             if (!savedKeywords.containsKey(keyword)) {
                 Keyword getKeyword = keywordRepository.findByName(keyword)
                     .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
