@@ -37,9 +37,6 @@ public class LogUploadService {
     @Value("${aws.s3.log-prefix:logs}")
     private String s3LogPrefix;
 
-    @Value("${logging.file.path:./logs}")
-    private String logFilePath;
-
     @Value("${logging.file.archive:${logging.file.path}/archive}")
     private String logArchivePath;
 
