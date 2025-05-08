@@ -337,6 +337,16 @@
               }
             }
           },
+          "201": {
+            "description": "등록 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestDto"
+                }
+              }
+            }
+          },
           "500": {
             "description": "서버 내부 오류",
             "content": {
@@ -349,16 +359,6 @@
           },
           "400": {
             "description": "잘못된 요청 (입력값 검증 실패)",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/InterestDto"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "등록 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -401,6 +401,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "구독 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionDto"
+                }
+              }
+            }
+          },
           "404": {
             "description": "관심사 정보 없음",
             "content": {
@@ -413,16 +423,6 @@
           },
           "500": {
             "description": "서버 내부 오류",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionDto"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "구독 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -600,8 +600,8 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "댓글 등록 성공",
+          "500": {
+            "description": "서버 내부 오류",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -610,8 +610,8 @@
               }
             }
           },
-          "500": {
-            "description": "서버 내부 오류",
+          "201": {
+            "description": "댓글 등록 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -769,6 +769,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "기사 뷰 등록 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleViewDto"
+                }
+              }
+            }
+          },
           "404": {
             "description": "댓글 정보 없음",
             "content": {
@@ -781,16 +791,6 @@
           },
           "500": {
             "description": "서버 내부 오류",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArticleViewDto"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "기사 뷰 등록 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -992,6 +992,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorPageResponseNotificationDto"
+                }
+              }
+            }
+          },
           "400": {
             "description": "잘못된 요청 (정렬 기준 오류, 페이지네이션 파라미터 오류 등)",
             "content": {
@@ -1004,16 +1014,6 @@
           },
           "500": {
             "description": "서버 내부 오류",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/CursorPageResponseNotificationDto"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "조회 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -1187,8 +1187,8 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "수정 성공",
+          "404": {
+            "description": "관심사 정보 없음",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -1197,8 +1197,8 @@
               }
             }
           },
-          "404": {
-            "description": "관심사 정보 없음",
+          "200": {
+            "description": "수정 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -1625,6 +1625,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "복구 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleRestoreResultDto"
+                }
+              }
+            }
+          },
           "500": {
             "description": "서버 내부 오류",
             "content": {
@@ -1634,16 +1644,6 @@
                   "items": {
                     "$ref": "#/components/schemas/ArticleRestoreResultDto"
                   }
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "복구 성공",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArticleRestoreResultDto"
                 }
               }
             }
