@@ -59,7 +59,8 @@ class ArticleBackupProcessorTest {
             articleInterests,
             10L,
             publishedDate,
-            false
+            false,
+            null
         );
         ReflectionTestUtils.setField(article, "id", articleId);
 
@@ -91,7 +92,8 @@ class ArticleBackupProcessorTest {
             new HashSet<>(),
             5L,
             Instant.now(),
-            false
+            false,
+            null
         );
         ReflectionTestUtils.setField(article, "id", articleId);
 
