@@ -20,11 +20,17 @@ jobs:
       AWS_S3_BUCKET_NAME: dummy
 
     steps:
-      - name: Checkout PR branch
+      - name: Checkout target branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.base_ref }}
-          path: release-branch
+          path: target-branch
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          path: pr-branch
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -39,14 +45,8 @@ jobs:
           VERSION=$(./gradlew properties --console=plain | grep "^version:" | awk '{print $2}')
           echo "Project version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-        working-directory: ./release-branch/monew
+        working-directory: ./pr-branch/monew
         continue-on-error: false
-
-      - name: Checkout target branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.base_ref }}
-          path: target-branch
 
       - name: Check if swagger file exists in PR branch
         id: check_pr
@@ -58,7 +58,7 @@ jobs:
             echo "✔️ swagger file does not exist in PR branch"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-        working-directory: ./release-branch
+        working-directory: ./pr-branch
 
       - name: Check if swagger file exists in target branch
         id: check_target
@@ -75,7 +75,7 @@ jobs:
       - name: Generate OpenAPI docs
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
         run: ./gradlew generateOpenApiDocs
-        working-directory: ./release-branch/monew
+        working-directory: ./pr-branch/monew
         continue-on-error: false
 
       - name: Copy file to docs/
@@ -87,10 +87,11 @@ jobs:
           cp build/openapi/docs/swagger-${{ steps.get_version.outputs.version }}.json docs/
           echo "➡ 복사 후 docs/ 경로:"
           ls -al docs/
-        working-directory: ./release-branch/monew
+        working-directory: ./pr-branch/monew
 
       - name: Commit and push
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
+        working-directory: ./target-branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -99,7 +100,7 @@ jobs:
           git fetch origin ${{ github.base_ref }}
           git checkout -B ${{ github.base_ref }} origin/${{ github.base_ref }}
           
-          cp ./pr-branch/monew/docs/swagger-${{ steps.get_version.outputs.version }}.json ./monew/docs/
+          cp ../pr-branch/monew/docs/swagger-${{ steps.get_version.outputs.version }}.json ./monew/docs/
           
           cd ./monew
           git add docs/swagger-${{ steps.get_version.outputs.version }}.json
