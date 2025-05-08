@@ -117,7 +117,9 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📄 OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전 생성 완료.\n\npath: `monew/docs/swagger-${{ steps.get_version.outputs.version }}.json`'
+              body: '📄 OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전 생성 완료.\n' +
+                    'path: `monew/docs/swagger-${{ steps.get_version.outputs.version }}.json`\n' + 
+                    'Target 브랜치: `${{ github.base_ref }}`'
             })
 
       - name: Comment on PR - Already in PR branch
@@ -130,7 +132,8 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 PR 브랜치에 이미 존재하여 새 문서가 생성되지 않음.'
+              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 PR 브랜치에 이미 존재하여 새 문서가 생성되지 않음.\n' +
+                    'PR 브랜치: `${{ github.head_ref }}`'
             })
 
       - name: Comment on PR - Already in target branch
@@ -143,5 +146,6 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 타겟 브랜치(${{ github.base_ref }})에 이미 존재하여 새 문서가 생성되지 않음.'
+              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 타겟 브랜치에 이미 존재하여 새 문서가 생성되지 않음.\n' +
+                    'Target 브랜치: `${{ github.base_ref }}`'
             })
