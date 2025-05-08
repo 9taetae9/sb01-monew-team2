@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @Tag("integration")
-@ActiveProfiles({"test-temp"})
+@ActiveProfiles({"test"})
 class InterestNameSimilarityServiceTest {
 
     private static final double DEFAULT_THRESHOLD = 0.8;
@@ -37,7 +37,6 @@ class InterestNameSimilarityServiceTest {
             String word2 = "사과";
 
             double result = interestNameSimilarityService.calculateSimilarity(word1, word2);
-            System.out.println(word1 + " 와 " + word2 + " : " + result);
 
             assertThat(result).isEqualTo(1.0);
         }
@@ -49,7 +48,6 @@ class InterestNameSimilarityServiceTest {
             String word2 = "개발자 공부";
 
             double result = interestNameSimilarityService.calculateSimilarity(word1, word2);
-            System.out.println(word1 + " 와 " + word2 + " : " + result);
 
             assertThat(result).isBetween(0.0, DEFAULT_THRESHOLD);
         }
@@ -61,7 +59,6 @@ class InterestNameSimilarityServiceTest {
             String word2 = "핸드폰케이스";
 
             double result = interestNameSimilarityService.calculateSimilarity(word1, word2);
-            System.out.println(word1 + " 와 " + word2 + " : " + result);
 
             assertThat(result).isBetween(DEFAULT_THRESHOLD, 1.0);
         }
@@ -102,7 +99,6 @@ class InterestNameSimilarityServiceTest {
 
             boolean result = interestNameSimilarityService.isSimilar(word1, word2,
                 DEFAULT_THRESHOLD);
-            System.out.println(word1 + " 와 " + word2 + " : " + result);
 
             assertThat(result).isFalse();
         }
