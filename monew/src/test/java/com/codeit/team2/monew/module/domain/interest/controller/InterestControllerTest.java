@@ -178,8 +178,7 @@ class InterestControllerTest {
         );
 
         when(interestService.update(requestDto, interestId, user.getId()))
-            .thenThrow(new InterestNotFoundException(InterestErrorCode.INTEREST_NOT_FOUND,
-                Map.of("id", interestId)));
+            .thenThrow(new InterestNotFoundException(interestId));
 
         //when & then
         mockMvc.perform(patch("/api/interests/{interestId}", interestId)
