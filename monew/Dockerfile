@@ -16,10 +16,11 @@ ENV PROJECT_NAME=monew
 ARG VERSION=v1.0.0
 ENV PROJECT_VERSION=${VERSION}
 ENV JAVA_OPTS="-Xmx384m -Xms256m -XX:MaxMetaspaceSize=210m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof"
+ENV LOGGING_FILE_PATH=/var/log/monew
 
-RUN mkdir -p /app/logs && chmod 755 /app/logs
+RUN mkdir -p /var/log/monew/archive && chmod 755 /var/log/monew/archive
 
 COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.jar
 EXPOSE 80
 
-ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -jar app.jar --server.port=80 --spring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod}"]
+ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -Dlogging.file.path=/var/log/monew -jar app.jar --server.port=80 --spring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod}"]

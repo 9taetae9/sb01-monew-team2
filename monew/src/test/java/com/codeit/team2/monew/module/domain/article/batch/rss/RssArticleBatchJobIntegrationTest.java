@@ -55,6 +55,8 @@ public class RssArticleBatchJobIntegrationTest {
     private InterestKeywordRepository interestKeywordRepository;
 
     @Autowired
+    private KeywordCache keywordCache;
+    @Autowired
     private ArticleRepository articleRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -94,6 +96,7 @@ public class RssArticleBatchJobIntegrationTest {
 
     @BeforeEach
     void setup() {
+
         jobLauncherTestUtils.setJob(rssArticleBatchJob);
 
     }
@@ -105,7 +108,7 @@ public class RssArticleBatchJobIntegrationTest {
         // given
 
         DummyArticle dummy = new DummyArticle(null, "AI", "NAVER", "http://AI.com",
-            "AI AI AI", 0L, Instant.now(), false);
+            "AI AI AI", 0L, Instant.now(), false, null);
         dummyArticleRepository.save(dummy);
 
         Keyword keyword = new Keyword("AI");
@@ -115,7 +118,7 @@ public class RssArticleBatchJobIntegrationTest {
         keywordRepository.save(keyword);
         interestRepository.save(interest);
         interestKeywordRepository.save(ik);
-
+        keywordCache.refresh();
         //when
 //        jobLauncherTestUtils.setJob(rssArticleBatchJob);
         JobExecution execution = jobLauncherTestUtils.launchJob();
