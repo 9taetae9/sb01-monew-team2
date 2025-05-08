@@ -17,7 +17,7 @@ ARG VERSION=v1.0.0
 ENV PROJECT_VERSION=${VERSION}
 ENV JAVA_OPTS="-Xmx384m -Xms256m -XX:MaxMetaspaceSize=210m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof"
 
-RUN mkdir -p /app/logs && chmod 755 /app/logs
+RUN mkdir -p /var/log/monew/archive && chmod 755 /var/log/monew/archive
 
 COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.jar
 EXPOSE 80
