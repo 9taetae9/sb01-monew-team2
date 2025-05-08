@@ -20,11 +20,17 @@ jobs:
       AWS_S3_BUCKET_NAME: dummy
 
     steps:
-      - name: Checkout PR branch
+      - name: Checkout target branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.base_ref }}
-          path: release-branch
+          path: target-branch
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          path: pr-branch
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -35,51 +41,46 @@ jobs:
 
       - name: Get project.version from Gradle (PR branch)
         id: get_version
+        working-directory: ./pr-branch/monew
         run: |
           VERSION=$(./gradlew properties --console=plain | grep "^version:" | awk '{print $2}')
           echo "Project version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-        working-directory: ./release-branch/monew
         continue-on-error: false
-
-      - name: Checkout target branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.base_ref }}
-          path: target-branch
 
       - name: Check if swagger file exists in PR branch
         id: check_pr
+        working-directory: ./pr-branch
         run: |
-          if [ -f "docs/swagger-${{ steps.get_version.outputs.version }}.json" ]; then
+          if [ -f "monew/docs/swagger-${{ steps.get_version.outputs.version }}.json" ]; then
             echo "✔️ swagger file exists in PR branch"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "✔️ swagger file does not exist in PR branch"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-        working-directory: ./release-branch
 
       - name: Check if swagger file exists in target branch
         id: check_target
+        working-directory: ./target-branch
         run: |
-          if [ -f "docs/swagger-${{ steps.get_version.outputs.version }}.json" ]; then
+          if [ -f "monew/docs/swagger-${{ steps.get_version.outputs.version }}.json" ]; then
             echo "✔️ swagger file exists in target branch"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "✔️ swagger file does not exist in target branch"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-        working-directory: ./target-branch
 
       - name: Generate OpenAPI docs
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
+        working-directory: ./pr-branch/monew
         run: ./gradlew generateOpenApiDocs
-        working-directory: ./release-branch/monew
         continue-on-error: false
 
       - name: Copy file to docs/
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
+        working-directory: ./pr-branch/monew
         run: |
           mkdir -p docs
           echo "➡ build/openapi/docs/ 경로 안 파일들:"
@@ -87,14 +88,21 @@ jobs:
           cp build/openapi/docs/swagger-${{ steps.get_version.outputs.version }}.json docs/
           echo "➡ 복사 후 docs/ 경로:"
           ls -al docs/
-        working-directory: ./release-branch/monew
 
       - name: Commit and push
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
+        working-directory: ./target-branch
         run: |
-          cd ./release-branch/monew
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # release 브랜치 체크아웃
+          git fetch origin ${{ github.base_ref }}
+          git checkout -B ${{ github.base_ref }} origin/${{ github.base_ref }}
+          
+          cp ../pr-branch/monew/docs/swagger-${{ steps.get_version.outputs.version }}.json ./monew/docs/
+          
+          cd ./monew
           git add docs/swagger-${{ steps.get_version.outputs.version }}.json
           git commit -m "chore[bot]: add swagger spec for version ${{ steps.get_version.outputs.version }}"
           git push origin ${{ github.base_ref }}
@@ -109,7 +117,9 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📄 OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전 생성 완료.\n\npath: `monew/docs/swagger-${{ steps.get_version.outputs.version }}.json`'
+              body: '📄 OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전 생성 완료.\n\n' +
+                    'Path: `monew/docs/swagger-${{ steps.get_version.outputs.version }}.json`\n' + 
+                    'Target 브랜치: `${{ github.base_ref }}`'
             })
 
       - name: Comment on PR - Already in PR branch
@@ -122,7 +132,8 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 PR 브랜치에 이미 존재하여 새 문서가 생성되지 않음.'
+              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 PR 브랜치에 이미 존재하여 새 문서가 생성되지 않음.\n\n' +
+                    'PR 브랜치: `${{ github.head_ref }}`'
             })
 
       - name: Comment on PR - Already in target branch
@@ -135,5 +146,6 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 타겟 브랜치(${{ github.base_ref }})에 이미 존재하여 새 문서가 생성되지 않음.'
+              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 타겟 브랜치에 이미 존재하여 새 문서가 생성되지 않음.\n\n' +
+                    'Target 브랜치: `${{ github.base_ref }}`'
             })

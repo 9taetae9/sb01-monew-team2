@@ -19,6 +19,7 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestReposito
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
@@ -149,7 +150,7 @@ public class InterestServiceImpl implements InterestService {
 
     private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId).orElseThrow(
-            () -> new RuntimeException("user not found"));
+            () -> new UserNotFoundException(userId));
     }
 
     private Interest getByIdOrThrow(UUID id) {

@@ -39,7 +39,7 @@ public class DummyArticleProcessorTest {
     void processorShouldReturnCommand() throws Exception {
         // given
         DummyArticle dummy = new DummyArticle(UUID.randomUUID(), "test", "TEST", "http://test.com",
-            "this is test summary", 0L, Instant.now(), false);
+            "this is test summary", 0L, Instant.now(), false, null);
         Article article = articleMapper.dummyArticleToArticle(dummy);
         Keyword keyword = new Keyword("test");
         Interest interest = Interest.create("test");

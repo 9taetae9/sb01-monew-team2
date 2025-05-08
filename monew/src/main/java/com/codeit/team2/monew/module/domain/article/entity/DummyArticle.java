@@ -39,4 +39,7 @@ public class DummyArticle {
     private Long viewCount;
     private Instant publishedDate;
     private Boolean deleted;
+
+    @Column(name = "body_tsv", columnDefinition = "tsvector", insertable = false, updatable = false)
+    private String bodyTsv;
 }

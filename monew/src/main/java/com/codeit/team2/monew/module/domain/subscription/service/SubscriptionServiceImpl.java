@@ -12,6 +12,7 @@ import com.codeit.team2.monew.module.domain.subscription.exception.SubscriptionN
 import com.codeit.team2.monew.module.domain.subscription.mapper.SubscriptionMapper;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -83,7 +84,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("user not found"));
+            () -> new UserNotFoundException(userId));
     }
 
     private Interest getInterestOrThrow(UUID interestId) {

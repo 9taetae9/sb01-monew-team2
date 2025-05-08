@@ -1,12 +1,16 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
   batch:
     jdbc:
       initialize-schema: always
-
+  sql:
+    init:
+      mode: never
+      schema-locations:
+        - classpath:schema.sql
 aws:
   credentials:
     accessKey: tmp

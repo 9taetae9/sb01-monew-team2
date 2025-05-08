@@ -23,6 +23,7 @@ import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepositor
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +59,6 @@ class InterestServiceImplTest {
 
     @Mock
     private SubscriptionRepository subscriptionRepository;
-
 
     @Mock
     private InterestNameSimilarityService interestNameSimilarityService;
@@ -133,6 +133,24 @@ class InterestServiceImplTest {
             .isInstanceOf(SimilarInterestAlreadyExistsException.class);
     }
 
+    @DisplayName("존재하지 않는 유저인 경우 관심사 생성에 실패한다.")
+    @Test
+    void user_not_exist_create_failure() {
+        // given
+        User user = TestUserFactory.createWithName("name");
+
+        String name = "채소식단";
+        List<String> inputKeywords = List.of("당근", "시금치");
+        InterestRegisterRequest request = new InterestRegisterRequest(name, inputKeywords);
+
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> interestService.create(request, user.getId()))
+            .isInstanceOf(UserNotFoundException.class);
+    }
+
     @DisplayName("관심사 수정에서 키워드 추가/삭제가 정상적으로 수행된다.")
     @Test
     void update_success() {
@@ -167,14 +185,6 @@ class InterestServiceImplTest {
             .contains("시금치").doesNotContain("당근");
         verify(keywordRepository).delete(any(Keyword.class));
         verify(keywordRepository).save(any(Keyword.class));
-    }
-
-    Interest createInterest(String name, List<String> keywords) {
-        Interest mockInterest = Interest.create(name);
-        for (String keyword : keywords) {
-            mockInterest.addKeyword(new Keyword(keyword));
-        }
-        return mockInterest;
     }
 
     @DisplayName("관심사 삭제가 수행된다.")

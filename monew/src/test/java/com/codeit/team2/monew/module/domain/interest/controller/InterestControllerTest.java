@@ -15,7 +15,6 @@ import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegiste
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResponseInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
-import com.codeit.team2.monew.module.domain.interest.exception.InterestErrorCode;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
@@ -25,7 +24,6 @@ import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ActiveProfiles("test")
 @WebMvcTest(InterestController.class)
@@ -165,6 +164,22 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.subscribedByMe").value(interestDto.subscribedByMe()));
     }
 
+    @DisplayName("관심사 삭제를 성공하면 204를 응답합니다.")
+    @Test
+    void delete() throws Exception {
+        // given
+        UUID interestId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/interests/{interestId}", interestId)
+                .header("Monew-Request-User-Id", userId))
+            .andExpect(status().isNoContent());
+
+        // then
+        verify(interestService).delete(interestId, userId);
+    }
+
     @DisplayName("관심사를 찾을 수 없어 예외를 응답합니다.")
     @Test
     void update_failure() throws Exception {
@@ -178,8 +193,7 @@ class InterestControllerTest {
         );
 
         when(interestService.update(requestDto, interestId, user.getId()))
-            .thenThrow(new InterestNotFoundException(InterestErrorCode.INTEREST_NOT_FOUND,
-                Map.of("id", interestId)));
+            .thenThrow(new InterestNotFoundException(interestId));
 
         //when & then
         mockMvc.perform(patch("/api/interests/{interestId}", interestId)
@@ -196,6 +210,8 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.details.id").value(interestId.toString()));
     }
 
+
+    @DisplayName("유저가 관심사를 구독합니다.")
     @Test
     void subscription() throws Exception {
         // given
@@ -226,6 +242,23 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.interestKeywords[0]").value(keywords.get(0)))
             .andExpect(jsonPath("$.subscriberCount").value(subscriptionDto.subscriberCount()));
 
+    }
+
+    @DisplayName("구독 취소 성공하여 204를 응답합니다.")
+    @Test
+    void subscriptionCancel() throws Exception {
+        // given
+        UUID interestId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        // when
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/api/interests/{interestId}/subscriptions", interestId)
+                    .header("Monew-Request-User-Id", userId))
+            .andExpect(status().isNoContent());
+
+        // then
+        verify(subscriptionService).cancelSubscription(interestId, userId);
     }
 
     @Test

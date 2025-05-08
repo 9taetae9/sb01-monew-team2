@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.module.domain.article.batch;
 
 
+import com.codeit.team2.monew.module.domain.article.batch.rss.KeywordCache;
 import com.codeit.team2.monew.module.domain.article.entity.DummyArticle;
 import com.codeit.team2.monew.module.domain.article.external.ChosunRssNewsClient;
 import com.codeit.team2.monew.module.domain.article.external.HankyungRssNewsClient;
@@ -30,31 +31,36 @@ import org.springframework.web.bind.annotation.RestController;
 public class ArticleBatchTestController {
 
     private final JobLauncher jobLauncher;
-
     private final Job articleBatchJob;
     private final Job rssArticleBatchJob;
+
+    private final Job rssArticleBatchJobV2;
     private final HankyungRssNewsClient hankyungNewsClient;
     private final ChosunRssNewsClient chosunRssNewsClient;
     private final YonhapRssNewsClient yonhapRssNewsClient;
     private final RssFetchService rssFetchService;
     private final ArticleBatchScheduler scheduler;
+    private final KeywordCache keywordCache;
 
     public ArticleBatchTestController(JobLauncher jobLauncher,
         @Qualifier("articleBatchJob") Job articleBatchJob,
         @Qualifier("rssArticleBatchJob") Job rssArticleBatchJob,
+        @Qualifier("rssArticleBatchJobV2") Job rssArticleBatchJobV2,
         HankyungRssNewsClient hankyungNewsClient,
         ChosunRssNewsClient chosunRssNewsClient,
         YonhapRssNewsClient yonhapRssNewsClient,
         RssFetchService rssFetchService,
-        ArticleBatchScheduler scheduler) {
+        ArticleBatchScheduler scheduler, KeywordCache keywordCache) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
         this.rssArticleBatchJob = rssArticleBatchJob;
+        this.rssArticleBatchJobV2 = rssArticleBatchJobV2;
         this.hankyungNewsClient = hankyungNewsClient;
         this.chosunRssNewsClient = chosunRssNewsClient;
         this.yonhapRssNewsClient = yonhapRssNewsClient;
         this.rssFetchService = rssFetchService;
         this.scheduler = scheduler;
+        this.keywordCache = keywordCache;
     }
 
     @PostMapping("/test-all")
@@ -67,6 +73,7 @@ public class ArticleBatchTestController {
         rssFetchService.fetchAllRss();
         scheduler.runRssBatch();
     }
+
 
     @PostMapping("/run")
     public void runBatch() {
@@ -102,6 +109,21 @@ public class ArticleBatchTestController {
         }
     }
 
+    @PostMapping("/run-rss-v2")
+    public void runRssBatchV2() {
+
+        JobParameters params = new JobParametersBuilder()
+            .addLong("ts", System.currentTimeMillis())
+            .toJobParameters();
+
+        try {
+            jobLauncher.run(rssArticleBatchJobV2, params);
+        } catch (Exception e) {
+            log.error("Keyword batch 실패: {}", e);
+        }
+
+    }
+
 
     @GetMapping("/han")
     public ResponseEntity<List<DummyArticle>> getHankyungArticles() {
@@ -126,4 +148,5 @@ public class ArticleBatchTestController {
         rssFetchService.fetchAllRss();
         return "ok";
     }
+
 }
