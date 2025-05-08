@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.codeit.team2.monew.module.domain.interest.TestInterestFactory;
+import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestRepository;
 import com.codeit.team2.monew.module.domain.subscription.TestSubscriptionFactory;
@@ -18,6 +19,7 @@ import com.codeit.team2.monew.module.domain.subscription.mapper.SubscriptionMapp
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -78,6 +80,21 @@ class SubscriptionServiceImplTest {
         assertThat(result.interestKeywords()).hasSize(2).contains("당근", "시금치");
         assertThat(result.subscriberCount()).isEqualTo(1);
 
+    }
+
+    @DisplayName("존재하지 않는 유저인 경우 관심사 구독에 실패한다.")
+    @Test
+    void user_not_exist_create_failure() {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID interestId = UUID.randomUUID();
+
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> subscriptionService.subscription(interestId, userId))
+            .isInstanceOf(UserNotFoundException.class);
     }
 
     @DisplayName("유저가 관심사를 이미 구독중인 경우 실패한다.")
