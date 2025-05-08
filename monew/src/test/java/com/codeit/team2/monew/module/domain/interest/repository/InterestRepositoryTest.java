@@ -60,7 +60,7 @@ public class InterestRepositoryTest {
         interest.addSubscriber(user);
         Interest savedInterest = interestRepository.saveAndFlush(interest);
 
-        Article article = new Article("a", "a", "a", "a", Set.of(), 0L, Instant.now(), false);
+        Article article = new Article("a", "a", "a", "a", Set.of(), 0L, Instant.now(), false, null);
         articleRepository.saveAndFlush(article);
 
         ArticleInterest articleInterest = new ArticleInterest(article, savedInterest);

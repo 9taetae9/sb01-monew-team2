@@ -9,6 +9,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +52,10 @@ public class Article extends BaseEntity {
     private Long viewCount;
     private Instant publishedDate;
     private Boolean deleted;
+
+    @Transient
+    @Column(name = "body_tsv", columnDefinition = "tsvector", insertable = false, updatable = false)
+    private String bodyTsv;
 
     public void incrementView() {
         viewCount++;

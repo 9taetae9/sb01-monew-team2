@@ -38,6 +38,10 @@ public class KeywordToArticlesProcessor implements
         // List<InterestKeyword> iks = interestKeywordRepository.findAllByKeyword(keyword);
         List<Interest> interests = keywordCache.getCache()
             .get(keyword.getName()); //iks.stream().map(ik -> ik.getInterest()) // TODO : N + 1
+        if (interests == null || interests.isEmpty()) {
+            return List.of();
+        }
+
         // .collect(Collectors.toList());
 
         List<Article> articles = new ArrayList<>();

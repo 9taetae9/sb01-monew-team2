@@ -43,9 +43,9 @@ public class BatchArticleWriterTest {
         //given
 
         Article a = new Article("a", "a", "a", "a", Collections.emptySet(), 0L, Instant.now(),
-            false);
+            false, null);
         Article b = new Article("b", "b", "b", "b", Collections.emptySet(), 0L, Instant.now(),
-            false);
+            false, null);
         Interest i1 = Interest.create("a");
         Interest i2 = Interest.create("b");
 
