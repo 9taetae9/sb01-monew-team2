@@ -12,6 +12,10 @@ import com.codeit.team2.monew.module.domain.user.dto.request.UserRegisterRequest
 import com.codeit.team2.monew.module.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.team2.monew.module.domain.user.dto.response.UserDto;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserEmailAlreadyExistsException;
+import com.codeit.team2.monew.module.domain.user.exception.UserNicknameAlreadyExistsException;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
+import com.codeit.team2.monew.module.domain.user.exception.UserUnauthorizedException;
 import com.codeit.team2.monew.module.domain.user.mapper.UserMapper;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import java.util.Optional;
@@ -77,7 +81,7 @@ class UserServiceImplTest {
             when(userRepository.existsByEmail(any())).thenReturn(true);
 
             // when & then
-            assertThrows(Exception.class, () -> {
+            assertThrows(UserEmailAlreadyExistsException.class, () -> {
                 userService.registerUser(request);
             });
         }
@@ -95,7 +99,7 @@ class UserServiceImplTest {
             when(userRepository.existsByNickname(any())).thenReturn(true);
 
             // when & then
-            assertThrows(Exception.class, () -> {
+            assertThrows(UserNicknameAlreadyExistsException.class, () -> {
                 userService.registerUser(request);
             });
         }
@@ -125,6 +129,32 @@ class UserServiceImplTest {
             // then
             assertEquals("newNickname", userDto.nickname());
         }
+
+        @Test
+        void 인증_되지_않는_유저_수정_실패() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = UUID.randomUUID();
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname");
+
+            // when & then
+            assertThrows(UserUnauthorizedException.class, () -> {
+                userService.updateUser(loginId, userId, userUpdateRequest);
+            });
+        }
+
+        @Test
+        void 존재하지_않는_유저_조회_시_실패() {
+            // given
+            UUID userId = UUID.randomUUID();
+            UUID loginId = userId;
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("newNickname");
+
+            // when & then
+            assertThrows(UserNotFoundException.class, () -> {
+                userService.updateUser(loginId, userId, userUpdateRequest);
+            });
+        }
     }
 
     @Nested
@@ -149,6 +179,23 @@ class UserServiceImplTest {
             // then
             assertEquals(email, userDto.email());
             assertEquals(nickname, userDto.nickname());
+        }
+
+        @Test
+        void 올바르지_않은_이메일_혹은_비밀번호_입력_시_실패() {
+            // given
+            String email = "a@a.com";
+            String password = "password";
+
+            UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+
+            when(userRepository.findByEmailAndPasswordAndDeletedFalse(any(), any()))
+                .thenReturn(Optional.empty());
+
+            // when & then
+            assertThrows(UserNotFoundException.class, () -> {
+                userService.login(userLoginRequest);
+            });
         }
     }
 

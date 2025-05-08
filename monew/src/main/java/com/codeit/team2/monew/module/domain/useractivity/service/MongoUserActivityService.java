@@ -8,6 +8,8 @@ import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.subscription.entity.Subscription;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
+import com.codeit.team2.monew.module.domain.user.exception.UserUnauthorizedException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import com.codeit.team2.monew.module.domain.useractivity.document.ArticleViewItem;
 import com.codeit.team2.monew.module.domain.useractivity.document.CommentItem;
@@ -21,10 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.db-type", havingValue = "mongodb")
@@ -38,7 +42,8 @@ public class MongoUserActivityService implements UserActivityService {
     @Override
     public UserActivityDto findUserActivities(UUID loginId, UUID userId) {
         if (!loginId.equals(userId)) {
-            throw new RuntimeException("Not Authorized");
+            log.debug("User Unauthorized: loginId={} userId={}", loginId, userId);
+            throw new UserUnauthorizedException(loginId, userId);
         }
 
         UserActivity userActivity = findUserActivityOrSave(userId);
@@ -248,7 +253,10 @@ public class MongoUserActivityService implements UserActivityService {
         return userActivityRepository.findById(userId)
             .orElseGet(() -> {
                 User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Not Found User"));
+                    .orElseThrow(() -> {
+                        log.debug("User Not Found: id={}", userId);
+                        return new UserNotFoundException(userId);
+                    });
                 return createUserActivity(user);
             });
     }
