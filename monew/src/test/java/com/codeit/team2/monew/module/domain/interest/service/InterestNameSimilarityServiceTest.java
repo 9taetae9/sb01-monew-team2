@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.codeit.team2.monew.module.domain.interest.exception.InvalidSimilarityInputException;
 import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@Disabled
 @SpringBootTest
 @Tag("integration")
 @ActiveProfiles({"test-temp"})
