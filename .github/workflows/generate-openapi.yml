@@ -1,7 +1,7 @@
 name: Generate OpenAPI JSON on Release PR
 on:
   pull_request:
-    branches: [ 'release*', 'release-*' , 'task/*' ]
+    branches: [ 'release*', 'release-*' , 'task/**' ]
 
 permissions:
   contents: write
