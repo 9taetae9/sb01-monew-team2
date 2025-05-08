@@ -79,3 +79,24 @@ springdoc:
 
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, loggers # Actuator 엔드포인트 설정
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: monew
+  java:
+    version: 17
+  spring:
+    boot:
+      version: 3.4.4
