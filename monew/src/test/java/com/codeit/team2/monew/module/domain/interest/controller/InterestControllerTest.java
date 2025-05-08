@@ -2,8 +2,11 @@ package com.codeit.team2.monew.module.domain.interest.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,7 +18,6 @@ import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegiste
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestUpdateRequest;
 import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResponseInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
-import com.codeit.team2.monew.module.domain.interest.exception.InterestErrorCode;
 import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.service.InterestService;
 import com.codeit.team2.monew.module.domain.subscription.dto.SubscriptionDto;
@@ -25,7 +27,6 @@ import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -195,6 +196,9 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.details.id").value(interestId.toString()));
     }
 
+
+
+    @DisplayName("유저가 관심사를 구독합니다.")
     @Test
     void subscription() throws Exception {
         // given
@@ -225,6 +229,22 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.interestKeywords[0]").value(keywords.get(0)))
             .andExpect(jsonPath("$.subscriberCount").value(subscriptionDto.subscriberCount()));
 
+    }
+
+    @DisplayName("구독 취소 성공하여 204를 응답합니다.")
+    @Test
+    void subscriptionCancel() throws Exception {
+        // given
+        UUID interestId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        // when
+        mockMvc.perform(delete("/api/interests/{interestId}/subscriptions", interestId)
+                .header("Monew-Request-User-Id", userId))
+            .andExpect(status().isNoContent());
+
+        // then
+        verify(subscriptionService).cancelSubscription(interestId, userId);
     }
 
     @Test
