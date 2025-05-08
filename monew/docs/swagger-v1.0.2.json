@@ -67,16 +67,6 @@
               }
             }
           },
-          "201": {
-            "description": "회원가입 성공",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserDto"
-                }
-              }
-            }
-          },
           "500": {
             "description": "서버 내부 오류",
             "content": {
@@ -89,6 +79,16 @@
           },
           "400": {
             "description": "잘못된 요청 (입력값 검증 실패)",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "회원가입 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -119,16 +119,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "로그인 성공",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserDto"
-                }
-              }
-            }
-          },
           "401": {
             "description": "로그인 실패 (이메일 또는 비밀번호 불일치)",
             "content": {
@@ -151,6 +141,16 @@
           },
           "400": {
             "description": "잘못된 요청 (입력값 검증 실패)",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "로그인 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -337,6 +337,16 @@
               }
             }
           },
+          "201": {
+            "description": "등록 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestDto"
+                }
+              }
+            }
+          },
           "500": {
             "description": "서버 내부 오류",
             "content": {
@@ -349,16 +359,6 @@
           },
           "400": {
             "description": "잘못된 요청 (입력값 검증 실패)",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/InterestDto"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "등록 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -401,16 +401,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "구독 성공",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubscriptionDto"
-                }
-              }
-            }
-          },
           "404": {
             "description": "관심사 정보 없음",
             "content": {
@@ -423,6 +413,16 @@
           },
           "500": {
             "description": "서버 내부 오류",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "구독 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -769,8 +769,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "기사 뷰 등록 성공",
+          "404": {
+            "description": "댓글 정보 없음",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -779,8 +779,8 @@
               }
             }
           },
-          "404": {
-            "description": "댓글 정보 없음",
+          "200": {
+            "description": "기사 뷰 등록 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -887,16 +887,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "사용자 정보 수정 성공",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserDto"
-                }
-              }
-            }
-          },
           "403": {
             "description": "사용자 정보 수정 권한 없음",
             "content": {
@@ -919,6 +909,16 @@
           },
           "500": {
             "description": "서버 내부 오류",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "사용자 정보 수정 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -1187,6 +1187,16 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "수정 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestDto"
+                }
+              }
+            }
+          },
           "404": {
             "description": "관심사 정보 없음",
             "content": {
@@ -1199,16 +1209,6 @@
           },
           "500": {
             "description": "서버 내부 오류",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/InterestDto"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "수정 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -1312,6 +1312,16 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "댓글 수정 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentDto"
+                }
+              }
+            }
+          },
           "404": {
             "description": "댓글 정보 없음",
             "content": {
@@ -1324,16 +1334,6 @@
           },
           "500": {
             "description": "서버 내부 오류",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommentDto"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "댓글 수정 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -1386,16 +1386,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "사용자 활동 내역 조회 성공",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserActivityDto"
-                }
-              }
-            }
-          },
           "404": {
             "description": "사용자 정보 없음",
             "content": {
@@ -1408,6 +1398,16 @@
           },
           "500": {
             "description": "서버 내부 오류",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserActivityDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "사용자 활동 내역 조회 성공",
             "content": {
               "application/json;charset\u003dUTF-8": {
                 "schema": {
@@ -1625,16 +1625,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "복구 성공",
-            "content": {
-              "application/json;charset\u003dUTF-8": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArticleRestoreResultDto"
-                }
-              }
-            }
-          },
           "500": {
             "description": "서버 내부 오류",
             "content": {
@@ -1644,6 +1634,16 @@
                   "items": {
                     "$ref": "#/components/schemas/ArticleRestoreResultDto"
                   }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "복구 성공",
+            "content": {
+              "application/json;charset\u003dUTF-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleRestoreResultDto"
                 }
               }
             }
