@@ -30,6 +30,10 @@ spring:
     job:
       name: deleteNotificationJob
       enabled: false
+  boot:
+    admin:
+      client:
+        url: http://localhost:9090
 logging:
   level:
     root: info

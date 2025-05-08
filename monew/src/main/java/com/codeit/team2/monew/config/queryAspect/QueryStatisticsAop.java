@@ -22,6 +22,10 @@ public class QueryStatisticsAop {
 
     @Around("execution(* javax.sql.DataSource.getConnection())")
     public Object getConnection(ProceedingJoinPoint joinPoint) throws Throwable {
+        if (RequestContextHolder.getRequestAttributes() == null) {
+            // HTTP 요청이 아닌 경우 AOP 무시, 그냥 원래대로 진행
+            return joinPoint.proceed();
+        }
         Object connection = joinPoint.proceed();
         return Proxy.newProxyInstance(
             connection.getClass().getClassLoader(),

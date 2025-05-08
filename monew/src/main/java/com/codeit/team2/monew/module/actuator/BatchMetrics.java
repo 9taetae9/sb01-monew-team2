@@ -37,14 +37,21 @@ public class BatchMetrics {
     public void initGauges() {
         for (String jobName : jobExplorer.getJobNames()) {
             Tags tags = Tags.of("job", jobName);
-            totalCountMap.put(jobName, registerGauge("batch.job.total.count", tags));
-            successCountMap.put(jobName, registerGauge("batch.job.success.count", tags));
-            failureCountMap.put(jobName, registerGauge("batch.job.failure.count", tags));
-            lastDurationMap.put(jobName, registerGauge("batch.job.last.duration.millis", tags));
-            avgDurationMap.put(jobName, registerGauge("batch.job.avg.duration.millis", tags));
-            readCountMap.put(jobName, registerGauge("batch.job.read.count", tags));
-            writeCountMap.put(jobName, registerGauge("batch.job.write.count", tags));
-            skipCountMap.put(jobName, registerGauge("batch.job.skip.count", tags));
+            totalCountMap.put(jobName, registerGauge("batch.job.total.count", tags));   // 총 실행 횟수
+            successCountMap.put(jobName,
+                registerGauge("batch.job.success.count", tags));   // 성공한(COMPLETED) 횟수
+            failureCountMap.put(jobName,
+                registerGauge("batch.job.failure.count", tags));   // 실패(FAILED) 횟수
+            lastDurationMap.put(jobName,
+                registerGauge("batch.job.last.duration.millis", tags));    // 마지막 Job의 실행 시간
+            avgDurationMap.put(jobName,
+                registerGauge("batch.job.avg.duration.millis", tags));  // 전체 Job들의 평균 소요 시간
+            readCountMap.put(jobName,
+                registerGauge("batch.job.read.count", tags));     // 모든 Job에서 처리한 read 횟수 합
+            writeCountMap.put(jobName,
+                registerGauge("batch.job.write.count", tags));   // 모든 Job에서 처리한 write 횟수 합
+            skipCountMap.put(jobName,
+                registerGauge("batch.job.skip.count", tags)); // 모든 Job에서 처리한 skip 횟수 합
         }
     }
 
@@ -54,7 +61,7 @@ public class BatchMetrics {
         return gauge;
     }
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 10000)  // 10초마다 Map 업데이트
     public void updateMetrics() {
         for (String jobName : jobExplorer.getJobNames()) {
             List<JobInstance> jobInstances = jobExplorer.getJobInstances(jobName, 0,
