@@ -36,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ActiveProfiles("test")
 @WebMvcTest(InterestController.class)
@@ -166,6 +167,22 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.subscribedByMe").value(interestDto.subscribedByMe()));
     }
 
+    @DisplayName("관심사 삭제를 성공하면 204를 응답합니다.")
+    @Test
+    void delete() throws Exception {
+        // given
+        UUID interestId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/interests/{interestId}", interestId)
+                .header("Monew-Request-User-Id", userId))
+            .andExpect(status().isNoContent());
+
+        // then
+        verify(interestService).delete(interestId, userId);
+    }
+
     @DisplayName("관심사를 찾을 수 없어 예외를 응답합니다.")
     @Test
     void update_failure() throws Exception {
@@ -195,7 +212,6 @@ class InterestControllerTest {
             .andExpect(jsonPath("$.details").exists())
             .andExpect(jsonPath("$.details.id").value(interestId.toString()));
     }
-
 
 
     @DisplayName("유저가 관심사를 구독합니다.")
@@ -239,7 +255,7 @@ class InterestControllerTest {
         UUID userId = UUID.randomUUID();
 
         // when
-        mockMvc.perform(delete("/api/interests/{interestId}/subscriptions", interestId)
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/interests/{interestId}/subscriptions", interestId)
                 .header("Monew-Request-User-Id", userId))
             .andExpect(status().isNoContent());
 
