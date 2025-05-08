@@ -41,45 +41,46 @@ jobs:
 
       - name: Get project.version from Gradle (PR branch)
         id: get_version
+        working-directory: ./pr-branch/monew
         run: |
           VERSION=$(./gradlew properties --console=plain | grep "^version:" | awk '{print $2}')
           echo "Project version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-        working-directory: ./pr-branch/monew
         continue-on-error: false
 
       - name: Check if swagger file exists in PR branch
         id: check_pr
+        working-directory: ./pr-branch
         run: |
-          if [ -f "docs/swagger-${{ steps.get_version.outputs.version }}.json" ]; then
+          if [ -f "monew/docs/swagger-${{ steps.get_version.outputs.version }}.json" ]; then
             echo "✔️ swagger file exists in PR branch"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "✔️ swagger file does not exist in PR branch"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-        working-directory: ./pr-branch
 
       - name: Check if swagger file exists in target branch
         id: check_target
+        working-directory: ./target-branch
         run: |
-          if [ -f "docs/swagger-${{ steps.get_version.outputs.version }}.json" ]; then
+          if [ -f "monew/docs/swagger-${{ steps.get_version.outputs.version }}.json" ]; then
             echo "✔️ swagger file exists in target branch"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "✔️ swagger file does not exist in target branch"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-        working-directory: ./target-branch
 
       - name: Generate OpenAPI docs
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
-        run: ./gradlew generateOpenApiDocs
         working-directory: ./pr-branch/monew
+        run: ./gradlew generateOpenApiDocs
         continue-on-error: false
 
       - name: Copy file to docs/
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
+        working-directory: ./pr-branch/monew
         run: |
           mkdir -p docs
           echo "➡ build/openapi/docs/ 경로 안 파일들:"
@@ -87,7 +88,6 @@ jobs:
           cp build/openapi/docs/swagger-${{ steps.get_version.outputs.version }}.json docs/
           echo "➡ 복사 후 docs/ 경로:"
           ls -al docs/
-        working-directory: ./pr-branch/monew
 
       - name: Commit and push
         if: steps.check_pr.outputs.exists == 'false' && steps.check_target.outputs.exists == 'false'
@@ -117,8 +117,8 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📄 OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전 생성 완료.\n' +
-                    'path: `monew/docs/swagger-${{ steps.get_version.outputs.version }}.json`\n' + 
+              body: '📄 OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전 생성 완료.\n\n' +
+                    'Path: `monew/docs/swagger-${{ steps.get_version.outputs.version }}.json`\n' + 
                     'Target 브랜치: `${{ github.base_ref }}`'
             })
 
@@ -132,7 +132,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 PR 브랜치에 이미 존재하여 새 문서가 생성되지 않음.\n' +
+              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 PR 브랜치에 이미 존재하여 새 문서가 생성되지 않음.\n\n' +
                     'PR 브랜치: `${{ github.head_ref }}`'
             })
 
@@ -146,6 +146,6 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 타겟 브랜치에 이미 존재하여 새 문서가 생성되지 않음.\n' +
+              body: '⚠️ OpenAPI 문서: ${{ steps.get_version.outputs.version }} 버전이 타겟 브랜치에 이미 존재하여 새 문서가 생성되지 않음.\n\n' +
                     'Target 브랜치: `${{ github.base_ref }}`'
             })
