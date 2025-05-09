@@ -40,6 +40,7 @@ CREATE TABLE interest_keywords
     FOREIGN KEY (interest_id) REFERENCES interests (id) ON DELETE CASCADE,
     FOREIGN KEY (keyword_id) REFERENCES keywords (id) ON DELETE CASCADE
 );
+CREATE INDEX idx_interest_keyword_keyword_id ON interest_keywords(keyword_id);
 
 CREATE TABLE users
 (

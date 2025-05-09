@@ -2,6 +2,7 @@ package com.codeit.team2.monew.module.domain.interest.repository;
 
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,10 @@ public interface InterestRepository extends JpaRepository<Interest, UUID>,
 
     @Query("SELECT i.name FROM Interest i")
     List<String> findAllNames();
+
+    @Query("SELECT DISTINCT i FROM Interest i "
+        + "JOIN FETCH i.keywords ik "
+        + "JOIN FETCH ik.keyword "
+        + "WHERE i.id = :id")
+    Optional<Interest> findByIdWithKeywords(@Param("id") UUID id);
 }

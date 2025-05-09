@@ -92,32 +92,10 @@ public class InterestServiceImpl implements InterestService {
     public InterestDto update(InterestUpdateRequest request, UUID id, UUID userId) {
 
         User user = getUserOrThrow(userId);
-        Interest interest = getByIdOrThrow(id);
+        Interest interest = getByIdWithKeywordsOrThrow(id);
         boolean subscribedByMe = subscriptionRepository.existsByInterestAndUser(interest, user);
 
-        Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
-            .collect(Collectors.toMap(ik -> ik.getKeyword().getName(), ik -> ik));
-
-        Set<String> keywordSet = new HashSet<>(request.keywords());
-        for (String keyword : keywordSet) {
-            if (!savedKeywords.containsKey(keyword)) {
-                Keyword getKeyword = keywordRepository.findByName(keyword)
-                    .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
-                interest.addKeyword(getKeyword);
-            } else {
-                savedKeywords.remove(keyword);
-            }
-        }
-
-        if (!savedKeywords.isEmpty()) {
-            for (InterestKeyword interestKeyword : savedKeywords.values()) {
-                interest.getKeywords().remove(interestKeyword);
-                Keyword keyword = interestKeyword.getKeyword();
-                if (!interestKeywordRepository.existsByKeyword(keyword)) {
-                    keywordRepository.delete(keyword);
-                }
-            }
-        }
+        updateKeywords(interest, request.keywords());
 
         List<String> keywords = interest.getKeywords().stream()
             .map(ik -> ik.getKeyword().getName())
@@ -149,16 +127,6 @@ public class InterestServiceImpl implements InterestService {
             interest,
             userId
         ));
-    }
-
-    private User getUserOrThrow(UUID userId) {
-        return userRepository.findById(userId).orElseThrow(
-            () -> new UserNotFoundException(userId));
-    }
-
-    private Interest getByIdOrThrow(UUID id) {
-        return interestRepository.findById(id).orElseThrow(
-            () -> new InterestNotFoundException(id));
     }
 
     @Override
@@ -214,6 +182,64 @@ public class InterestServiceImpl implements InterestService {
 
         return new CursorPageResponseInterestDto(interestDtos, nextCursor, nextAfter,
             slices.getSize(), totalElements, hasNext);
+    }
+
+    private User getUserOrThrow(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(
+            () -> new UserNotFoundException(userId));
+    }
+
+    private Interest getByIdOrThrow(UUID id) {
+        return interestRepository.findById(id).orElseThrow(
+            () -> new InterestNotFoundException(id));
+    }
+
+    private Interest getByIdWithKeywordsOrThrow(UUID id) {
+        return interestRepository.findByIdWithKeywords(id).orElseThrow(
+            () -> new InterestNotFoundException(id));
+    }
+
+    private void updateKeywords(Interest interest, List<String> requestKeywords) {
+
+        Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
+            .collect(Collectors.toMap(ik -> ik.getKeyword().getName(), ik -> ik));
+
+        Set<String> requestKeywordSet = new HashSet<>(requestKeywords);
+
+        List<Keyword> existingKeywords = keywordRepository.findByNameIn(requestKeywordSet);
+        Map<String, Keyword> existingKeywordMap = existingKeywords.stream()
+            .collect(Collectors.toMap(Keyword::getName, k -> k));
+
+        for (String keyword : requestKeywordSet) {
+            if (!savedKeywords.containsKey(keyword)) {
+                Keyword getKeyword = existingKeywordMap.getOrDefault(keyword, new Keyword(keyword));
+                if (getKeyword.getId() == null) {
+                    getKeyword = keywordRepository.save(getKeyword);
+                }
+                interest.addKeyword(getKeyword);
+            } else {
+                savedKeywords.remove(keyword);
+            }
+        }
+
+        removeOrphanKeywords(interest, savedKeywords);
+    }
+
+    private void removeOrphanKeywords(Interest interest, Map<String, InterestKeyword> toRemove) {
+
+        if (toRemove.isEmpty()) {
+            return;
+        }
+        List<Keyword> removedKeyword = new ArrayList<>();
+
+        for (InterestKeyword interestKeyword : toRemove.values()) {
+            interest.getKeywords().remove(interestKeyword);
+            removedKeyword.add(interestKeyword.getKeyword());
+        }
+
+        List<Keyword> toDelete = keywordRepository.findOrphanKeywordsIn(removedKeyword);
+        keywordRepository.deleteAll(toDelete);
+
     }
 
 }
