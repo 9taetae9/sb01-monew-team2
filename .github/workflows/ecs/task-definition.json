@@ -48,6 +48,40 @@
           "max-buffer-size": "15m"
         }
       }
+    },
+    {
+      "name": "monew-admin-app",
+      "image": "462740558166.dkr.ecr.ap-northeast-2.amazonaws.com/monew-admin:latest",
+      "cpu": 256,
+      "memory": 512,
+      "memoryReservation": 384,
+      "essential": true,
+      "environment": [
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "prod"
+        }
+      ],
+      "portMappings": [
+        {
+          "name": "admin-app-90-tcp",
+          "containerPort": 90,
+          "hostPort": 90,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/monew-admin-task",
+          "awslogs-create-group": "true",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs",
+          "mode": "non-blocking",
+          "max-buffer-size": "15m"
+        }
+      }
     }
   ]
 }

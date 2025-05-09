@@ -14,6 +14,10 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DB_DEV}?retryWrites=true&w=majority&appName=Cluster0
+  boot:
+    admin:
+      client:
+        url: http://localhost:9090
 logging:
   level:
     org.mongodb.driver.protocol.command: DEBUG
