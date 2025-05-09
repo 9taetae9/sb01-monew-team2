@@ -19,10 +19,12 @@ import com.codeit.team2.monew.module.domain.interest.repository.InterestReposito
 import com.codeit.team2.monew.module.domain.interest.repository.KeywordRepository;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
+import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +71,8 @@ public class InterestServiceImpl implements InterestService {
 
         Interest interest = Interest.create(interestName);
 
-        for (String keyword : request.keywords()) {
+        Set<String> keywordSet = new HashSet<>(request.keywords());
+        for (String keyword : keywordSet) {
             Keyword getKeyword = keywordRepository.findByName(keyword)
                 .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
             interest.addKeyword(getKeyword);
@@ -95,7 +98,8 @@ public class InterestServiceImpl implements InterestService {
         Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
             .collect(Collectors.toMap(ik -> ik.getKeyword().getName(), ik -> ik));
 
-        for (String keyword : request.keywords()) {
+        Set<String> keywordSet = new HashSet<>(request.keywords());
+        for (String keyword : keywordSet) {
             if (!savedKeywords.containsKey(keyword)) {
                 Keyword getKeyword = keywordRepository.findByName(keyword)
                     .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
@@ -149,7 +153,7 @@ public class InterestServiceImpl implements InterestService {
 
     private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId).orElseThrow(
-            () -> new RuntimeException("user not found"));
+            () -> new UserNotFoundException(userId));
     }
 
     private Interest getByIdOrThrow(UUID id) {

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <property name="LOG_PATH" value="${LOG_PATH:-./logs}" />
-  <property name="LOG_ARCHIVE" value="${LOG_ARCHIVE:-${LOG_PATH}/archive}" />
-  <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{requestId}] [%X{clientIp}] - %msg%n" />
+  <springProperty scope="context" name="APP_TIMEZONE" source="app.timezone" defaultValue="Asia/Seoul"/>
+  <property name="LOG_PATH" value="${logging.file.path:-./logs}"/>
+  <property name="LOG_ARCHIVE" value="${logging.file.archive:-${LOG_PATH}/archive}"/>
+  <property name="LOG_PATTERN"
+    value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{requestId}] [%X{clientIp}] - %msg%n"/>
 
   <!-- 콘솔 로그 설정 -->
   <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
@@ -18,7 +20,7 @@
       <pattern>${LOG_PATTERN}</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${LOG_ARCHIVE}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <fileNamePattern>${LOG_ARCHIVE}/application.%d{yyyy-MM-dd, ${APP_TIMEZONE}}.log</fileNamePattern>
       <maxHistory>14</maxHistory>  <!-- 최대 14일 보관 -->
       <totalSizeCap>500MB</totalSizeCap>  <!-- 총 로그 크기 제한 -->
     </rollingPolicy>
@@ -26,10 +28,10 @@
 
   <!-- 루트 로거 설정 -->
   <root level="INFO">
-    <appender-ref ref="Console" />
-    <appender-ref ref="RollingFile" />
+    <appender-ref ref="Console"/>
+    <appender-ref ref="RollingFile"/>
   </root>
 
   <!-- 애플리케이션 로거 설정 -->
-  <logger name="com.codeit.team2.monew" level="INFO" />
+  <logger name="com.codeit.team2.monew" level="INFO"/>
 </configuration>

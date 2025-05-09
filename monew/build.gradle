@@ -18,7 +18,7 @@ subprojects {
 }
 
 group = 'com.codeit.team2'
-version = 'v2.0.0'
+version = 'v2.0.1'
 
 
 java {
@@ -105,6 +105,9 @@ dependencies {
 
     // Admin Client
     implementation 'de.codecentric:spring-boot-admin-starter-client:3.4.5'
+
+    implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
+
 }
 
 tasks.named('test') {

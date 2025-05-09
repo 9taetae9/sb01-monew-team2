@@ -55,7 +55,8 @@ class CommentCustomRepositoryImplTest {
     void setUp() {
         User user = userRepository.save(new User("email", "nickname", "password", false));
         Article article = articleRepository.save(
-            new Article("title", "source", "url", "summary", Set.of(), 0L, Instant.now(), false));
+            new Article("title", "source", "url", "summary", Set.of(), 0L, Instant.now(), false,
+                ""));
         articleId = article.getId();
 
         for (int i = 0; i < 5; i++) {

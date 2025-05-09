@@ -70,7 +70,7 @@ class ArticleCustomRepositoryImplTest {
         for (int i = 0; i < 10; i++) {
             Article article = new Article("title " + i, "source", "http://test" + i + ".com",
                 "summary",
-                Set.of(), (long) i, Instant.now(), false);
+                Set.of(), (long) i, Instant.now(), false, null);
             em.persist(article);
 
             ArticleInterest ai = new ArticleInterest(article, interest);
