@@ -6,7 +6,7 @@ plugins {
 
 jar {
     archiveBaseName.set('monew-admin')
-    archiveVersion.set('v1.0.0')
+    archiveVersion.set('v2.2.0')
 }
 
 dependencies {
