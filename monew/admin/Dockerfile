@@ -24,9 +24,9 @@ RUN apk add --no-cache tzdata && \
     echo "${TZ}" > /etc/timezone && \
     apk del tzdata
 
-RUN mkdir -p /var/log/monew/archive && chmod 755 /var/log/monew/archive
+RUN mkdir -p /var/log/admin/archive && chmod 755 /var/log/admin/archive
 
 COPY --from=builder /app/admin/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.jar
 EXPOSE 90
 
-ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -jar app.jar --server.port=90 --spring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod}"]
+ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -Duser.timezone=Asia/Seoul -Dlogging.file.path=/var/log/admin -jar app.jar --server.port=90 --spring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod}"]
