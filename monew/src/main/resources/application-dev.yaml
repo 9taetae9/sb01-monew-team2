@@ -8,9 +8,9 @@ spring:
     hibernate:
       ddl-auto: none
     defer-datasource-initialization: true
-    sql:
-      init:
-        mode: always
+  sql:
+    init:
+      mode: always
   data:
     mongodb:
       uri: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DB_DEV}?retryWrites=true&w=majority&appName=Cluster0
