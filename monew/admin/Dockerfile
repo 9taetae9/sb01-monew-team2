@@ -22,9 +22,9 @@ ENV TZ=Asia/Seoul
 RUN apk add --no-cache tzdata && \
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
-    apk del tzdata \
+    apk del tzdata
 
-RUN mkdir -p /app/logs && chmod 755 /app/logs
+RUN mkdir -p /var/log/monew/archive && chmod 755 /var/log/monew/archive
 
 COPY --from=builder /app/admin/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.jar
 EXPOSE 90
