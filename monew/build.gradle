@@ -6,6 +6,17 @@ plugins {
     id("org.springdoc.openapi-gradle-plugin") version "1.7.0"
 }
 
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = '17'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
 group = 'com.codeit.team2'
 version = 'v2.0.0'
 
