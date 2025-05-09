@@ -51,7 +51,7 @@
     },
     {
       "name": "monew-admin-app",
-      "image": "462740558166.dkr.ecr.ap-northeast-2.amazonaws.com/monew-admin:latest",
+      "image": "462740558166.dkr.ecr.ap-northeast-2.amazonaws.com/monew-admin:v1.0.0",
       "cpu": 256,
       "memory": 512,
       "memoryReservation": 384,
