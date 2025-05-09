@@ -16,7 +16,7 @@ ENV PROJECT_NAME=monew
 ARG VERSION=v1.0.0
 ENV PROJECT_VERSION=${VERSION}
 ENV TZ=Asia/Seoul
-ENV JAVA_OPTS="-Xmx384m -Xms256m -XX:MaxMetaspaceSize=210m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof"
+ENV JAVA_OPTS="-Xmx1024m -Xms1024m -XX:MaxMetaspaceSize=256m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof -XX:+UseCompressedOops"
 ENV LOGGING_FILE_PATH=/var/log/monew
 
 RUN apk add --no-cache tzdata && \
