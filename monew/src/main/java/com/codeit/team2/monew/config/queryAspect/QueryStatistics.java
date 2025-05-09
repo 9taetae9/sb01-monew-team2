@@ -1,6 +1,7 @@
 package com.codeit.team2.monew.config.queryAspect;
 
 import lombok.Getter;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -10,6 +11,7 @@ import org.springframework.web.context.annotation.RequestScope;
 @Component
 @RequestScope
 @Getter
+@Profile("dev")
 public class QueryStatistics {
 
     private String apiUrl;
