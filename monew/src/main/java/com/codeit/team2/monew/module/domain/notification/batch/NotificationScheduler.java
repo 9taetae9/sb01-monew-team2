@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.notification.batch;
 
+import java.time.ZoneId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -13,18 +14,21 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class NotificationScheduler {
 
+    private final ZoneId zoneId;
+
     private final JobLauncher jobLauncher;
     private final Job deleteNotificationJob;
 
     public NotificationScheduler(
         JobLauncher jobLauncher,
-        @Qualifier("deleteNotificationJob") Job deleteNotificationJob
+        @Qualifier("deleteNotificationJob") Job deleteNotificationJob, ZoneId zoneId
     ) {
         this.jobLauncher = jobLauncher;
         this.deleteNotificationJob = deleteNotificationJob;
+        this.zoneId = zoneId;
     }
 
-    @Scheduled(cron = "0 30 2 * * *")
+    @Scheduled(cron = "0 30 4 * * *", zone = "#{@timezoneId}")
     public void runJob() throws Exception {
         JobParameters parameters = new JobParametersBuilder()
             .addLong("timestamp", System.currentTimeMillis())
