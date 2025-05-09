@@ -30,6 +30,10 @@ spring:
     job:
       name: deleteNotificationJob
       enabled: false
+  boot:
+    admin:
+      client:
+        url: http://monew-admin-app:90
     hikari:
       maximum-pool-size: 20       # 기본 10에서 증가
       minimum-idle: 5             # 유휴 연결 수 유지

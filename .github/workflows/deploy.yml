@@ -20,6 +20,7 @@ env:
   ECS_CLUSTER: monew-cluster
   JAVA_OPTS: "-Xmx768m -Xms512m -XX:MaxMetaspaceSize=256m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof -XX:+UseCompressedOops -XX:+ExitOnOutOfMemoryError"
   SPRING_PROFILES_ACTIVE: "prod"
+  JAVA_OPTS_ADMIN: "-Xmx384m -Xms256m -XX:MaxMetaspaceSize=128m -XX:MetaspaceSize=64m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof -XX:+UseCompressedOops -XX:+ExitOnOutOfMemoryError"
 
 jobs:
   build-and-push:
@@ -42,7 +43,7 @@ jobs:
           VERSION=$(grep "version = " ./monew/build.gradle | sed "s/version = '\(.*\)'/\1/")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Extracted version: $VERSION"
-      
+
 
       - name: Grant Execution Permission
         run: chmod +x ./gradlew
@@ -70,6 +71,9 @@ jobs:
           docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
           docker push $ECR_REPOSITORY_URI:latest
           docker push $ECR_REPOSITORY_URI:${{ env.VERSION }}
+          # Build and push admin image
+          docker build -f ./admin/Dockerfile --build-arg VERSION=${{ env.VERSION }} -t $ECR_REPOSITORY_URI:admin-${{ env.VERSION }} . --platform linux/amd64
+          docker push $ECR_REPOSITORY_URI:admin-${{ env.VERSION }}
         working-directory: ./monew
 
   deploy:
@@ -96,8 +100,8 @@ jobs:
 
       - name: Update Task Definition with Environment Variables
         run: |
-          cat ${{ env.ECS_TASK_DEFINITION }} | jq --arg java_opts "${{ env.JAVA_OPTS }}" --arg profile "${{ env.SPRING_PROFILES_ACTIVE }}" --arg version "${{ env.VERSION }}" '
-          if .containerDefinitions[0].environment then 
+          cat ${{ env.ECS_TASK_DEFINITION }} | jq --arg java_opts "${{ env.JAVA_OPTS }}" --arg profile "${{ env.SPRING_PROFILES_ACTIVE }}" --arg version "${{ env.VERSION }}" --arg admin_version "${{ env.VERSION }}" '
+          if .containerDefinitions[0].environment then
             .containerDefinitions[0].environment += [
               {"name": "JAVA_OPTS", "value": $java_opts},
               {"name": "SPRING_PROFILES_ACTIVE", "value": $profile},
@@ -109,7 +113,22 @@ jobs:
               {"name": "SPRING_PROFILES_ACTIVE", "value": $profile},
               {"name": "PROJECT_VERSION", "value": $version}
             ]
-          end' > updated-task-def.json
+          end
+          if .containerDefinitions[1].environment then 
+            .containerDefinitions[1].environment += [
+              {"name": "JAVA_OPTS", "value": $java_opts_admin},
+              {"name": "SPRING_PROFILES_ACTIVE", "value": $profile},
+              {"name": "PROJECT_VERSION", "value": $admin_version}
+            ]
+          else 
+            .containerDefinitions[1].environment = [
+              {"name": "JAVA_OPTS", "value": $java_opts_admin},
+              {"name": "SPRING_PROFILES_ACTIVE", "value": $profile},
+              {"name": "PROJECT_VERSION", "value": $admin_version}
+            ]
+          end
+          .containerDefinitions[1].image = $ECR_REPOSITORY_URI + ":admin-" + $admin_version
+          ' > updated-task-def.json
           mv updated-task-def.json ${{ env.ECS_TASK_DEFINITION }}  
 
       - name: ECS 테스크 정의
@@ -119,6 +138,14 @@ jobs:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: monew-app
           image: ${{ env.ECR_REPOSITORY_URI }}:${{ env.VERSION }}
+
+      - name: ECS 테스크 정의 (monew-admin-app)
+        id: render-task-definition-admin
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          container-name: monew-admin-app
+          image: ${{ env.ECR_REPOSITORY_URI }}:admin-${{ env.VERSION }}
 
       - name: ECS 서비스 중지(프리티어 환경 고려)
         run: |
@@ -130,7 +157,7 @@ jobs:
       - name: ECS 배포
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          task-definition: ${{ steps.render-task-definition-admin.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
