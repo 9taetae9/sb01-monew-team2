@@ -34,6 +34,8 @@ spring:
     admin:
       client:
         url: http://172.31.27.197:90
+        instance:
+          prefer-ip-address: true
     hikari:
       maximum-pool-size: 20       # 기본 10에서 증가
       minimum-idle: 5             # 유휴 연결 수 유지
