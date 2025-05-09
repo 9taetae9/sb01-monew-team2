@@ -5,7 +5,9 @@ import java.lang.reflect.Method;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 
+@Profile("dev")
 @Slf4j
 @RequiredArgsConstructor
 public class PreparedStatementProxyHandler implements InvocationHandler {
