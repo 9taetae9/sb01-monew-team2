@@ -99,8 +99,8 @@ class LogUploadSchedulerTest {
         Scheduled uploadAnnotation = uploadMethod.getAnnotation(Scheduled.class);
 
         assertNotNull(uploadAnnotation, "uploadYesterdayLogs 메서드에 @Scheduled 어노테이션이 있어야 함");
-        assertEquals("0 40 3 * * ?", uploadAnnotation.cron(),
-            "매일 새벽 3시 40분에 실행되도록 설정되어야 함");
+        assertEquals("0 30 3 * * ?", uploadAnnotation.cron(),
+            "매일 새벽 3시 30분에 실행되도록 설정되어야 함");
 
         Method cleanupMethod = LogUploadScheduler.class.getMethod("cleanupOldLogs");
         Scheduled cleanupAnnotation = cleanupMethod.getAnnotation(Scheduled.class);

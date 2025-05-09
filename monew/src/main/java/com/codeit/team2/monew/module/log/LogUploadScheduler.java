@@ -16,9 +16,9 @@ public class LogUploadScheduler {
     private final ZoneId zoneId;
 
     /**
-     * 매일 03:40에 전날 로그 S3에 업로드
+     * 매일 03:30에 전날 로그 S3에 업로드
      */
-    @Scheduled(cron = "0 40 3 * * ?", zone = "#{@timezoneId}")
+    @Scheduled(cron = "0 30 3 * * ?", zone = "#{@timezoneId}")
     public void uploadYesterdayLogs() {
         LocalDate yesterday = LocalDate.now(zoneId).minusDays(1);
         log.info("Starting scheduled log upload for date: {}", yesterday);
