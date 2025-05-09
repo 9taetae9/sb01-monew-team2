@@ -53,7 +53,7 @@ public class ArticleBatchScheduler {
         }
     }
 
-    @Scheduled(cron = "0 20 * * * *")
+    @Scheduled(cron = "0 10 * * * *")
     public void runRssBatch() {
         log.info("Starting - RSS ARTICLE BATCH, time={}", Instant.now());
         fetchService.fetchAllRss();
