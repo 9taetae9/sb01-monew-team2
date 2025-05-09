@@ -6,8 +6,8 @@
   "requiresCompatibilities": [
     "EC2"
   ],
-  "cpu": "1024",
-  "memory": "1792",
+  "cpu": "1536",
+  "memory": "2048",
   "containerDefinitions": [
     {
       "name": "monew-app",
