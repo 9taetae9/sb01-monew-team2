@@ -17,6 +17,7 @@ import com.codeit.team2.monew.module.domain.interest.dto.response.CursorPageResp
 import com.codeit.team2.monew.module.domain.interest.dto.response.InterestDto;
 import com.codeit.team2.monew.module.domain.interest.entity.Interest;
 import com.codeit.team2.monew.module.domain.interest.entity.Keyword;
+import com.codeit.team2.monew.module.domain.interest.exception.InterestNotFoundException;
 import com.codeit.team2.monew.module.domain.interest.exception.SimilarInterestAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.interest.mapper.InterestMapper;
 import com.codeit.team2.monew.module.domain.interest.repository.InterestKeywordRepository;
@@ -195,6 +196,27 @@ class InterestServiceImplTest {
         verify(keywordRepository).save(any(Keyword.class));
         verify(keywordRepository).deleteAll(any());
     }
+
+    @DisplayName("존재하지 않는 관심사인 경우 관심사 수정에 실패한다.")
+    @Test
+    void interest_not_exist_create_failure() {
+        // given
+        User user = TestUserFactory.createWithName("name");
+        Interest interest = TestInterestFactory.create("채소식단", List.of("당근", "시금치"));
+
+        List<String> inputKeywords = List.of("시금치");
+        InterestUpdateRequest request = new InterestUpdateRequest(inputKeywords);
+
+        when(userRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(user));
+        when(interestRepository.findByIdWithKeywords(any(UUID.class)))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> interestService.update(request, interest.getId(), user.getId()))
+            .isInstanceOf(InterestNotFoundException.class);
+    }
+
 
     @DisplayName("관심사 삭제가 수행된다.")
     @Test
