@@ -20,6 +20,7 @@ env:
   ECS_CLUSTER: monew-cluster
   JAVA_OPTS: "-Xmx768m -Xms512m -XX:MaxMetaspaceSize=256m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof -XX:+UseCompressedOops -XX:+ExitOnOutOfMemoryError"
   SPRING_PROFILES_ACTIVE: "prod"
+  JAVA_OPTS_ADMIN: "-Xmx384m -Xms256m -XX:MaxMetaspaceSize=128m -XX:MetaspaceSize=64m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof -XX:+UseCompressedOops -XX:+ExitOnOutOfMemoryError"
 
 jobs:
   build-and-push:
@@ -115,13 +116,13 @@ jobs:
           end
           if .containerDefinitions[1].environment then 
             .containerDefinitions[1].environment += [
-              {"name": "JAVA_OPTS", "value": $java_opts},
+              {"name": "JAVA_OPTS", "value": $java_opts_admin},
               {"name": "SPRING_PROFILES_ACTIVE", "value": $profile},
               {"name": "PROJECT_VERSION", "value": $admin_version}
             ]
           else 
             .containerDefinitions[1].environment = [
-              {"name": "JAVA_OPTS", "value": $java_opts},
+              {"name": "JAVA_OPTS", "value": $java_opts_admin},
               {"name": "SPRING_PROFILES_ACTIVE", "value": $profile},
               {"name": "PROJECT_VERSION", "value": $admin_version}
             ]

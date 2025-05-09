@@ -15,7 +15,14 @@ WORKDIR /app
 ENV PROJECT_NAME=monew-admin
 ARG VERSION=v1.0.0
 ENV PROJECT_VERSION=${VERSION}
-ENV JAVA_OPTS="-Xmx384m -Xms256m -XX:MaxMetaspaceSize=210m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof"
+ENV JAVA_OPTS="-Xmx512m -Xms384m -XX:MaxMetaspaceSize=210m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof"
+
+ENV TZ=Asia/Seoul
+
+RUN apk add --no-cache tzdata && \
+    cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
+    echo "${TZ}" > /etc/timezone && \
+    apk del tzdata \
 
 RUN mkdir -p /app/logs && chmod 755 /app/logs
 
