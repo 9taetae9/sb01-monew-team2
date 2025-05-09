@@ -138,6 +138,14 @@ jobs:
           container-name: monew-app
           image: ${{ env.ECR_REPOSITORY_URI }}:${{ env.VERSION }}
 
+      - name: ECS 테스크 정의 (monew-admin-app)
+        id: render-task-definition-admin
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          container-name: monew-admin-app
+          image: ${{ env.ECR_REPOSITORY_URI }}:admin-${{ env.VERSION }}
+
       - name: ECS 서비스 중지(프리티어 환경 고려)
         run: |
           aws ecs update-service \
@@ -148,7 +156,7 @@ jobs:
       - name: ECS 배포
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          task-definition: ${{ steps.render-task-definition-admin.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
