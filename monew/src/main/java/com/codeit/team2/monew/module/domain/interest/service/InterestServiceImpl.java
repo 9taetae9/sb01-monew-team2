@@ -1,5 +1,7 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
+import static com.codeit.team2.monew.module.domain.interest.entity.QKeyword.keyword;
+
 import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestOrderBy;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
@@ -25,6 +27,7 @@ import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,29 +98,7 @@ public class InterestServiceImpl implements InterestService {
         Interest interest = getByIdOrThrow(id);
         boolean subscribedByMe = subscriptionRepository.existsByInterestAndUser(interest, user);
 
-        Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
-            .collect(Collectors.toMap(ik -> ik.getKeyword().getName(), ik -> ik));
-
-        Set<String> keywordSet = new HashSet<>(request.keywords());
-        for (String keyword : keywordSet) {
-            if (!savedKeywords.containsKey(keyword)) {
-                Keyword getKeyword = keywordRepository.findByName(keyword)
-                    .orElseGet(() -> keywordRepository.save(new Keyword(keyword)));
-                interest.addKeyword(getKeyword);
-            } else {
-                savedKeywords.remove(keyword);
-            }
-        }
-
-        if (!savedKeywords.isEmpty()) {
-            for (InterestKeyword interestKeyword : savedKeywords.values()) {
-                interest.getKeywords().remove(interestKeyword);
-                Keyword keyword = interestKeyword.getKeyword();
-                if (!interestKeywordRepository.existsByKeyword(keyword)) {
-                    keywordRepository.delete(keyword);
-                }
-            }
-        }
+        updateKeywords(interest, request.keywords()); // 분리
 
         List<String> keywords = interest.getKeywords().stream()
             .map(ik -> ik.getKeyword().getName())
@@ -149,16 +130,6 @@ public class InterestServiceImpl implements InterestService {
             interest,
             userId
         ));
-    }
-
-    private User getUserOrThrow(UUID userId) {
-        return userRepository.findById(userId).orElseThrow(
-            () -> new UserNotFoundException(userId));
-    }
-
-    private Interest getByIdOrThrow(UUID id) {
-        return interestRepository.findById(id).orElseThrow(
-            () -> new InterestNotFoundException(id));
     }
 
     @Override
@@ -216,4 +187,64 @@ public class InterestServiceImpl implements InterestService {
             slices.getSize(), totalElements, hasNext);
     }
 
+    private User getUserOrThrow(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(
+            () -> new UserNotFoundException(userId));
+    }
+
+    private Interest getByIdOrThrow(UUID id) {
+        return interestRepository.findById(id).orElseThrow(
+            () -> new InterestNotFoundException(id));
+    }
+
+    private void updateKeywords(Interest interest, List<String> requestKeywords) {
+
+        Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
+            .collect(Collectors.toMap(ik -> ik.getKeyword().getName(), ik -> ik));
+
+        Set<String> requestKeywordSet = new HashSet<>(requestKeywords);
+
+        // 존재하는 키워드 한 번에 조회 (10 -> 1)
+        List<Keyword> existingKeywords = keywordRepository.findByNameIn(requestKeywordSet);
+        Map<String, Keyword> existingKeywordMap = existingKeywords.stream()
+            .collect(Collectors.toMap(Keyword::getName, k -> k));
+
+        for (String keyword : requestKeywordSet) {
+            if (!savedKeywords.containsKey(keyword)) {
+                Keyword getKeyword = existingKeywordMap.getOrDefault(keyword, new Keyword(keyword));
+                if (getKeyword.getId() == null) {
+                    getKeyword = keywordRepository.save(getKeyword);
+                }
+                interest.addKeyword(getKeyword);
+            } else {
+                savedKeywords.remove(keyword);
+            }
+        }
+
+        removeOrphanKeywords(interest, savedKeywords);
+    }
+
+    private void removeOrphanKeywords(Interest interest, Map<String, InterestKeyword> toRemove) {
+
+        if (toRemove.isEmpty()) {
+            return;
+        }
+        List<Keyword> removedKeyword = new ArrayList<>();
+
+        for (InterestKeyword interestKeyword : toRemove.values()) {
+            interest.getKeywords().remove(interestKeyword);
+            removedKeyword.add(interestKeyword.getKeyword());
+        }
+
+        List<Keyword> toDelete = keywordRepository.findOrphanKeywordsIn(removedKeyword);
+        keywordRepository.deleteAll(toDelete);
+    } //TODO: 삭제는 이전으로 복귀..하자... 인덱스 문제로 보류 (인덱스가 없으면 full scan이 일어날 수도 있다.)
+
+//    for (InterestKeyword interestKeyword : toRemove.values()) {
+//        interest.getKeywords().remove(interestKeyword);
+//        Keyword keyword = interestKeyword.getKeyword();
+//        if (!interestKeywordRepository.existsByKeyword(keyword)) {
+//            keywordRepository.delete(keyword);
+//        }
+//    }
 }
