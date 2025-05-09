@@ -85,4 +85,32 @@ public class InterestRepositoryTest {
 
     }
 
+    @DisplayName("관심사를 키워드까지 fetch join으로 조회한다")
+    @Test
+    void findByIdWithKeywords_success() {
+        // given
+        User user = userRepository.save(new User("test@test.com", "test", "test", false));
+        Keyword keyword1 = keywordRepository.saveAndFlush(new Keyword("감자"));
+        Keyword keyword2 = keywordRepository.saveAndFlush(new Keyword("고구마"));
+
+        Interest interest = Interest.create("채소");
+        interest.addKeyword(keyword1);
+        interest.addKeyword(keyword2);
+        interest.addSubscriber(user);
+        Interest savedInterest = interestRepository.saveAndFlush(interest);
+
+        em.flush();
+        em.clear();
+
+        // when
+        var found = interestRepository.findByIdWithKeywords(savedInterest.getId());
+
+        // then
+        assertThat(found).isPresent();
+        assertThat(found.get().getKeywords()).hasSize(2);
+        assertThat(found.get().getKeywords())
+            .extracting(k -> k.getKeyword().getName())
+            .containsExactlyInAnyOrder("감자", "고구마");
+    }
+
 }
