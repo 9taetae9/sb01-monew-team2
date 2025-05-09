@@ -6,14 +6,14 @@
   "requiresCompatibilities": [
     "EC2"
   ],
-  "cpu": "1536",
-  "memory": "2048",
+  "cpu": "1024",
+  "memory": "1792",
   "containerDefinitions": [
     {
       "name": "monew-app",
       "image": "replace-me",
-      "cpu": 1024,
-      "memory": 1536,
+      "cpu": 896,
+      "memory": 1024,
       "memoryReservation": 1024,
       "essential": true,
       "environment": [
@@ -52,8 +52,8 @@
     {
       "name": "monew-admin-app",
       "image": "462740558166.dkr.ecr.ap-northeast-2.amazonaws.com/monew-admin:v1.0.0",
-      "cpu": 256,
-      "memory": 512,
+      "cpu": 128,
+      "memory": 384,
       "memoryReservation": 384,
       "essential": true,
       "environment": [
