@@ -18,7 +18,7 @@ env:
   ECS_TASK_DEFINITION: .github/workflows/ecs/task-definition.json
   ECS_SERVICE: monew-service
   ECS_CLUSTER: monew-cluster
-  JAVA_OPTS: "-Xmx384m -Xms256m -XX:MaxMetaspaceSize=210m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof"
+  JAVA_OPTS: "-Xmx768m -Xms512m -XX:MaxMetaspaceSize=256m -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:+ClassUnloadingWithConcurrentMark -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs/heapdump.hprof -XX:+UseCompressedOops -XX:+ExitOnOutOfMemoryError"
   SPRING_PROFILES_ACTIVE: "prod"
 
 jobs:
