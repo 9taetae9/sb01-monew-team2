@@ -4,8 +4,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 
-
+@Profile("dev")
 @RequiredArgsConstructor
 public class ConnectionProxyHandler implements InvocationHandler {
 

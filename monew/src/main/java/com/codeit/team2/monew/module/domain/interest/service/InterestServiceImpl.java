@@ -1,7 +1,5 @@
 package com.codeit.team2.monew.module.domain.interest.service;
 
-import static com.codeit.team2.monew.module.domain.interest.entity.QKeyword.keyword;
-
 import com.codeit.team2.monew.module.domain.interest.dto.request.CursorPageRequestInterestDto;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestOrderBy;
 import com.codeit.team2.monew.module.domain.interest.dto.request.InterestRegisterRequest;
@@ -27,7 +25,6 @@ import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
