@@ -24,6 +24,13 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20       # 기본 10에서 증가
+      minimum-idle: 5             # 유휴 연결 수 유지
+      connection-timeout: 30000   # 연결 획득 타임아웃(30초)
+      idle-timeout: 300000        # 유휴 연결 제거 시간(5분)
+      max-lifetime: 1200000       # 연결 최대 수명(20분)
+      leak-detection-threshold: 60000  # 연결 누수 감지(60초)
   batch:
     jdbc:
       initialize-schema: never # 배포 안정화 전까지 always
@@ -36,13 +43,6 @@ spring:
         url: http://172.31.27.197:90
         instance:
           service-host-type: ip
-    hikari:
-      maximum-pool-size: 20       # 기본 10에서 증가
-      minimum-idle: 5             # 유휴 연결 수 유지
-      connection-timeout: 30000   # 연결 획득 타임아웃(30초)
-      idle-timeout: 300000        # 유휴 연결 제거 시간(5분)
-      max-lifetime: 1200000       # 연결 최대 수명(20분)
-      leak-detection-threshold: 60000  # 연결 누수 감지(60초)
 logging:
   level:
     root: info
@@ -52,7 +52,9 @@ logging:
     path: /var/log/monew
     name: ${logging.file.path}/application.log
     archive: ${logging.file.path}/archive
-  retention-days: 14
+  logback:
+    rollingpolicy:
+      max-history: 14
 
 springdoc:
   api-docs:
