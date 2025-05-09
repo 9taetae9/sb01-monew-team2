@@ -40,3 +40,6 @@ CREATE TRIGGER article_tsv_trg
 UPDATE articles
 SET    body_tsv = to_tsvector('simple', coalesce(title,'') || ' ' || coalesce(summary,''))
 WHERE  body_tsv IS NULL;
+
+ALTER TABLE interest_keywords
+    ADD CONSTRAINT uq_interest_keyword UNIQUE (interest_id, keyword_id);
