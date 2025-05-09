@@ -11,3 +11,9 @@ spring:
   sql:
     init:
       mode: never
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      name: deleteNotificationJob
+      enabled: false
