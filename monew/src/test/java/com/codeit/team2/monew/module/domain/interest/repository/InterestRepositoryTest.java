@@ -13,6 +13,7 @@ import com.codeit.team2.monew.module.domain.relation.entity.ArticleInterest;
 import com.codeit.team2.monew.module.domain.subscription.repository.SubscriptionRepository;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
@@ -47,6 +48,9 @@ public class InterestRepositoryTest {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    EntityManager em;
 
     @DisplayName("관심사 삭제 시, 키워드와 구독 테이블 확인")
     @Test

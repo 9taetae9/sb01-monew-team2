@@ -92,10 +92,10 @@ public class InterestServiceImpl implements InterestService {
     public InterestDto update(InterestUpdateRequest request, UUID id, UUID userId) {
 
         User user = getUserOrThrow(userId);
-        Interest interest = getByIdOrThrow(id);
+        Interest interest = getByIdWithKeywordsOrThrow(id);
         boolean subscribedByMe = subscriptionRepository.existsByInterestAndUser(interest, user);
 
-        updateKeywords(interest, request.keywords()); // 분리
+        updateKeywords(interest, request.keywords());
 
         List<String> keywords = interest.getKeywords().stream()
             .map(ik -> ik.getKeyword().getName())
@@ -194,6 +194,11 @@ public class InterestServiceImpl implements InterestService {
             () -> new InterestNotFoundException(id));
     }
 
+    private Interest getByIdWithKeywordsOrThrow(UUID id) {
+        return interestRepository.findByIdWithKeywords(id).orElseThrow(
+            () -> new InterestNotFoundException(id));
+    }
+
     private void updateKeywords(Interest interest, List<String> requestKeywords) {
 
         Map<String, InterestKeyword> savedKeywords = interest.getKeywords().stream()
@@ -201,7 +206,6 @@ public class InterestServiceImpl implements InterestService {
 
         Set<String> requestKeywordSet = new HashSet<>(requestKeywords);
 
-        // 존재하는 키워드 한 번에 조회 (10 -> 1)
         List<Keyword> existingKeywords = keywordRepository.findByNameIn(requestKeywordSet);
         Map<String, Keyword> existingKeywordMap = existingKeywords.stream()
             .collect(Collectors.toMap(Keyword::getName, k -> k));
@@ -235,13 +239,7 @@ public class InterestServiceImpl implements InterestService {
 
         List<Keyword> toDelete = keywordRepository.findOrphanKeywordsIn(removedKeyword);
         keywordRepository.deleteAll(toDelete);
-    } //TODO: 삭제는 이전으로 복귀..하자... 인덱스 문제로 보류 (인덱스가 없으면 full scan이 일어날 수도 있다.)
 
-//    for (InterestKeyword interestKeyword : toRemove.values()) {
-//        interest.getKeywords().remove(interestKeyword);
-//        Keyword keyword = interestKeyword.getKeyword();
-//        if (!interestKeywordRepository.existsByKeyword(keyword)) {
-//            keywordRepository.delete(keyword);
-//        }
-//    }
+    }
+
 }
