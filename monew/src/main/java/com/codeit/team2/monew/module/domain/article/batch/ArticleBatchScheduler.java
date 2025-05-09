@@ -26,7 +26,7 @@ public class ArticleBatchScheduler {
 
     public ArticleBatchScheduler(JobLauncher jobLauncher,
         @Qualifier("articleBatchJob") Job articleBatchJob,
-        @Qualifier("rssArticleBatchJob") Job rssArticleBatchJob,
+        @Qualifier("rssArticleBatchJobV2") Job rssArticleBatchJob,
         RssFetchService rssFetchService) {
         this.jobLauncher = jobLauncher;
         this.articleBatchJob = articleBatchJob;
@@ -53,7 +53,7 @@ public class ArticleBatchScheduler {
         }
     }
 
-    @Scheduled(cron = "0 22 * * * *")
+    @Scheduled(cron = "0 10 * * * *")
     public void runRssBatch() {
         log.info("Starting - RSS ARTICLE BATCH, time={}", Instant.now());
         fetchService.fetchAllRss();
