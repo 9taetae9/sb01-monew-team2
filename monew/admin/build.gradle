@@ -9,6 +9,11 @@ jar {
     archiveVersion.set('v1.0.0')
 }
 
+bootJar {
+    archiveBaseName.set('monew-admin')
+    archiveVersion.set('v1.0.0')
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'de.codecentric:spring-boot-admin-starter-server:3.4.5'
