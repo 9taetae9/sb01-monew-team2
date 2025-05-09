@@ -14,10 +14,12 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.explore.JobExplorer;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test & !test-temp & !test-postgre")
 @RequiredArgsConstructor
 public class BatchMetrics {
 
@@ -35,6 +37,9 @@ public class BatchMetrics {
 
     @PostConstruct
     public void initGauges() {
+        if (jobExplorer.getJobNames().isEmpty()) {
+            return;
+        }
         for (String jobName : jobExplorer.getJobNames()) {
             Tags tags = Tags.of("job", jobName);
             totalCountMap.put(jobName, registerGauge("batch.job.total.count", tags));   // 총 실행 횟수
