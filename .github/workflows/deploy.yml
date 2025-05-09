@@ -150,7 +150,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
           container-name: monew-admin-app
-          image: ${{ env.ECR_REPOSITORY_URI }}:admin-${{ env.VERSION }}
+          image: ${{ env.ECR_REPOSITORY_URI }}:admin-v1.0.0
 
       - name: ECS 서비스 중지(프리티어 환경 고려)
         run: |
