@@ -3,6 +3,8 @@ package com.codeit.team2.monew.module.domain.interest.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +27,8 @@ import com.codeit.team2.monew.module.domain.user.TestUserFactory;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -166,25 +170,30 @@ class InterestServiceImplTest {
 
         when(userRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(user));
-        when(interestRepository.findById(any(UUID.class)))
+        when(subscriptionRepository.existsByInterestAndUser(any(Interest.class), any(User.class)))
+            .thenReturn(false);
+        when(interestRepository.findByIdWithKeywords(any(UUID.class)))
             .thenReturn(Optional.of(interest));
-        when(keywordRepository.findByName(any(String.class)))
-            .thenReturn(Optional.empty());
+        when(keywordRepository.findByNameIn(argThat(list ->
+            list.size() == 1 && list.contains("시금치")
+        ))).thenReturn(List.of());
         when(keywordRepository.save(any(Keyword.class)))
             .thenAnswer(invocation -> {
                 return invocation.getArgument(0);
             });
-        when(interestKeywordRepository.existsByKeyword(any(Keyword.class)))
-            .thenReturn(false);
+        when(keywordRepository.findOrphanKeywordsIn(anyList()))
+            .thenReturn(List.of(new Keyword("당근")));
 
         // when
         InterestDto result = interestService.update(request, interest.getId(), user.getId());
 
         // then
         assertThat(result.keywords()).hasSize(1)
-            .contains("시금치").doesNotContain("당근");
-        verify(keywordRepository).delete(any(Keyword.class));
+            .contains("시금치")
+            .doesNotContain("당근");
+
         verify(keywordRepository).save(any(Keyword.class));
+        verify(keywordRepository).deleteAll(any());
     }
 
     @DisplayName("관심사 삭제가 수행된다.")
