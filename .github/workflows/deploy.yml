@@ -73,7 +73,7 @@ jobs:
           docker push $ECR_REPOSITORY_URI:${{ env.VERSION }}
           # Build and push admin image
           docker build -f ./admin/Dockerfile --build-arg VERSION=v1.0.0 -t $ECR_REPOSITORY_URI:admin-v1.0.0 . --platform linux/amd64
-          docker push $ECR_REPOSITORY_URI:admin-${{ env.VERSION }}
+          docker push $ECR_REPOSITORY_URI:admin-v1.0.0
         working-directory: ./monew
 
   deploy:
