@@ -118,4 +118,17 @@ public class ArticleControllerTest {
             .andExpect(jsonPath("$.size").value(1))
             .andExpect(jsonPath("$.hasNext").value(false));
     }
+
+    @Test
+    void getSources_success() throws Exception {
+        // given
+        UUID userId = UUID.randomUUID();
+
+        // when & then
+        mockMvc.perform(get("/api/articles/sources")
+                .header("Monew-Request-User-Id", userId.toString())
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(4));
+    }
 }

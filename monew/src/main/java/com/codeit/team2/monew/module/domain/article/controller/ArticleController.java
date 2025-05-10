@@ -4,9 +4,12 @@ package com.codeit.team2.monew.module.domain.article.controller;
 import com.codeit.team2.monew.module.domain.article.controller.docs.ArticleControllerDocs;
 import com.codeit.team2.monew.module.domain.article.dto.ArticleViewDto;
 import com.codeit.team2.monew.module.domain.article.dto.CursorPageResponseArticleDto;
+import com.codeit.team2.monew.module.domain.article.dto.request.ArticleSourceIn;
 import com.codeit.team2.monew.module.domain.article.dto.request.CursorPageRequestArticleDto;
 import com.codeit.team2.monew.module.domain.article.service.ArticleService;
 import jakarta.validation.Valid;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +60,14 @@ public class ArticleController implements ArticleControllerDocs {
             cursorPageRequestArticleDto);
         log.info("Complete - ArticleController/findAll");
         return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/sources")
+    public ResponseEntity<List<ArticleSourceIn>> getSources() {
+        log.info("Start - ArticleController/getSources");
+        List<ArticleSourceIn> sources = Arrays.stream(ArticleSourceIn.values()).toList();
+        log.info("Complete - ArticleController/getSources");
+        return ResponseEntity.ok().body(sources);
     }
 
 }
