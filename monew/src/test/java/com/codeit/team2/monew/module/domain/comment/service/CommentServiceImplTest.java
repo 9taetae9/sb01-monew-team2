@@ -157,7 +157,7 @@ class CommentServiceImplTest {
             Instant.now()
         );
 
-        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(comment.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
         when(comment.getId()).thenReturn(commentId);
@@ -171,7 +171,7 @@ class CommentServiceImplTest {
 
         // then
         assertThat(result).isEqualTo(expectedDto);
-        verify(commentRepository).findById(commentId);
+        verify(commentRepository).findByIdAndDeletedFalse(commentId);
         verify(comment).update(request.content());
         verify(commentMapper).toDto(comment, false);
     }
@@ -182,7 +182,7 @@ class CommentServiceImplTest {
         //given
         CommentUpdateRequest request = new CommentUpdateRequest("edited comment");
 
-        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(comment.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
 
@@ -197,7 +197,7 @@ class CommentServiceImplTest {
     void edit_Not_Found() {
         CommentUpdateRequest request = new CommentUpdateRequest("edited comment");
 
-        when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> commentService.edit(commentId, userId, request))
             .isInstanceOf(CommentNotFoundException.class)
@@ -207,16 +207,13 @@ class CommentServiceImplTest {
     @Test
     @DisplayName("댓글 삭제 - 성공")
     void delete_success() {
-        //given
-        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(comment.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
 
-        //when
         commentService.delete(commentId, userId);
 
-        //then
-        verify(commentRepository).findById(commentId);
+        verify(commentRepository).findByIdAndDeletedFalse(commentId);
         verify(comment).delete();
     }
 
@@ -224,7 +221,7 @@ class CommentServiceImplTest {
     @DisplayName("댓글 삭제 - 실패: 댓글 작성자 아닐때")
     void delete_Permission_Denied() {
         //given
-        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(comment.getUser()).thenReturn(user);
         when(user.getId()).thenReturn(userId);
 

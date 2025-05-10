@@ -68,9 +68,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto edit(UUID commentId, UUID userId, CommentUpdateRequest request) {
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
             .orElseThrow(() -> {
-                log.debug("Comment Not Found - commentId: {}", commentId);
+                log.debug("Comment Not Found or Deleted - commentId: {}", commentId);
                 return new CommentNotFoundException(commentId);
             });
 
@@ -95,9 +95,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void delete(UUID commentId, UUID userId) {
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
             .orElseThrow(() -> {
-                log.debug("Comment Not Found - commentId: {}", commentId);
+                log.debug("Comment Not Found or Deleted - commentId: {}", commentId);
                 return new CommentNotFoundException(commentId);
             });
 

@@ -4,6 +4,7 @@ import com.codeit.team2.monew.module.domain.article.entity.Article;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,11 +16,14 @@ public interface CommentRepository extends JpaRepository<Comment, UUID>, Comment
     @EntityGraph(attributePaths = {"article"})
     List<Comment> findTop10ByUserOrderByCreatedAtDesc(User user);
 
+    Optional<Comment> findByIdAndDeletedFalse(UUID commentId);
+
     Long countByArticle(Article article);
 
-    Long countByArticleId(UUID articleId);
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.article.id = :articleId AND c.deleted = false")
+    Long countByArticleId(@Param("articleId") UUID articleId);
 
-    @Query("SELECT c.article.id, COUNT(c) FROM Comment c WHERE c.article.id IN :articleIds GROUP BY c.article.id")
+    @Query("SELECT c.article.id, COUNT(c) FROM Comment c WHERE c.article.id IN :articleIds AND c.deleted = false GROUP BY c.article.id")
     List<Object[]> countByArticleIds(@Param("articleIds") List<UUID> articleIds);
 
 
