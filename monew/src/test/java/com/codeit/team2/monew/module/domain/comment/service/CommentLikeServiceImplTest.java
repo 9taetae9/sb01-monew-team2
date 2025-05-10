@@ -70,7 +70,7 @@ class CommentLikeServiceImplTest {
     @Test
     @DisplayName("댓글 종아요 - 성공")
     void like_Success() {
-        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(commentLikeRepository.existsByCommentIdAndUserId(commentId, userId)).thenReturn(false);
         when(commentLikeRepository.save(any(CommentLike.class))).thenReturn(commentLike);
@@ -79,7 +79,7 @@ class CommentLikeServiceImplTest {
         CommentLike result = commentLikeService.like(commentId, userId);
 
         assertThat(result).isEqualTo(commentLike);
-        verify(commentRepository).findById(commentId);
+        verify(commentRepository).findByIdAndDeletedFalse(commentId);
         verify(userRepository).findById(userId);
         verify(commentLikeRepository).existsByCommentIdAndUserId(commentId, userId);
         verify(commentLikeRepository).save(any(CommentLike.class));
@@ -89,7 +89,7 @@ class CommentLikeServiceImplTest {
     @Test
     @DisplayName("댓글 종아요 - 실패: 댓글 없음")
     void like_CommentNotFound() {
-        when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> commentLikeService.like(commentId, userId))
             .isInstanceOf(CommentNotFoundException.class)
@@ -99,7 +99,7 @@ class CommentLikeServiceImplTest {
     @Test
     @DisplayName("댓글 종아요 - 실패: 사용자 없음")
     void like_UserNotFoound() {
-        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> commentLikeService.like(commentId, userId))
@@ -110,7 +110,7 @@ class CommentLikeServiceImplTest {
     @Test
     @DisplayName("댓글 종아요 - 실패: 이미 좋아요 누름")
     void like_AlreadyLiked() {
-        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(commentLikeRepository.existsByCommentIdAndUserId(commentId, userId)).thenReturn(true);
 
@@ -127,6 +127,7 @@ class CommentLikeServiceImplTest {
         when(commentLikeRepository.findByCommentIdAndUserId(commentId, userId))
             .thenReturn(Optional.of(commentLike));
         when(commentLike.getComment()).thenReturn(comment);
+        when(comment.isDeleted()).thenReturn(false);
 
         commentLikeService.unlike(commentId, userId);
 
@@ -136,13 +137,15 @@ class CommentLikeServiceImplTest {
     }
 
     @Test
-    @DisplayName("댓글 좋아요 취소 - 실패: 좋아요 존재 안함")
-    void unlike_NotLiked() {
+    @DisplayName("댓글 좋아요 취소 - 실패: 삭제된 댓글")
+    void unlike_DeletedComment() {
         when(commentLikeRepository.findByCommentIdAndUserId(commentId, userId))
-            .thenReturn(Optional.empty());
+            .thenReturn(Optional.of(commentLike));
+        when(commentLike.getComment()).thenReturn(comment);
+        when(comment.isDeleted()).thenReturn(true); // 삭제된 댓글임을 명시
 
         assertThatThrownBy(() -> commentLikeService.unlike(commentId, userId))
-            .isInstanceOf(CommentLikeNotFoundException.class)
+            .isInstanceOf(CommentNotFoundException.class)
             .hasFieldOrPropertyWithValue("errorCode.httpStatus.value", 404);
     }
 }

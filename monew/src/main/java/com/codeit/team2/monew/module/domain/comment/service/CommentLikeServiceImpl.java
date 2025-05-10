@@ -13,7 +13,6 @@ import com.codeit.team2.monew.module.domain.notification.service.NotificationSer
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +34,9 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
     @Override
     public CommentLike like(UUID commentId, UUID userId) {
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
             .orElseThrow(() -> {
-                log.debug("Comment Not Found: commentId={}", commentId);
+                log.debug("Comment Not Found or Deleted: commentId={}", commentId);
                 return new CommentNotFoundException(commentId);
             });
 
@@ -75,6 +74,12 @@ public class CommentLikeServiceImpl implements CommentLikeService {
             });
 
         Comment comment = commentLike.getComment();
+
+        if (comment.isDeleted()) {
+            log.debug("Comment is deleted - cannot unlike: commentId={}", commentId);
+            throw new CommentNotFoundException(commentId);
+        }
+
         comment.decrementLikeCount();
 
         // 댓글 좋아요 취소 이벤트 발생
