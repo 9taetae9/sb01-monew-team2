@@ -19,7 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!test & !test-temp & !test-postgre")
+@Profile("!test & !test-temp & !test-postgre & !openapi")
 @RequiredArgsConstructor
 public class BatchMetrics {
 
