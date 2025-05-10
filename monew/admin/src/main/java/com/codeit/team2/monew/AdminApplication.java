@@ -1,4 +1,4 @@
-package com.sprint.mission.admin;
+package com.codeit.team2.monew;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.springframework.boot.SpringApplication;
