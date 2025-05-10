@@ -1,4 +1,4 @@
-package com.sprint.mission.admin;
+package com.codeit.team2.monew;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
