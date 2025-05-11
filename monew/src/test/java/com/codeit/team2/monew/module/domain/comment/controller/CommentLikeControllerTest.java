@@ -99,8 +99,7 @@ public class CommentLikeControllerTest {
     @DisplayName("댓글 좋아요 등록 - 성공")
     void like_Success() throws Exception {
         // given
-        when(commentLikeService.like(eq(commentId), eq(userId))).thenReturn(commentLike);
-        when(commentMapper.toDto(commentLike)).thenReturn(commentLikeDto);
+        when(commentLikeService.like(eq(commentId), eq(userId))).thenReturn(commentLikeDto);
 
         // when & then
         mockMvc.perform(post("/api/comments/{commentId}/comment-likes", commentId)
