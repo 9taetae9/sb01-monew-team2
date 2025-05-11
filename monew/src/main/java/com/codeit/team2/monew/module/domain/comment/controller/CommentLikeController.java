@@ -2,8 +2,6 @@ package com.codeit.team2.monew.module.domain.comment.controller;
 
 import com.codeit.team2.monew.module.domain.comment.controller.docs.CommentLikeControllerDocs;
 import com.codeit.team2.monew.module.domain.comment.dto.CommentLikeDto;
-import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
-import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.service.CommentLikeService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentLikeController implements CommentLikeControllerDocs {
 
     private final CommentLikeService commentLikeService;
-    private final CommentMapper commentMapper;
 
     @PostMapping
     public ResponseEntity<CommentLikeDto> like(
@@ -33,8 +30,7 @@ public class CommentLikeController implements CommentLikeControllerDocs {
         log.info("Start - CommentLikeController/like: commentId={}, userId={}",
             commentId, userId);
 
-        CommentLike commentLike = commentLikeService.like(commentId, userId);
-        CommentLikeDto result = commentMapper.toDto(commentLike);
+        CommentLikeDto result = commentLikeService.like(commentId, userId);
 
         log.info("Complete - CommentLikeController/like: commentLikeId={}", result.id());
 
