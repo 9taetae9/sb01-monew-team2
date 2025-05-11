@@ -1,23 +1,24 @@
 package com.codeit.team2.monew.module.domain.comment.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeit.team2.monew.module.domain.comment.dto.CommentLikeDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.exception.CommentLikeAlreadyExistsException;
-import com.codeit.team2.monew.module.domain.comment.exception.CommentLikeNotFoundException;
 import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
+import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.notification.service.NotificationService;
 import com.codeit.team2.monew.module.domain.user.entity.User;
 import com.codeit.team2.monew.module.domain.user.exception.UserNotFoundException;
 import com.codeit.team2.monew.module.domain.user.repository.UserRepository;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,8 @@ class CommentLikeServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private CommentMapper commentMapper;
     @Mock
     private NotificationService notificationService;
 
@@ -68,17 +71,20 @@ class CommentLikeServiceImplTest {
     }
 
     @Test
-    @DisplayName("댓글 종아요 - 성공")
+    @DisplayName("댓글 좋아요 - 성공")
     void like_Success() {
+        CommentLikeDto commentLikeDto = new CommentLikeDto(UUID.randomUUID(), userId, Instant.now(),
+            commentId, UUID.randomUUID(), UUID.randomUUID(), "nickname", "content", 1L,
+            Instant.now());
         when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(commentLikeRepository.existsByCommentIdAndUserId(commentId, userId)).thenReturn(false);
         when(commentLikeRepository.save(any(CommentLike.class))).thenReturn(commentLike);
+        when(commentMapper.toDto(any(CommentLike.class))).thenReturn(commentLikeDto);
 
         // when
-        CommentLike result = commentLikeService.like(commentId, userId);
+        CommentLikeDto result = commentLikeService.like(commentId, userId);
 
-        assertThat(result).isEqualTo(commentLike);
         verify(commentRepository).findByIdAndDeletedFalse(commentId);
         verify(userRepository).findById(userId);
         verify(commentLikeRepository).existsByCommentIdAndUserId(commentId, userId);
@@ -87,7 +93,7 @@ class CommentLikeServiceImplTest {
     }
 
     @Test
-    @DisplayName("댓글 종아요 - 실패: 댓글 없음")
+    @DisplayName("댓글 좋아요 - 실패: 댓글 없음")
     void like_CommentNotFound() {
         when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.empty());
 
@@ -97,7 +103,7 @@ class CommentLikeServiceImplTest {
     }
 
     @Test
-    @DisplayName("댓글 종아요 - 실패: 사용자 없음")
+    @DisplayName("댓글 좋아요 - 실패: 사용자 없음")
     void like_UserNotFoound() {
         when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -108,7 +114,7 @@ class CommentLikeServiceImplTest {
     }
 
     @Test
-    @DisplayName("댓글 종아요 - 실패: 이미 좋아요 누름")
+    @DisplayName("댓글 좋아요 - 실패: 이미 좋아요 누름")
     void like_AlreadyLiked() {
         when(commentRepository.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(comment));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -118,7 +124,6 @@ class CommentLikeServiceImplTest {
             .isInstanceOf(CommentLikeAlreadyExistsException.class)
             .hasFieldOrPropertyWithValue("errorCode.httpStatus.value", 409);
     }
-
 
 
     @Test

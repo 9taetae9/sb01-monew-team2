@@ -1,5 +1,6 @@
 package com.codeit.team2.monew.module.domain.comment.service;
 
+import com.codeit.team2.monew.module.domain.comment.dto.CommentLikeDto;
 import com.codeit.team2.monew.module.domain.comment.entity.Comment;
 import com.codeit.team2.monew.module.domain.comment.entity.CommentLike;
 import com.codeit.team2.monew.module.domain.comment.event.CommentLikeDeleteEvent;
@@ -7,6 +8,7 @@ import com.codeit.team2.monew.module.domain.comment.event.CommentLikeRegisterEve
 import com.codeit.team2.monew.module.domain.comment.exception.CommentLikeAlreadyExistsException;
 import com.codeit.team2.monew.module.domain.comment.exception.CommentLikeNotFoundException;
 import com.codeit.team2.monew.module.domain.comment.exception.CommentNotFoundException;
+import com.codeit.team2.monew.module.domain.comment.mapper.CommentMapper;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentLikeRepository;
 import com.codeit.team2.monew.module.domain.comment.repository.CommentRepository;
 import com.codeit.team2.monew.module.domain.notification.service.NotificationService;
@@ -31,9 +33,10 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final ApplicationEventPublisher publisher;
+    private final CommentMapper commentMapper;
 
     @Override
-    public CommentLike like(UUID commentId, UUID userId) {
+    public CommentLikeDto like(UUID commentId, UUID userId) {
         Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
             .orElseThrow(() -> {
                 log.debug("Comment Not Found or Deleted: commentId={}", commentId);
@@ -61,7 +64,9 @@ public class CommentLikeServiceImpl implements CommentLikeService {
         // 댓글 좋아요 이벤트 발행
         publisher.publishEvent(new CommentLikeRegisterEvent(commentLike));
 
-        return commentLikeRepository.save(commentLike);
+        commentLikeRepository.save(commentLike);
+
+        return commentMapper.toDto(commentLike);
     }
 
     @Override
