@@ -85,10 +85,10 @@
 ## 💾 데이터베이스 스키마
 
 ### PostgreSQL
-![PostgreSQL ERD](https://github.com/user-attachments/assets/0f0c3559-b9c7-4e59-a2c7-5858a3cefd76)
+<img src="https://github.com/user-attachments/assets/0f0c3559-b9c7-4e59-a2c7-5858a3cefd76" width="650" alt="PostgreSQL ERD">
 
 ### MongoDB
-![MongoDB 스키마](https://github.com/user-attachments/assets/f95215c8-46d4-43c7-b47c-9584f080b018)
+<img src="https://github.com/user-attachments/assets/f95215c8-46d4-43c7-b47c-9584f080b018" width="650" alt="MongoDB 스키마">
 
 ## 🚀 주요 기능
 
