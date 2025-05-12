@@ -1,21 +1,161 @@
-# 1기-MoNew-02팀
+# 모뉴 (MoNew) - 사용자 맞춤형 통합 뉴스 플랫폼
 #### 📈 Test Coverage 
 [![codecov](https://codecov.io/gh/9taetae9/sb01-monew-team2/graph/badge.svg?token=T3PWUF31Y6)](https://codecov.io/gh/9taetae9/sb01-monew-team2)
 
-## 👥 팀원 구성 및 R&R
-
-| 이름     | R&R                                                                 |
-|----------|----------------------------------------------------------------------|
-| [김태현<br>(팀장)](https://github.com/9taetae9) | |
-| [김주언](https://github.com/wndjs803) |  |
-| [연예림](https://github.com/yinneu) |  |
-| [이소영](https://github.com/gitSoyoungLee) | |
-| [허지웅](https://github.com/kiki1875b) |  |
-
 ---
 ## 📝 프로젝트 소개
-**모뉴(MoNew) - PostgreSQL 및 MongoDB 기반 백업 및 복구 시스템을 갖춘 사용자 맞춤형 통합 뉴스 플랫폼**  
-📆 프로젝트 기간: 2025.04.16 ~ 2025.05.13  
+**모뉴(MoNew)** 는 MongoDB 및 PostgreSQL 기반 백업 및 복구 시스템을 갖춘 사용자 맞춤형 통합 뉴스 플랫폼입니다. 다양한 뉴스 API를 통합하여 사용자에게 맞춤형 뉴스를 제공하고, 의견을 나눌 수 있는 소셜 기능을 갖추고 있습니다.
+
+- 📆 **프로젝트 기간**: 2025.04.16 ~ 2025.05.13
+- 🔗 **배포 링크**: [http://15.165.92.142/login](http://15.165.92.142/login)
+
+## 🛠️ 기술 스택
+
+### 백엔드
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Spring Web](https://img.shields.io/badge/Spring_Web-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Batch](https://img.shields.io/badge/Spring_Batch-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+
+### 데이터 액세스
+![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Data MongoDB](https://img.shields.io/badge/Spring_Data_MongoDB-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![QueryDSL](https://img.shields.io/badge/QueryDSL-007ACC?style=for-the-badge&logo=java&logoColor=white)
+![JDBC](https://img.shields.io/badge/JDBC-007396?style=for-the-badge&logo=java&logoColor=white)
+
+### 데이터베이스
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+
+### 클라우드/인프라
+![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)
+![AWS ECS](https://img.shields.io/badge/AWS_ECS-FF9900?style=for-the-badge&logo=amazonecs&logoColor=white)
+![AWS ECR](https://img.shields.io/badge/AWS_ECR-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+
+### 코드 품질 및 생산성
+![Lombok](https://img.shields.io/badge/Lombok-BC4521?style=for-the-badge&logo=java&logoColor=white)
+![MapStruct](https://img.shields.io/badge/MapStruct-8A2BE2?style=for-the-badge&logo=java&logoColor=white)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-F58025?style=for-the-badge&logo=jacoco&logoColor=white)
+
+### 테스트
+![JUnit Jupiter](https://img.shields.io/badge/JUnit_Jupiter-25A162?style=for-the-badge&logo=junit5&logoColor=white)
+![Spring Batch Test](https://img.shields.io/badge/Spring_Batch_Test-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![TestContainers](https://img.shields.io/badge/TestContainers-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![H2](https://img.shields.io/badge/H2_Database-0074BD?style=for-the-badge&logo=h2&logoColor=white)
+
+### 모니터링/관리
+![Spring Boot Admin](https://img.shields.io/badge/Spring_Boot_Admin-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Actuator](https://img.shields.io/badge/Actuator-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Micrometer](https://img.shields.io/badge/Micrometer-326CE5?style=for-the-badge&logo=prometheus&logoColor=white)
+
+### 기타 유틸리티
+![Jackson XML](https://img.shields.io/badge/Jackson_XML-0076C0?style=for-the-badge&logo=json&logoColor=white)
+![Apache Commons](https://img.shields.io/badge/Apache_Commons-D22128?style=for-the-badge&logo=apache&logoColor=white)
+
+## 👥 팀원 구성 및 R&R
+
+| 이름 | 역할 및 기여 |
+|------|------------|
+| [김태현(팀장)](https://github.com/9taetae9) | • 프로젝트 관리(칸반보드 연동, 이슈 기반 브랜치 자동 생성, 이슈 템플릿)<br>• CI 파이프라인 구축<br>• 기사 백업 & 복구 시스템 구현<br>• logback 롤링 정책 및 시스템, JVM 레벨 타임존 설정<br>• 댓글 관리 도메인 설계<br>• 인프라 관리(swap 파일, JVM 옵션 최적화로 OOM 문제 해결)<br>• 릴리즈 버전 문서 관리 |
+| [김주언](https://github.com/wndjs803) | • 사용자, 활동 내역 도메인 설계<br>• Fetch Join을 활용한 쿼리 성능 개선<br>• Spring Event를 활용한 클래스 간 결합도 감소<br>• MongoDB를 활용한 조회 최적화<br>• DB Schema, MongoDB 관리 |
+| [연예림](https://github.com/yinneu) | • Interest 도메인 설계<br>• Subscription 도메인 설계<br>• Swagger API 문서화<br>• 배포 시 API 문서 추출 자동화 워크플로우 구성<br>• Fetch Join, Index를 활용한 쿼리 최적화 |
+| [이소영](https://github.com/gitSoyoungLee) | • Notification 도메인 설계<br>• 오래된 알림 삭제 배치 작업 구현<br>• QueryDsl 기반 모든 도메인 커서 페이지네이션 구현<br>• AOP 기반 쿼리 추적 로그 시스템<br>• Spring Actuator 및 커스텀 메트릭 적용<br>• Spring Boot Admin Server 적용 및 모니터링 |
+| [허지웅](https://github.com/kiki1875b) | • Article 도메인 설계<br>• 기사 수집, 분류 및 저장 배치 프로세스 구현<br>• Template Method, Strategy 패턴을 통한 확장성 확보<br>• 인메모리 KeywordCache 도입<br>• CD 파이프라인 구축<br>• GIN 인덱스, tsvector를 활용한 Article 도메인 성능 개선 |
+
+## 🏗️ 시스템 아키텍처
+
+![시스템 아키텍처](img_2.png)
+모뉴 시스템은 다음과 같은 아키텍처로 구성되어 있습니다.
+
+1. **CI/CD 파이프라인**
+  - GitHub을 통한 코드 관리
+  - GitHub Actions를 활용한 자동화된 테스트 및 배포
+  - AWS ECR을 통한 컨테이너 이미지 관리
+
+2. **백엔드 시스템**
+  - Amazon EC2 인스턴스에서 애플리케이션 실행
+  - MongoDB와 PostgreSQL을 활용한 데이터 저장
+  - AWS S3를 활용한 로그 및 기사 백업 관리
+
+3. **데이터베이스 구조**
+  - PostgreSQL: 관계형 데이터를 위한 주 데이터베이스
+  - MongoDB: 사용자 활동 내역과 같은 조회 최적화를 위한 비관계형 데이터베이스
+
+## 💾 데이터베이스 스키마
+
+### PostgreSQL
+![PostgreSQL ERD](img.png)
+### MongoDB
+![MongoDB 스키마](img_1.png)
+## 🚀 주요 기능
+
+### 사용자 관리
+- 회원가입, 로그인, 닉네임 수정 기능
+- 논리적 삭제 지원으로 데이터 무결성 유지
+- 보안을 위한 비밀번호 암호화
+
+### 관심사 관리
+- 관심사 등록, 수정, 삭제 기능
+- 키워드 기반 관심사 설정
+- 관심사 구독 시스템
+- 유사도 기반 중복 관심사 방지
+
+### 뉴스 기사 관리
+- 다양한 출처(Naver API, RSS 피드 등)를 통한 뉴스 기사 수집
+- 관심사 키워드 기반 필터링
+- 백업 및 복구 시스템 구현
+- 조회수, 댓글 수 등 다양한 정렬 옵션
+
+### 댓글 관리
+- 기사별 댓글 등록, 수정, 삭제
+- 좋아요 기능
+- 커서 기반 페이지네이션
+
+### 활동 내역 관리
+- MongoDB를 활용한 사용자 활동 내역 조회 최적화
+- 구독 중인 관심사, 최근 작성 댓글, 좋아요, 조회 기사 추적
+
+### 알림 관리
+- 관심사 관련 새 기사 알림
+- 댓글 좋아요 알림
+- 알림 확인 및 자동 삭제 배치 처리
+
+## 📊 성능 최적화
+
+### 쿼리 최적화
+- Fetch Join을 활용한 N+1 문제 해결
+- 인덱스 전략 적용으로 조회 성능 개선
+- GIN 인덱스 및 tsvector를 활용한 전문 검색 최적화
+
+### MongoDB를 활용한 조회 최적화
+- 사용자 활동 내역을 위한 비정규화 모델 설계
+- 조인 없이 빠른 조회가 가능한 문서 구조 설계
+
+### 메모리 최적화
+- 인메모리 KeywordCache 도입으로 기사 분류 성능 개선
+- JVM 옵션 최적화로 OOM 문제 해결
+
+### 배치 프로세스 최적화
+- Template Method, Strategy 패턴을 통한 확장성 있는 배치 구조
+- 청크 기반 처리로 대용량 데이터 효율적 관리
+
+## 🔍 모니터링 및 로깅
+
+### Spring Boot Admin
+- 애플리케이션 상태 모니터링 대시보드
+- 스프링 액추에이터 통합으로 런타임 정보 확인
+
+### 커스텀 메트릭
+- 배치 작업 관련 커스텀 메트릭 수집
+- Micrometer를 통한 메트릭 노출
+
+### 쿼리 추적 로그
+- AOP를 활용한 HTTP 요청별 쿼리 실행 수와 시간 로깅
+- 개발 환경에서 쿼리 최적화를 위한 도구로 활용
+
+### 로그 관리
+- Logback을 활용한 로그 롤링 정책 구현
+- 로그 파일 압축 및 S3 업로드 자동화
 
 ## 🌿 Branch Naming Convention
 
