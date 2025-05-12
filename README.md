@@ -8,6 +8,7 @@
 
 - 📆 **프로젝트 기간**: 2025.04.16 ~ 2025.05.13
 - 🔗 **배포 링크**: [http://15.165.92.142/login](http://15.165.92.142/login)
+- 🎬 **시연 영상**: [YouTube 시연 영상 보기](https://youtu.be/QGx8xnzYtDg)
 
 ## 🛠️ 기술 스택
 
@@ -63,8 +64,8 @@
 | [허지웅](https://github.com/kiki1875b) | • Article 도메인 설계<br>• 기사 수집, 분류 및 저장 배치 프로세스 구현<br>• Template Method, Strategy 패턴을 통한 확장성 확보<br>• 인메모리 KeywordCache 도입<br>• CD 파이프라인 구축<br>• GIN 인덱스, tsvector를 활용한 Article 도메인 성능 개선 |
 
 ## 🏗️ 시스템 아키텍처
+![시스템 아키텍처](https://github.com/user-attachments/assets/b910bcdd-0fdc-41a0-86e5-5609a8ea2013)
 
-![시스템 아키텍처](img_2.png)
 모뉴 시스템은 다음과 같은 아키텍처로 구성되어 있습니다.
 
 1. **CI/CD 파이프라인**
@@ -84,9 +85,11 @@
 ## 💾 데이터베이스 스키마
 
 ### PostgreSQL
-![PostgreSQL ERD](img.png)
+![PostgreSQL ERD](https://github.com/user-attachments/assets/0f0c3559-b9c7-4e59-a2c7-5858a3cefd76)
+
 ### MongoDB
-![MongoDB 스키마](img_1.png)
+![MongoDB 스키마](https://github.com/user-attachments/assets/f95215c8-46d4-43c7-b47c-9584f080b018)
+
 ## 🚀 주요 기능
 
 ### 사용자 관리
@@ -133,7 +136,7 @@
 
 ### 메모리 최적화
 - 인메모리 KeywordCache 도입으로 기사 분류 성능 개선
-- JVM 옵션 최적화로 OOM 문제 해결
+- swap 공간 생성 및 JVM 옵션 최적화로 OOM 문제 해결
 
 ### 배치 프로세스 최적화
 - Template Method, Strategy 패턴을 통한 확장성 있는 배치 구조
