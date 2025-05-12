@@ -9,6 +9,8 @@
 - 📆 **프로젝트 기간**: 2025.04.16 ~ 2025.05.13
 - 🔗 **배포 링크**: [http://15.165.92.142/login](http://15.165.92.142/login)
 - 🎬 **시연 영상**: [YouTube 시연 영상 보기](https://youtu.be/QGx8xnzYtDg)
+- 📋 **협업 문서**: [Notion 페이지](https://www.notion.so/MoNew-1c7c5631fb0180c9a06eea3d4f599b7c)
+
 
 ## 🛠️ 기술 스택
 
