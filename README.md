@@ -10,7 +10,7 @@
 - 🔗 **배포 링크**: [http://15.165.92.142/login](http://15.165.92.142/login)
 - 🎬 **시연 영상**: [YouTube 시연 영상 보기](https://youtu.be/QGx8xnzYtDg)
 - 📋 **협업 문서**: [Notion 페이지](https://www.notion.so/MoNew-1c7c5631fb0180c9a06eea3d4f599b7c)
-- [Swagger API 문서 (v2.3.1)](https://github.com/9taetae9/sb01-monew-team2/blob/release-v2.3.1/monew/docs/swagger-v2.3.1.json)
+- 📘 **Swagger API 문서**: [v2.3.1](https://github.com/9taetae9/sb01-monew-team2/blob/release-v2.3.1/monew/docs/swagger-v2.3.1.json)
 
 ## 🛠️ 기술 스택
 
