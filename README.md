@@ -10,7 +10,7 @@
 - 🔗 **배포 링크**: [http://15.165.92.142/login](http://15.165.92.142/login)
 - 🎬 **시연 영상**: [YouTube 시연 영상 보기](https://youtu.be/QGx8xnzYtDg)
 - 📋 **협업 문서**: [Notion 페이지](https://www.notion.so/MoNew-1c7c5631fb0180c9a06eea3d4f599b7c)
-
+- [Swagger API 문서 (v2.3.1)](https://github.com/9taetae9/sb01-monew-team2/blob/release-v2.3.1/monew/docs/swagger-v2.3.1.json)
 
 ## 🛠️ 기술 스택
 
@@ -61,7 +61,7 @@
 |------|------------|
 | [김태현(팀장)](https://github.com/9taetae9) | • 프로젝트 관리(칸반보드 연동, 이슈 기반 브랜치 자동 생성, 이슈 템플릿)<br>• CI 파이프라인 구축<br>• 기사 백업 & 복구 시스템 구현<br>• logback 롤링 정책 및 시스템, JVM 레벨 타임존 설정<br>• 댓글 관리 도메인 설계<br>• 인프라 관리(swap 파일, JVM 옵션 최적화로 OOM 문제 해결)<br>• 릴리즈 버전 문서 관리 |
 | [김주언](https://github.com/wndjs803) | • 사용자, 활동 내역 도메인 설계<br>• Fetch Join을 활용한 쿼리 성능 개선<br>• Spring Event를 활용한 클래스 간 결합도 감소<br>• MongoDB를 활용한 조회 최적화<br>• DB Schema, MongoDB 관리 |
-| [연예림](https://github.com/yinneu) | • Interest 도메인 설계<br>• Subscription 도메인 설계<br>• Swagger API 문서화<br>• 배포 시 API 문서 추출 자동화 워크플로우 구성<br>• Fetch Join, Index를 활용한 쿼리 최적화 |
+| [연예림](https://github.com/yinneu) | • Interest 도메인 설계<br>• Subscription 도메인 설계<br>• Swagger API 문서화(자동화 워크플로우 구축)<br>• 공통 예외 처리 및 전역 핸들러 구현 <br>• Fetch Join, Index를 활용한 쿼리 최적화 |
 | [이소영](https://github.com/gitSoyoungLee) | • Notification 도메인 설계<br>• 오래된 알림 삭제 배치 작업 구현<br>• QueryDsl 기반 모든 도메인 커서 페이지네이션 구현<br>• AOP 기반 쿼리 추적 로그 시스템<br>• Spring Actuator 및 커스텀 메트릭 적용<br>• Spring Boot Admin Server 적용 및 모니터링 |
 | [허지웅](https://github.com/kiki1875b) | • Article 도메인 설계<br>• 기사 수집, 분류 및 저장 배치 프로세스 구현<br>• Template Method, Strategy 패턴을 통한 확장성 확보<br>• 인메모리 KeywordCache 도입<br>• CD 파이프라인 구축<br>• GIN 인덱스, tsvector를 활용한 Article 도메인 성능 개선 |
 
