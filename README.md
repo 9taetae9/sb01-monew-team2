@@ -12,6 +12,7 @@
 - 📋 **협업 문서**: [Notion 페이지](https://www.notion.so/MoNew-1c7c5631fb0180c9a06eea3d4f599b7c)
 - 📊 **칸반 보드**: [GitHub Projects](https://github.com/users/9taetae9/projects/3)
 - 📘 **Swagger API 문서**: [v2.3.1](https://github.com/9taetae9/sb01-monew-team2/blob/release-v2.3.1/monew/docs/swagger-v2.3.1.json)
+- 📑 **발표 자료**: [Canva 발표 자료](https://www.canva.com/design/DAGmFTBmxzI/W_GSg6Aw2kgVw4iNGCgthw/view?utm_content=DAGmFTBmxzI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h35c7fe3d01)
 
 ## 🛠️ 기술 스택
 
@@ -150,18 +151,39 @@
 ### Spring Boot Admin
 - 애플리케이션 상태 모니터링 대시보드
 - 스프링 액추에이터 통합으로 런타임 정보 확인
+![image](https://github.com/user-attachments/assets/3946a669-4de0-4e3c-bb54-0c30fee34dde)
+
 
 ### 커스텀 메트릭
 - 배치 작업 관련 커스텀 메트릭 수집
 - Micrometer를 통한 메트릭 노출
+![image](https://github.com/user-attachments/assets/5bfd9f65-1dd7-4ab8-b4de-8f718efee123)
 
 ### 쿼리 추적 로그
 - AOP를 활용한 HTTP 요청별 쿼리 실행 수와 시간 로깅
 - 개발 환경에서 쿼리 최적화를 위한 도구로 활용
-
-### 로그 관리
+```
+Query Statistics: URL = GET /api/interests,  Query Count = 3, Query Time = 22(ms)
+```
+### 로그 & 백업 관리
 - Logback을 활용한 로그 롤링 정책 구현
 - 로그 파일 압축 및 S3 업로드 자동화
+- 일별 기사 S3 백업
+<table>
+  <tr>
+    <td rowspan="2" align="center" valign="middle">
+      <img src="https://github.com/user-attachments/assets/3dc0c216-009e-4f11-9712-2393ad4ed0e5" width="350px" alt="로그 압축 및 S3 업로드">
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/958c0f4e-4f7d-434e-9aa5-cce7c782720d" width="350px" alt="로그 시스템 구성도">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/e0c4b559-dd96-4a38-8ce1-ef6d460c391b" width="350px" alt="로그 관리 시스템 구조">
+    </td>
+  </tr>
+</table>
 
 ## 🌿 Branch Naming Convention
 
