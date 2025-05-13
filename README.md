@@ -86,6 +86,76 @@
   - PostgreSQL: 관계형 데이터를 위한 주 데이터베이스
   - MongoDB: 사용자 활동 내역과 같은 조회 최적화를 위한 비관계형 데이터베이스
 
+## 📁 프로젝트 구조
+```
+monew/                                # 루트 디렉토리
+├── admin/                            # Spring Boot Admin 애플리케이션
+│   ├── Dockerfile                    # Admin 컨테이너화 설정
+│   ├── build.gradle                  
+│   └── src/
+│       ├── main/java/.../monew/
+│       │   └── AdminApplication.java # Admin 진입점
+│       └── test/java/.../monew/
+│           └── AdminApplicationTests.java
+│
+├── src/                              
+│   ├── main/                         # 메인 소스 코드
+│   │   └── java/.../monew/
+│   │       ├── config/               # 애플리케이션 설정
+│   │       │   ├── JpaConfig.java    # JPA 설정
+│   │       │   ├── MongoDbConfig.java# MongoDB 설정
+│   │       │   ├── WebConfig.java    # 웹 관련 설정
+│   │       │   ├── interceptor/      # 인터셉터
+│   │       │   └── queryAspect/      # 쿼리 추적 AOP
+│   │       │
+│   │       └── module/               # 애플리케이션 모듈
+│   │           ├── actuator/         # 모니터링 지표
+│   │           ├── common/           # 공통 모듈 (예외 처리 등)
+│   │           ├── domain/           # 도메인 모듈
+│   │           │   ├── article/      # 기사 도메인
+│   │           │   │   ├── backup/   # 기사 백업 & 복구
+│   │           │   │   ├── batch/    # 기사 수집 배치
+│   │           │   │   └── controller, dto, entity, repository, service...
+│   │           │   │
+│   │           │   ├── comment/      # 댓글 도메인
+│   │           │   ├── interest/     # 관심사 도메인
+│   │           │   ├── notification/ # 알림 도메인
+│   │           │   ├── subscription/ # 구독 도메인
+│   │           │   ├── user/         # 사용자 도메인
+│   │           │   └── useractivity/ # 사용자 활동 도메인
+│   │           │
+│   │           └── log/              # 로그 관리
+│   │
+│   └── test/                         # 테스트 소스 코드
+│       └── java/.../monew/
+│           ├── config/               # 설정 테스트
+│           └── module/
+│               ├── TestEntityFactory.java
+│               ├── actuator/         # 모니터링 지표 테스트
+│               ├── domain/           # 도메인별 테스트
+│               │   ├── article/      # 기사 도메인 테스트
+│               │   │   ├── backup/   # 백업 & 복구 테스트
+│               │   │   ├── batch/    # 배치 테스트
+│               │   │   ├── controller/
+│               │   │   ├── repository/
+│               │   │   └── service/
+│               │   │
+│               │   ├── comment/      # 댓글 도메인 테스트
+│               │   ├── interest/     # 관심사 도메인 테스트
+│               │   ├── notification/ # 알림 도메인 테스트
+│               │   ├── subscription/ # 구독 도메인 테스트
+│               │   ├── user/         # 사용자 도메인 테스트
+│               │   └── useractivity/ # 사용자 활동 도메인 테스트
+│               │
+│               └── log/              # 로그 관리 테스트
+│
+├── docs/                             # API 문서 및 관련 문서
+├── logs/                             # 로그 파일 디렉토리
+├── gradle/                           
+├── build.gradle                      
+└── Dockerfile                        # 메인 애플리케이션 컨테이너화 설정
+```
+
 ## 💾 데이터베이스 스키마
 
 ### PostgreSQL
