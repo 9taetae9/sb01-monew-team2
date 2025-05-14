@@ -255,24 +255,6 @@ Query Statistics: URL = GET /api/interests,  Query Count = 3, Query Time = 22(ms
   </tr>
 </table>
 
-## 🌿 Branch Naming Convention
-
-**형식**: `[유형]/#[이슈번호]/[키워드]`
-
-| 라벨 유형    | 접두사   | 예시                                   | 비고                     |
-|--------------|----------|----------------------------------------|--------------------------|
-| `feat`       | `feat`   | `feat/#123/login-modal`                | 신기능 개발             |
-| `hotfix`     | `hotfix` | `hotfix/#45/auth-error`                | 긴급 수정               |
-| `refactor`   | `feat`   | `feat/#89/employee-search-refactor`    | 리팩토링 작업           |
-| `etc.`  | `task`   | `task/#234/docs-update`                | 문서 작업 등 일반 작업  |
-
-### ✨ 주요 규칙
-- 영문 소문자 사용 (employ-search ⭕ / EmploySearch ❌)
-- 하이픈(-) 으로 단어 구분
-- 이슈 번호는 #+숫자 형식
-- 리팩토링 작업 시 기존 feat 브랜치명에 '-refactor' 접미사 추가
-- 키워드 길이 20자 이내 권장
-
 ## 💬 Commit Message Convention
 **형식**: `유형(범위): <설명> #이슈번호`
 - 브랜치의 첫 커밋과 마지막 커밋에는 #이슈번호 필수로 포함하기
@@ -291,6 +273,24 @@ Query Statistics: URL = GET /api/interests,  Query Count = 3, Query Time = 22(ms
 | `docs`	 | 문서 수정 |
 | `remove`	 | 파일 삭제 |
 | `chore`  | 기타 변경 |
+
+## 🌿 Branch Naming Convention
+
+**형식**: `[유형]/#[이슈번호]/[키워드]`
+
+| 라벨 유형    | 접두사   | 예시                                   | 비고                     |
+|--------------|----------|----------------------------------------|--------------------------|
+| `feat`       | `feat`   | `feat/#123/login-modal`                | 신기능 개발             |
+| `hotfix`     | `hotfix` | `hotfix/#45/auth-error`                | 긴급 수정               |
+| `refactor`   | `feat`   | `feat/#89/employee-search-refactor`    | 리팩토링 작업           |
+| `etc.`  | `task`   | `task/#234/docs-update`                | 문서 작업 등 일반 작업  |
+
+### ✨ 주요 규칙
+- 영문 소문자 사용 (employ-search ⭕ / EmploySearch ❌)
+- 하이픈(-) 으로 단어 구분
+- 이슈 번호는 #+숫자 형식
+- 리팩토링 작업 시 기존 feat 브랜치명에 '-refactor' 접미사 추가
+- 키워드 길이 20자 이내 권장
 
 ### 🔄 Git Flow
 ![image](https://github.com/user-attachments/assets/6ae847b8-b30d-4d5f-85dc-5c0099a3ced7)
