@@ -1,9 +1,9 @@
 spring:
   application:
     name: monew
-  data:
-    mongodb:
-      uri: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DB_PROD}?retryWrites=true&w=majority&appName=Cluster0
+#  data:
+#    mongodb:
+#      uri: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DB_PROD}?retryWrites=true&w=majority&appName=Cluster0
   jpa:
     hibernate:
       ddl-auto: none
