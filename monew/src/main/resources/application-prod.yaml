@@ -40,7 +40,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://172.31.27.197:90
+        url: http://10.0.24.8:90
         instance:
           service-host-type: ip
 logging:
