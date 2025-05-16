@@ -11,7 +11,7 @@
   "containerDefinitions": [
     {
       "name": "monew-app",
-      "image": "replace-me",
+      "image": "462740558166.dkr.ecr.ap-northeast-2.amazonaws.com/team2/monew:latest",
       "cpu": 896,
       "memory": 1024,
       "memoryReservation": 1024,
@@ -51,7 +51,7 @@
     },
     {
       "name": "monew-admin-app",
-      "image": "462740558166.dkr.ecr.ap-northeast-2.amazonaws.com/monew-admin:v1.0.0",
+      "image": "462740558166.dkr.ecr.ap-northeast-2.amazonaws.com/team2/monew:admin-v1.0.0",
       "cpu": 128,
       "memory": 384,
       "memoryReservation": 384,
