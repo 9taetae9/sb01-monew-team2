@@ -15,8 +15,8 @@ jobs:
       SPRING_PROFILES_ACTIVE: "openapi"
       NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
       NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY2 }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY2 }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_S3_BUCKET_NAME: dummy
 
     steps:
