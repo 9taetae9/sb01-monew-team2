@@ -13,8 +13,8 @@ env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY_URI: 462740558166.dkr.ecr.ap-northeast-2.amazonaws.com/team2/monew
   IMAGE_TAG: ${{ github.sha }}
-  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY2 }}
-  AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY2 }}
+  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
   ECS_TASK_DEFINITION: .github/workflows/ecs/task-definition.json
   ECS_SERVICE: monew-service
   ECS_CLUSTER: monew-cluster
