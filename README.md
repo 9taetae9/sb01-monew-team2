@@ -7,7 +7,7 @@
 **모뉴(MoNew)** 는 MongoDB 및 PostgreSQL 기반 백업 및 복구 시스템을 갖춘 사용자 맞춤형 통합 뉴스 플랫폼입니다. 다양한 뉴스 API를 통합하여 사용자에게 맞춤형 뉴스를 제공하고, 의견을 나눌 수 있는 소셜 기능을 갖추고 있습니다.
 
 - 📆 **프로젝트 기간**: 2025.04.16 ~ 2025.05.11
-- 🔗 **배포 링크**: [http://15.165.92.142/login](http://15.165.92.142/login)
+- 🔗 **배포 링크**: [http://15.164.82.15/login](http://15.164.82.15/login)
 - 🎬 **시연 영상**: [YouTube 시연 영상 보기](https://youtu.be/QGx8xnzYtDg)
 - 📋 **협업 문서**: [Notion 페이지](https://www.notion.so/MoNew-1c7c5631fb0180c9a06eea3d4f599b7c)
 - 📊 **칸반 보드**: [GitHub Projects](https://github.com/users/9taetae9/projects/3)
