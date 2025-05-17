@@ -4,16 +4,23 @@
 
 ---
 ## 📝 프로젝트 소개
-**모뉴(MoNew)** 는 MongoDB 및 PostgreSQL 기반 백업 및 복구 시스템을 갖춘 사용자 맞춤형 통합 뉴스 플랫폼입니다. 다양한 뉴스 API를 통합하여 사용자에게 맞춤형 뉴스를 제공하고, 의견을 나눌 수 있는 소셜 기능을 갖추고 있습니다.
+### 📰 흩어진 뉴스를 한 곳에, 관심 있는 주제만 모아보세요!
 
-- 📆 **프로젝트 기간**: 2025.04.16 ~ 2025.05.11
-- 🔗 **배포 링크**: [http://15.164.82.15/login](http://15.164.82.15/login)
-- 🎬 **시연 영상**: [YouTube 시연 영상 보기](https://youtu.be/QGx8xnzYtDg)
-- 📋 **협업 문서**: [Notion 페이지](https://www.notion.so/MoNew-1c7c5631fb0180c9a06eea3d4f599b7c)
-- 📊 **칸반 보드**: [GitHub Projects](https://github.com/users/9taetae9/projects/3)
-- 📘 **Swagger API 문서**: [v2.3.1](https://github.com/9taetae9/sb01-monew-team2/blob/release-v2.3.1/monew/docs/swagger-v2.3.1.json)
-- 📑 **발표 자료**: [Canva 발표 자료](https://www.canva.com/design/DAGmFTBmxzI/W_GSg6Aw2kgVw4iNGCgthw/view?utm_content=DAGmFTBmxzI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h35c7fe3d01)
+**모뉴(MoNew)**는 다양한 뉴스 출처(Naver API, 한국경제, 조선일보, 연합뉴스 등)를 통합하여 관심사 기반으로 뉴스를 저장하는 뉴스 통합 관리 플랫폼입니다. 사용자는 관심 있는 주제를 구독하고, 해당 주제의 기사가 등록되면 실시간 알림을 받을 수 있습니다. 또한 댓글과 좋아요를 통해 다른 사용자와 의견을 나눌 수 있는 소셜 기능도 함께 제공됩니다. 🗞️💬
 
+<img width="100%" alt="모뉴 대시보드" src="https://github.com/user-attachments/assets/0265d8f0-bca1-44b8-8eaa-4f5790fd3a58">
+
+### 📌 프로젝트 정보
+
+| 항목 | 내용 |
+|------|------|
+| **📆 프로젝트 기간** | 2025.04.16 ~ 2025.05.11 |
+| **🔗 배포 링크** | [http://15.164.82.15/login](http://15.164.82.15/login) |
+| **🎬 시연 영상** | [YouTube 시연 영상 보기](https://youtu.be/QGx8xnzYtDg) |
+| **📋 협업 문서** | [Notion 페이지](https://www.notion.so/MoNew-1c7c5631fb0180c9a06eea3d4f599b7c) |
+| **📊 칸반 보드** | [GitHub Projects](https://github.com/users/9taetae9/projects/3) |
+| **📘 API 문서** | [Swagger v2.3.1](https://github.com/9taetae9/sb01-monew-team2/blob/release-v2.3.1/monew/docs/swagger-v2.3.1.json) |
+| **📑 발표 자료** | [Canva 발표 자료](https://www.canva.com/design/DAGmFTBmxzI/W_GSg6Aw2kgVw4iNGCgthw/view?utm_content=DAGmFTBmxzI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h35c7fe3d01) |
 ## 🛠️ 기술 스택
 
 ### 백엔드
